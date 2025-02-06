@@ -11,18 +11,17 @@
 }
 
 .container {
-    display: flex;
-    flex-direction: column;
     border: 1px solid #e1e4e8;
-    border-radius: 16px;
-    padding: 4px;
+    border-radius: 8px;
     height: 68vh;
     margin: 0;
     padding: 0;
 }
 
 .data-layer-viewer {
-    padding: 16px;
-    height: 100%;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 16px;
+    height: 96%;
     margin: 0;
 }
