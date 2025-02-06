@@ -1,8 +1,8 @@
 {
   "name": "data-layer-viewer",
-  "private": true,
-  "version": "0.1.0",
   "type": "module",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -12,7 +12,8 @@
   "dependencies": {
     "@xyflow/react": "^12.4.2",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-select": "^5.10.0"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.1.1",
