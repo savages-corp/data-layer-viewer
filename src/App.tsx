@@ -1,5 +1,5 @@
 import type { Connection, Edge, EdgeChange, NodeChange } from '@xyflow/react'
-import type { AppNode, ServiceNode } from './nodes'
+import type { AppNode } from './nodes'
 import {
   addEdge,
   applyEdgeChanges,
@@ -13,12 +13,15 @@ import {
 } from '@xyflow/react'
 
 import { useCallback, useRef, useState } from 'react'
+
 import Select from 'react-select'
 
 import { edgeTypes } from './edges'
-import { nodeTypes } from './nodes'
+import { nodeTypes } from './nodes' // Ensure this maps to the updated ServiceNodeComponent
 
 import '@xyflow/react/dist/style.css'
+
+import './App.css'
 
 interface ServiceOption {
   label: string
@@ -39,25 +42,19 @@ const initialEdges: Edge[] = [
 const initialNodes: AppNode[] = [
   {
     id: 'service',
-    type: 'service',
+    type: 'service', // Ensure this matches the key in nodeTypes
     position: { x: 0, y: 0 },
     data: { label: 'Service' },
   },
   {
     id: 'data-layer',
-    type: 'data-layer',
+    type: 'data-layer', // Ensure this type is defined in nodeTypes
     position: { x: -100, y: 100 },
     data: { label: 'Data Layer' },
   },
 ] satisfies AppNode[]
 
-export default function App(
-  {
-    locked,
-  }: {
-    locked?: boolean
-  },
-) {
+export default function App({ locked }: { locked?: boolean }) {
   const [nodes, setNodes] = useState(initialNodes)
   const [edges, setEdges] = useState(initialEdges)
   const edgeReconnectSuccessful = useRef(true)
@@ -75,12 +72,20 @@ export default function App(
 
   const onConnect = useCallback(
     (connection: Connection) => {
-      if (connection.source === connection.target) // Prevent self-connections.
+      if (connection.source === connection.target)
+        return // Prevent self-connections
+
+      // Check for duplicate connections
+      const exists = edges.some(
+        edge => edge.source === connection.source && edge.target === connection.target,
+      )
+
+      if (exists)
         return
 
       // Create a new edge based on the connection.
       const edge: Edge = {
-        id: `${connection.source}-${connection.target}`,
+        id: `${connection.source}-${connection.target}-${Date.now()}`, // Unique ID
         source: connection.source,
         target: connection.target,
         animated: true,
@@ -88,36 +93,41 @@ export default function App(
 
       setEdges(eds => addEdge(edge, eds))
     },
-    [setEdges],
+    [edges, setEdges],
   )
 
   const onReconnectStart = useCallback(() => {
     edgeReconnectSuccessful.current = false
   }, [])
 
-  const onReconnect = useCallback((oldEdge: Edge, newConnection: Connection) => {
-    edgeReconnectSuccessful.current = true
-    setEdges(els => reconnectEdge(oldEdge, newConnection, els))
-  }, [])
+  const onReconnect = useCallback(
+    (oldEdge: Edge, newConnection: Connection) => {
+      edgeReconnectSuccessful.current = true
+      setEdges(els => reconnectEdge(oldEdge, newConnection, els))
+    },
+    [setEdges],
+  )
 
-  const onReconnectEnd = useCallback((_: any, edge: Edge) => {
-    if (!edgeReconnectSuccessful.current) {
-      setEdges(eds => eds.filter(e => e.id !== edge.id))
-    }
+  const onReconnectEnd = useCallback(
+    (_: any, edge: Edge) => {
+      if (!edgeReconnectSuccessful.current) {
+        setEdges(eds => eds.filter(e => e.id !== edge.id))
+      }
 
-    edgeReconnectSuccessful.current = true
-  }, [])
+      edgeReconnectSuccessful.current = true
+    },
+    [setEdges],
+  )
 
   // Custom functionality.
   const addNode = (node: AppNode) => setNodes(nds => [...nds, node])
-  // const removeNode = (nodeId: string) => setNodes(nds => nds.filter(n => n.id !== nodeId))
 
   const selectService = (option: ServiceOption | null) => {
     if (!option)
       return
 
     addNode({
-      id: option.value,
+      id: `${option.value}-${Date.now()}`, // Ensure unique ID
       type: 'service',
       position: { x: -256, y: Math.random() * 256 },
       data: { label: option.label },
@@ -127,31 +137,28 @@ export default function App(
   return (
     <ReactFlow
       nodes={nodes}
-      nodeTypes={nodeTypes}
+      nodeTypes={nodeTypes} // Ensure this includes 'service' mapped to ServiceNodeComponent
       onNodesChange={onNodesChange}
-
       edges={edges}
       edgeTypes={edgeTypes}
       onEdgesChange={onEdgesChange}
-
       onConnect={onConnect}
       onReconnect={onReconnect}
       onReconnectStart={onReconnectStart}
       onReconnectEnd={onReconnectEnd}
-
-      // Fit the view to the nodes when the component mounts.
       fitView
-
-      // Allow zooming and panning unless the viewer is locked.
       panOnDrag={!locked}
       zoomOnScroll={!locked}
       zoomOnPinch={!locked}
     >
-      {/* <Panel position="top-left">Sources</Panel> */}
       <Panel position="top-left">
-        <Select placeholder="Add a service" options={serviceOptions} value={null} onChange={option => selectService(option)} />
+        <Select
+          placeholder="Add a service"
+          options={serviceOptions}
+          value={null}
+          onChange={option => selectService(option)}
+        />
       </Panel>
-      {/* <Panel position="top-right">Destinations</Panel> */}
       <Background />
       <MiniMap />
       <Controls />
