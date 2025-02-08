@@ -8,9 +8,18 @@
       "DOM.Iterable"
     ],
     "useDefineForClassFields": true,
+    "baseUrl": ".",
     "module": "ESNext",
     /* Bundler mode */
     "moduleResolution": "bundler",
+    "paths": {
+      "@/app/*": [
+        "app/*"
+      ],
+      "@/types/*": [
+        "types/*"
+      ]
+    },
     "resolveJsonModule": true,
     "allowImportingTsExtensions": true,
     /* Linting */

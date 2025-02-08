@@ -1,5 +1,11 @@
-import type { Connection, Edge, EdgeChange, NodeChange } from '@xyflow/react'
-import type { AppNode } from './nodes'
+import type { BuiltInEdge, BuiltInNode, Connection, Edge, EdgeChange, EdgeTypes, NodeChange, NodeTypes } from '@xyflow/react'
+import type { DataEdge } from './edges/DataEdge'
+import type { ServiceNode } from './nodes/ServiceNode'
+import type { StageNode } from './nodes/StageNode'
+import type { WarehouseNode } from './nodes/WarehouseNode'
+
+import { Status } from '@/types/status'
+
 import {
   addEdge,
   applyEdgeChanges,
@@ -12,17 +18,34 @@ import {
   ReactFlow,
   reconnectEdge,
 } from '@xyflow/react'
-
 import { useCallback, useRef, useState } from 'react'
-
 import Select from 'react-select'
 
-import { edgeTypes } from './edges'
-import { nodeTypes } from './nodes' // Ensure this maps to the updated ServiceNodeComponent
+import { DataEdgeComponent } from './edges/DataEdge'
+
+import { ServiceNodeComponent } from './nodes/ServiceNode'
+import { StageNodeComponent } from './nodes/StageNode'
+import { WarehouseNodeComponent } from './nodes/WarehouseNode'
 
 import '@xyflow/react/dist/style.css'
-
 import './App.css'
+
+/* Set up various types of nodes and edges for the graph. */
+export type AppNode = BuiltInNode | StageNode | ServiceNode | WarehouseNode
+
+export const nodeTypes = {
+  stage: StageNodeComponent,
+  service: ServiceNodeComponent,
+  warehouse: WarehouseNodeComponent,
+  // Add any of your custom nodes here!
+} satisfies NodeTypes
+
+export type AppEdge = BuiltInEdge | DataEdge
+
+export const edgeTypes = {
+  data: DataEdgeComponent,
+} satisfies EdgeTypes
+/* --------------------------------------------------------- */
 
 interface ServiceOption {
   label: string
@@ -37,9 +60,10 @@ const serviceOptions: ServiceOption[] = [
 
 // The initial state of the graph.
 const initialEdges: Edge[] = [
-  { id: 'pull-1', source: 'service-a', target: 'modelize-1', type: 'data', animated: true, data: { shape: 'circle' } },
-  { id: 'data-layer-1', source: 'modelize-1', target: 'egress-1', type: 'data', animated: true, data: { shape: 'square' } },
-    { id: 'push-1', source: 'egress-1', target: 'service-b', type: 'data', animated: true, data: { shape: 'circle' } },
+  { id: 'pull-1', source: 'service-a', target: 'modelize-1', type: 'data', animated: true, data: { shape: 'circle', status: Status.Success } },
+  { id: 'stage-1', source: 'modelize-1', target: 'egress-1', type: 'data', animated: true, data: { shape: 'square', status: Status.Success } },
+  { id: 'push-1', source: 'egress-1', target: 'service-b', type: 'data', animated: true, data: { shape: 'circle', status: Status.Success } },
+  { id: 'warehouse-1', source: 'modelize-1', target: 'warehouse', type: 'data', animated: true, data: { shape: 'square', status: Status.SuccessWithWarehouse } },
 
 ] satisfies Edge[]
 
@@ -48,13 +72,19 @@ const initialNodes: AppNode[] = [
     id: 'service-a',
     type: 'service',
     position: { x: -300, y: 0 },
-    data: { label: 'Service A' },
+    data: {
+      label: 'Service A',
+      status: Status.Success,
+    },
   },
   {
     id: 'service-b',
     type: 'service',
     position: { x: 300, y: 0 },
-    data: { label: 'Service B' },
+    data: {
+      label: 'Service B',
+      status: Status.Success,
+    },
   },
   // Data Layer container sub-flow
   {
@@ -64,11 +94,32 @@ const initialNodes: AppNode[] = [
     style: { width: 300, height: 300 },
     zIndex: -1,
     data: {},
+    draggable: false,
+    selectable: false,
+  },
+  // {
+  //   id: 'data-layer-label',
+  //   position: { x: -50, y: -125 },
+  //   type: 'default',
+  //   data: { label: 'Data Layer' },
+  //   parentId: 'data-layer',
+  //   extent: 'parent',
+  // },
+  {
+    id: 'warehouse',
+    position: { x: 8, y: 260 },
+    type: 'warehouse',
+    data: {
+      label: 'Warehouse',
+    },
+    parentId: 'data-layer',
+    extent: 'parent',
+    draggable: false,
   },
   {
     id: 'modelize-1',
     position: { x: 50, y: 125 },
-    type: 'data-layer',
+    type: 'stage',
     data: { label: 'Modelize' },
     parentId: 'data-layer',
     extent: 'parent',
@@ -76,7 +127,7 @@ const initialNodes: AppNode[] = [
   {
     id: 'egress-1',
     position: { x: 200, y: 125 },
-    type: 'data-layer',
+    type: 'stage',
     data: { label: 'Egress' },
     parentId: 'data-layer',
     extent: 'parent',
@@ -118,7 +169,6 @@ export default function App({ locked }: { locked?: boolean }) {
         id: `${connection.source}-${connection.target}-${Date.now()}`, // Unique ID
         source: connection.source,
         target: connection.target,
-        animated: true,
         type: 'data',
         data: {
           shape: 'circle',

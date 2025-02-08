@@ -1,5 +1,8 @@
+import path from 'path'
 import react from '@vitejs/plugin-react'
+
 import { defineConfig } from 'vite'
+
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
 
 export default defineConfig({
@@ -12,6 +15,11 @@ export default defineConfig({
         chunkFileNames: 'bundle.js',
         assetFileNames: 'styles.css',
       },
+    },
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, '.'),
     },
   },
 })

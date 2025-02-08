@@ -1,8 +1,16 @@
-import type { EdgeProps } from '@xyflow/react'
+import type { Edge, EdgeProps } from '@xyflow/react'
 
-import type { DataEdge } from './'
+import { Status } from '@/types/status'
 
 import { BaseEdge, getSmoothStepPath } from '@xyflow/react'
+
+export type DataEdge = Edge<
+  {
+    status?: Status
+    shape?: 'circle' | 'square' | 'triangle'
+  },
+  'data'
+>
 
 export function DataEdgeComponent({
   id,
@@ -29,20 +37,25 @@ export function DataEdgeComponent({
   return (
     <>
       <BaseEdge id={id} path={edgePath} />
-      {data?.shape === 'circle' && (
-        <circle r={size / 2} fill={color} className="react-flow__edge-data__gizmo">
-          <animateMotion dur="2s" repeatCount="indefinite" path={edgePath} />
-        </circle>
-      )}
-      {data?.shape === 'square' && (
-        <rect width={size} height={size} x={-size / 2} y={-size / 2} fill={color} className="react-flow__edge-data__gizmo">
-          <animateMotion dur="2s" repeatCount="indefinite" path={edgePath} />
-        </rect>
-      )}
-      {data?.shape === 'triangle' && (
-        <polygon points={`0,${-size / 2} ${size / 2},${size / 2} ${-size / 2},${size / 2}`} fill={color} className="react-flow__edge-data__gizmo">
-          <animateMotion dur="2s" repeatCount="indefinite" path={edgePath} />
-        </polygon>
+      {(data?.status === Status.Success || data?.status === Status.SuccessWithWarehouse)
+      && (
+        <>
+          {data?.shape === 'circle' && (
+            <circle r={size / 2} fill={color} className="react-flow__edge-data__gizmo">
+              <animateMotion dur="2s" repeatCount="indefinite" path={edgePath} />
+            </circle>
+          )}
+          {data?.shape === 'square' && (
+            <rect width={size} height={size} x={-size / 2} y={-size / 2} fill={color} className="react-flow__edge-data__gizmo">
+              <animateMotion dur="2s" repeatCount="indefinite" path={edgePath} />
+            </rect>
+          )}
+          {data?.shape === 'triangle' && (
+            <polygon points={`0,${-size / 2} ${size / 2},${size / 2} ${-size / 2},${size / 2}`} fill={color} className="react-flow__edge-data__gizmo">
+              <animateMotion dur="2s" repeatCount="indefinite" path={edgePath} />
+            </polygon>
+          )}
+        </>
       )}
     </>
   )

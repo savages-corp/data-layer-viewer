@@ -1,17 +1,24 @@
-import type { NodeProps } from '@xyflow/react'
-
-import type { ServiceNode } from './'
+import type { Status } from '@/types/status'
+import type { Node, NodeProps } from '@xyflow/react'
 
 import { Handle, Position, useNodeConnections } from '@xyflow/react'
 import { useEffect, useState } from 'react'
 
 /*
-  ServiceNodeComponent is a React component that renders a service node.
+  ServiceNode displays various services that can be connected to other nodes.
     - It displays the label of the service and two handles, one for pushing data and one for pulling data.
     - The handles are only visible if the node is not already connected to another node.
     - A service node handle can only be connected to one other node.
 
 */
+
+export type ServiceNode = Node<
+  {
+    status?: Status
+    label?: string
+  },
+  'service'
+>
 
 export function ServiceNodeComponent({ data }: NodeProps<ServiceNode>) {
   const pushConnections = useNodeConnections({

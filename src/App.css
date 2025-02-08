@@ -34,8 +34,8 @@
   box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.08);
 }
 
-/* Node styling */
-.react-flow__node-default, .react-flow__node-service, .react-flow__node-data-layer {
+/* Global node styling */
+.react-flow__node-default, .react-flow__node-service, .react-flow__node-stage, .react-flow__node-warehouse {
   border-radius: 4px;
   background: linear-gradient(165deg, #ffffff, #f8f8f8);
   border: none;
@@ -44,8 +44,14 @@
   transform-origin: right;
 }
 
-.react-flow__node-default:hover, .react-flow__node-service:hover, .react-flow__node-data-layer:hover {
+.react-flow__node-default:hover, .react-flow__node-service:hover, .react-flow__node-stage:hover, .react-flow__node-warehouse:hover {
   box-shadow: 4px 4px 8px 0px rgba(0, 0, 0, 0.05);
+}
+
+.react-flow__node-group {
+  backdrop-filter: blur(4px);
+  background: linear-gradient(48deg, #d9ffe6, #ffffff);
+  border: 1px solid #31c787;
 }
 
 /* Node handle styling */
@@ -87,13 +93,22 @@
 }
 
 /* Data Layer node */
-.react-flow__node-data-layer {
+.react-flow__node-stage {
   display: flex;
   align-items: center;
   justify-content: center;
   min-width: 60px;
   min-height: 32px;
   font-size: .5em;
+}
+
+/* Warehouse node */
+.react-flow__node-warehouse {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 284px;
+  min-height: 32px;
 }
 
 /* Custom edges */
