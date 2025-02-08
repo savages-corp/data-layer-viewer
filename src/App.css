@@ -1,21 +1,21 @@
 
 .react-flow {
-  --xy-edge-stroke-default:#9eb8ad;
+  --xy-edge-stroke-default:#31c787;
   --xy-edge-stroke-width-default:1;
   --xy-edge-stroke-selected-default:#4d5553;
   --xy-connectionline-stroke-default:#b1b1b7;
   --xy-connectionline-stroke-width-default:1;
   --xy-attribution-background-color-default:rgba(255, 255, 255, 0.5);
   --xy-minimap-background-color-default:#fff;
-  --xy-background-pattern-dots-color-default:#91919a;
+  --xy-background-pattern-dots-color-default:#a2ccb5;
   --xy-background-pattern-line-color-default:#eee;
   --xy-background-pattern-cross-color-default:#e2e2e2;
   --xy-node-color-default:inherit;
   --xy-node-border-default:1px solid #4e4e4e;
   --xy-node-background-color-default:#fff;
   --xy-node-group-background-color-default:rgba(240, 240, 240, 0.25);
-  --xy-node-boxshadow-hover-default:0 1px 4px 1px rgba(0, 0, 0, 0.08);
-  --xy-node-boxshadow-selected-default:0 0 0 0.5px #1a192b;
+  --xy-node-boxshadow-hover-default:2px 2px 2px 2px rgba(0, 0, 0, 0.08);
+  --xy-node-boxshadow-selected-default:1px 1px 1px 1px rgba(0, 0, 0, 0.08);
   --xy-handle-background-color-default:#1a192b;
   --xy-handle-border-color-default:#fff;
   --xy-selection-background-color-default:rgba(0, 89, 220, 0.08);
@@ -29,10 +29,36 @@
   --xy-resize-background-color-default:#3367d9;
 }
 
+/* Selected node styling */
+.selected {
+  box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.08);
+}
+
+/* Node styling */
+.react-flow__node-default, .react-flow__node-service, .react-flow__node-data-layer {
+  border-radius: 4px;
+  background: linear-gradient(165deg, #ffffff, #f8f8f8);
+  border: none;
+  box-shadow: 1px 1px 4px 0px rgba(0, 0, 0, 0.1);
+  transition: box-shadow .15s ease-out;
+  transform-origin: right;
+}
+
+.react-flow__node-default:hover, .react-flow__node-service:hover, .react-flow__node-data-layer:hover {
+  box-shadow: 4px 4px 8px 0px rgba(0, 0, 0, 0.05);
+}
+
+/* Node handle styling */
 .react-flow__handle {
   z-index: 100;
   background-color: white;
-  border: var(--xy-node-border-default);
+  border: 1px solid #31c787;
+
+  transition: background-color 0.5s;
+}
+
+.react-flow__handle:hover {
+  background-color: #31c787;
 }
 
 /* Invisible handle to make dragging feel better */
@@ -44,4 +70,48 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+/* Service node */
+.react-flow__node-service {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  min-height: 32px;
+}
+
+.react-flow__node-service-subtitle {
+  font-size: .5em;
+}
+
+/* Data Layer node */
+.react-flow__node-data-layer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  min-height: 32px;
+  font-size: .5em;
+}
+
+/* Custom edges */
+@keyframes dataEdge {
+  0% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.react-flow__edge-data__gizmo {
+  animation: dataEdge 2s linear infinite;
 }

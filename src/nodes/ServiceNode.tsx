@@ -17,6 +17,7 @@ export function ServiceNodeComponent({ data }: NodeProps<ServiceNode>) {
   const pushConnections = useNodeConnections({
     handleType: 'target',
   })
+  // const pushConnectionsData = useNodesData(pushConnections[0]?.source) as ServiceNode | undefined
 
   const pullConnections = useNodeConnections({
     handleType: 'source',
@@ -44,15 +45,15 @@ export function ServiceNodeComponent({ data }: NodeProps<ServiceNode>) {
   }, [pullConnections])
 
   return (
-    <div className="react-flow__node-default">
+    <div className="react-flow__node-default react-flow__node-service">
       <div>{data.label}</div>
-      { (isSource) && <div style={{ fontSize: 8, marginTop: 4, marginBottom: 4 }}>Source</div> }
-      { (isDestination) && <div style={{ fontSize: 8, marginTop: 4, marginBottom: 4 }}>Destination</div> }
+      { (isSource) && <span className="react-flow__node-service-subtitle">Source</span> }
+      { (isDestination) && <span className="react-flow__node-service-subtitle">Destination</span> }
       <Handle
         type="target"
         position={Position.Left}
         id="push"
-        style={{ visibility: isSource ? 'hidden' : 'visible'}}
+        style={{ visibility: isSource ? 'hidden' : 'visible' }}
         isConnectable={!isDestination}
       >
         <div style={{ fontSize: 8, marginLeft: 12, lineHeight: 0.5 }}>Push</div>

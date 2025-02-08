@@ -5,6 +5,7 @@ import {
   applyEdgeChanges,
   applyNodeChanges,
   Background,
+  BackgroundVariant,
   Controls,
   MiniMap,
   Panel,
@@ -36,22 +37,51 @@ const serviceOptions: ServiceOption[] = [
 
 // The initial state of the graph.
 const initialEdges: Edge[] = [
-  { id: 'base', source: 'service', target: 'data-layer', animated: true },
+  { id: 'pull-1', source: 'service-a', target: 'modelize-1', type: 'data', animated: true, data: { shape: 'circle' } },
+  { id: 'data-layer-1', source: 'modelize-1', target: 'egress-1', type: 'data', animated: true, data: { shape: 'square' } },
+    { id: 'push-1', source: 'egress-1', target: 'service-b', type: 'data', animated: true, data: { shape: 'circle' } },
+
 ] satisfies Edge[]
 
 const initialNodes: AppNode[] = [
   {
-    id: 'service',
-    type: 'service', // Ensure this matches the key in nodeTypes
-    position: { x: 0, y: 0 },
-    data: { label: 'Service' },
+    id: 'service-a',
+    type: 'service',
+    position: { x: -300, y: 0 },
+    data: { label: 'Service A' },
   },
   {
-    id: 'data-layer',
-    type: 'data-layer', // Ensure this type is defined in nodeTypes
-    position: { x: -100, y: 100 },
-    data: { label: 'Data Layer' },
+    id: 'service-b',
+    type: 'service',
+    position: { x: 300, y: 0 },
+    data: { label: 'Service B' },
   },
+  // Data Layer container sub-flow
+  {
+    id: 'data-layer',
+    type: 'group',
+    position: { x: -50, y: -125 },
+    style: { width: 300, height: 300 },
+    zIndex: -1,
+    data: {},
+  },
+  {
+    id: 'modelize-1',
+    position: { x: 50, y: 125 },
+    type: 'data-layer',
+    data: { label: 'Modelize' },
+    parentId: 'data-layer',
+    extent: 'parent',
+  },
+  {
+    id: 'egress-1',
+    position: { x: 200, y: 125 },
+    type: 'data-layer',
+    data: { label: 'Egress' },
+    parentId: 'data-layer',
+    extent: 'parent',
+  },
+
 ] satisfies AppNode[]
 
 export default function App({ locked }: { locked?: boolean }) {
@@ -89,6 +119,10 @@ export default function App({ locked }: { locked?: boolean }) {
         source: connection.source,
         target: connection.target,
         animated: true,
+        type: 'data',
+        data: {
+          shape: 'circle',
+        },
       }
 
       setEdges(eds => addEdge(edge, eds))
@@ -159,7 +193,9 @@ export default function App({ locked }: { locked?: boolean }) {
           onChange={option => selectService(option)}
         />
       </Panel>
-      <Background />
+      <Background
+        variant={BackgroundVariant.Dots}
+      />
       <MiniMap />
       <Controls />
     </ReactFlow>

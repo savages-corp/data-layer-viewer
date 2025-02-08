@@ -3,8 +3,6 @@ import { createRoot } from 'react-dom/client'
 
 import App from './App'
 
-import './index.css'
-
 // Find all viewers and render the app in them.
 const viewers = document.querySelectorAll('.data-layer-viewer')
 

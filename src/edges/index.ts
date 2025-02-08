@@ -1,5 +1,16 @@
-import type { EdgeTypes } from '@xyflow/react'
+import type { BuiltInEdge, Edge, EdgeTypes } from '@xyflow/react'
+import { DataEdgeComponent } from './DataEdge'
+
+export type DataEdge = Edge<
+  {
+    state?: boolean
+    shape?: 'circle' | 'square' | 'triangle'
+  },
+  'data-edge'
+>
+
+export type AppEdge = BuiltInEdge | DataEdge
 
 export const edgeTypes = {
-  // Add your custom edge types here!
+  data: DataEdgeComponent,
 } satisfies EdgeTypes
