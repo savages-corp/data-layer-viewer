@@ -61,7 +61,7 @@ export function StageNodeComponent({ id, data }: NodeProps<StageNode>) {
         position={Position.Right}
         id="pull"
         style={{ borderRadius: data.stage === Stage.Modelize ? '0' : '50%' }}
-        isConnectable={sourceConnections.length === 0}
+        isConnectable={sourceConnections.length === 0 || data.stage === Stage.Modelize}
       >
       </Handle>
     </>

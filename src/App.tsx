@@ -92,7 +92,7 @@ const initialNodes: AppNode[] = [
     type: 'group',
     position: { x: -50, y: -125 },
     style: { width: 300, height: 300 },
-    zIndex: -1,
+    zIndex: -2,
     data: {},
     draggable: false,
     selectable: false,
@@ -106,6 +106,16 @@ const initialNodes: AppNode[] = [
   //   extent: 'parent',
   // },
   {
+    id: 'data-layer-flow-1',
+    type: 'group',
+    position: { x: 24, y: 16 },
+    style: { width: 256, height: 32, zIndex: -1 },
+    data: {},
+    zIndex: -1,
+    parentId: 'data-layer',
+    extent: 'parent',
+  },
+  {
     id: 'warehouse',
     position: { x: 8, y: 260 },
     type: 'warehouse',
@@ -118,10 +128,10 @@ const initialNodes: AppNode[] = [
   },
   {
     id: 'modelize-1',
-    position: { x: 50, y: 125 },
+    position: { x: 0, y: 125 },
     type: 'stage',
     data: { stage: Stage.Modelize },
-    parentId: 'data-layer',
+    parentId: 'data-layer-flow-1',
     extent: 'parent',
   },
   {
@@ -129,7 +139,7 @@ const initialNodes: AppNode[] = [
     position: { x: 200, y: 125 },
     type: 'stage',
     data: { stage: Stage.Egress },
-    parentId: 'data-layer',
+    parentId: 'data-layer-flow-1',
     extent: 'parent',
   },
 
