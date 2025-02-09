@@ -111,8 +111,14 @@
   min-height: 32px;
 }
 
+@keyframes blink {
+  50% {
+    opacity: 0.25;
+  }
+}
+
 /* Custom edges */
-@keyframes dataEdge {
+@keyframes in-out {
   0% {
     opacity: 0;
   }
@@ -128,5 +134,5 @@
 }
 
 .react-flow__edge-data__gizmo {
-  animation: dataEdge 2s linear infinite;
+  animation: in-out 2s linear infinite;
 }

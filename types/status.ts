@@ -1,4 +1,5 @@
 export enum Status {
+  Unknown,
   SuccessWithWarehouse,
   SuccessNothingNew,
   Success,

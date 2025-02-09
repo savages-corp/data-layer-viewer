@@ -21,6 +21,7 @@ export function WarehouseNodeComponent({ data }: NodeProps<WarehouseNode>) {
         type="target"
         position={Position.Top}
         id="push"
+        style={{ borderRadius: '0' }}
       />
     </>
   )

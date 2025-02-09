@@ -21,35 +21,35 @@ export type ServiceNode = Node<
 >
 
 export function ServiceNodeComponent({ data }: NodeProps<ServiceNode>) {
-  const pushConnections = useNodeConnections({
+  const targetConnections = useNodeConnections({
     handleType: 'target',
   })
-  // const pushConnectionsData = useNodesData(pushConnections[0]?.source) as ServiceNode | undefined
 
-  const pullConnections = useNodeConnections({
+  const sourceConnections = useNodeConnections({
     handleType: 'source',
   })
 
   const [isSource, setIsSource] = useState(false)
   const [isDestination, setIsDestination] = useState(false)
 
+  // Switch the visibility of the handles based on the connections.
   useEffect(() => {
-    if (pushConnections.length > 0) {
+    if (targetConnections.length > 0) {
       setIsDestination(true)
       return
     }
 
     setIsDestination(false)
-  }, [pushConnections])
+  }, [targetConnections])
 
   useEffect(() => {
-    if (pullConnections.length > 0) {
+    if (sourceConnections.length > 0) {
       setIsSource(true)
       return
     }
 
     setIsSource(false)
-  }, [pullConnections])
+  }, [sourceConnections])
 
   return (
     <div className="react-flow__node-default react-flow__node-service">

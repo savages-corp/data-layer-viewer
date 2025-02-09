@@ -4,8 +4,9 @@ import type { ServiceNode } from './nodes/ServiceNode'
 import type { StageNode } from './nodes/StageNode'
 import type { WarehouseNode } from './nodes/WarehouseNode'
 
-import { Status } from '@/types/status'
+import { Stage } from '@/types/stage'
 
+import { Status } from '@/types/status'
 import {
   addEdge,
   applyEdgeChanges,
@@ -19,14 +20,14 @@ import {
   reconnectEdge,
 } from '@xyflow/react'
 import { useCallback, useRef, useState } from 'react'
+
 import Select from 'react-select'
 
 import { DataEdgeComponent } from './edges/DataEdge'
-
 import { ServiceNodeComponent } from './nodes/ServiceNode'
 import { StageNodeComponent } from './nodes/StageNode'
-import { WarehouseNodeComponent } from './nodes/WarehouseNode'
 
+import { WarehouseNodeComponent } from './nodes/WarehouseNode'
 import '@xyflow/react/dist/style.css'
 import './App.css'
 
@@ -60,10 +61,10 @@ const serviceOptions: ServiceOption[] = [
 
 // The initial state of the graph.
 const initialEdges: Edge[] = [
-  { id: 'pull-1', source: 'service-a', target: 'modelize-1', type: 'data', animated: true, data: { shape: 'circle', status: Status.Success } },
-  { id: 'stage-1', source: 'modelize-1', target: 'egress-1', type: 'data', animated: true, data: { shape: 'square', status: Status.Success } },
-  { id: 'push-1', source: 'egress-1', target: 'service-b', type: 'data', animated: true, data: { shape: 'circle', status: Status.Success } },
-  { id: 'warehouse-1', source: 'modelize-1', target: 'warehouse', type: 'data', animated: true, data: { shape: 'square', status: Status.SuccessWithWarehouse } },
+  { id: 'pull-1', source: 'service-a', target: 'modelize-1', type: 'data', data: { shape: 'circle', status: Status.Success } },
+  { id: 'stage-1', source: 'modelize-1', target: 'egress-1', type: 'data', data: { shape: 'square', status: Status.Success } },
+  { id: 'push-1', source: 'egress-1', target: 'service-b', type: 'data', data: { shape: 'circle', status: Status.Success } },
+  { id: 'warehouse-1', source: 'modelize-1', target: 'warehouse', type: 'data', data: { shape: 'square', status: Status.SuccessWithWarehouse } },
 
 ] satisfies Edge[]
 
@@ -83,7 +84,6 @@ const initialNodes: AppNode[] = [
     position: { x: 300, y: 0 },
     data: {
       label: 'Service B',
-      status: Status.Success,
     },
   },
   // Data Layer container sub-flow
@@ -120,7 +120,7 @@ const initialNodes: AppNode[] = [
     id: 'modelize-1',
     position: { x: 50, y: 125 },
     type: 'stage',
-    data: { label: 'Modelize' },
+    data: { stage: Stage.Modelize },
     parentId: 'data-layer',
     extent: 'parent',
   },
@@ -128,7 +128,7 @@ const initialNodes: AppNode[] = [
     id: 'egress-1',
     position: { x: 200, y: 125 },
     type: 'stage',
-    data: { label: 'Egress' },
+    data: { stage: Stage.Egress },
     parentId: 'data-layer',
     extent: 'parent',
   },
@@ -156,7 +156,7 @@ export default function App({ locked }: { locked?: boolean }) {
       if (connection.source === connection.target)
         return // Prevent self-connections
 
-      // Check for duplicate connections
+      // Check for duplicate connections.
       const exists = edges.some(
         edge => edge.source === connection.source && edge.target === connection.target,
       )
@@ -214,7 +214,7 @@ export default function App({ locked }: { locked?: boolean }) {
       id: `${option.value}-${Date.now()}`, // Ensure unique ID
       type: 'service',
       position: { x: -256, y: Math.random() * 256 },
-      data: { label: option.label },
+      data: { label: option.label, status: Status.Success },
     })
   }
 
