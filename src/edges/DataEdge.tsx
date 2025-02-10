@@ -4,7 +4,7 @@ import type { ServiceNode } from 'src/nodes/ServiceNode'
 
 import { Status } from '@/types/status'
 import { BaseEdge, getSmoothStepPath, useNodesData } from '@xyflow/react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 export type DataEdge = Edge<
   {
@@ -36,7 +36,7 @@ export function DataEdgeComponent({
   }, [sourceNode])
 
   // Get the color of the edge based on the status. We'll wrap this in a useCallback to prevent unnecessary re-renders.
-  const getColor = useCallback(() => {
+  const color = useMemo(() => {
     switch (status) {
       case Status.Success:
       case Status.SuccessWithWarehouse:
@@ -59,7 +59,7 @@ export function DataEdgeComponent({
   const dashes = isActive ? '5' : '0' // Dashed line for active edges.
   const style = {
     animation: `dashdraw 0.25s linear infinite ${(!isActive && status !== Status.Unknown) ? ', blink 1s infinite' : ''}`,
-    stroke: getColor(),
+    stroke: color,
   } satisfies React.CSSProperties
 
   // Compute the path of the edge.
@@ -81,17 +81,17 @@ export function DataEdgeComponent({
       && (
         <>
           {data?.shape === 'circle' && (
-            <circle r={size / 2} fill={getColor()} className="react-flow__edge-data__gizmo">
+            <circle r={size / 2} fill={color} className="react-flow__edge-data__gizmo">
               <animateMotion dur="2s" repeatCount="indefinite" path={getPath()} />
             </circle>
           )}
           {data?.shape === 'square' && (
-            <rect width={size} height={size} x={-size / 2} y={-size / 2} fill={getColor()} className="react-flow__edge-data__gizmo">
+            <rect width={size} height={size} x={-size / 2} y={-size / 2} fill={color} className="react-flow__edge-data__gizmo">
               <animateMotion dur="2s" repeatCount="indefinite" path={getPath()} />
             </rect>
           )}
           {data?.shape === 'triangle' && (
-            <polygon points={`0,${-size / 2} ${size / 2},${size / 2} ${-size / 2},${size / 2}`} fill={getColor()} className="react-flow__edge-data__gizmo">
+            <polygon points={`0,${-size / 2} ${size / 2},${size / 2} ${-size / 2},${size / 2}`} fill={color} className="react-flow__edge-data__gizmo">
               <animateMotion dur="2s" repeatCount="indefinite" path={getPath()} />
             </polygon>
           )}

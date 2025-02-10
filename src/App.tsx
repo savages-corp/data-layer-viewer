@@ -1,12 +1,14 @@
-import type { BuiltInEdge, BuiltInNode, Connection, Edge, EdgeChange, EdgeTypes, NodeChange, NodeTypes } from '@xyflow/react'
+import type { BuiltInEdge, BuiltInNode, Connection, EdgeChange, EdgeTypes, NodeChange, NodeTypes, ReactFlowInstance } from '@xyflow/react'
 import type { DataEdge } from './edges/DataEdge'
 import type { ServiceNode } from './nodes/ServiceNode'
 import type { StageNode } from './nodes/StageNode'
 import type { WarehouseNode } from './nodes/WarehouseNode'
 
-import { Stage } from '@/types/stage'
+import { useWindowDimensions } from '@/lib/hooks/useWindowDimensions'
 
+import { Stage } from '@/types/stage'
 import { Status } from '@/types/status'
+
 import {
   addEdge,
   applyEdgeChanges,
@@ -17,9 +19,10 @@ import {
   MiniMap,
   Panel,
   ReactFlow,
+  ReactFlowProvider,
   reconnectEdge,
 } from '@xyflow/react'
-import { useCallback, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 import Select from 'react-select'
 
@@ -33,7 +36,6 @@ import './App.css'
 
 /* Set up various types of nodes and edges for the graph. */
 export type AppNode = BuiltInNode | StageNode | ServiceNode | WarehouseNode
-
 export const nodeTypes = {
   stage: StageNodeComponent,
   service: ServiceNodeComponent,
@@ -42,7 +44,6 @@ export const nodeTypes = {
 } satisfies NodeTypes
 
 export type AppEdge = BuiltInEdge | DataEdge
-
 export const edgeTypes = {
   data: DataEdgeComponent,
 } satisfies EdgeTypes
@@ -60,13 +61,13 @@ const serviceOptions: ServiceOption[] = [
 ]
 
 // The initial state of the graph.
-const initialEdges: Edge[] = [
-  { id: 'pull-1', source: 'service-a', target: 'modelize-1', type: 'data', data: { shape: 'circle', status: Status.Success } },
-  { id: 'stage-1', source: 'modelize-1', target: 'egress-1', type: 'data', data: { shape: 'square', status: Status.Success } },
-  { id: 'push-1', source: 'egress-1', target: 'service-b', type: 'data', data: { shape: 'circle', status: Status.Success } },
-  { id: 'warehouse-1', source: 'modelize-1', target: 'warehouse', type: 'data', data: { shape: 'square', status: Status.SuccessWithWarehouse } },
+const initialEdges: AppEdge[] = [
+  { id: 'pull-1', source: 'service-a', target: 'modelize-1', type: 'data', data: { shape: 'circle' } },
+  { id: 'stage-1', source: 'modelize-1', target: 'egress-1', type: 'data', data: { shape: 'square' } },
+  { id: 'push-1', source: 'egress-1', target: 'service-b', type: 'data', data: { shape: 'circle' } },
+  { id: 'warehouse-1', source: 'modelize-1', target: 'warehouse', type: 'data', data: { shape: 'square' } },
 
-] satisfies Edge[]
+] satisfies AppEdge[]
 
 const initialNodes: AppNode[] = [
   {
@@ -114,6 +115,7 @@ const initialNodes: AppNode[] = [
     zIndex: -1,
     parentId: 'data-layer',
     extent: 'parent',
+    className: 'data-layer-flow',
   },
   {
     id: 'warehouse',
@@ -145,10 +147,27 @@ const initialNodes: AppNode[] = [
 
 ] satisfies AppNode[]
 
-export default function App({ locked }: { locked?: boolean }) {
+export default function App(
+  {
+    locked,
+    hideMinimap,
+    hideControls,
+
+  }: {
+    locked?: boolean
+    hideMinimap?: boolean
+    hideControls?: boolean
+  },
+) {
+  const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance<AppNode, AppEdge>>()
   const [nodes, setNodes] = useState(initialNodes)
   const [edges, setEdges] = useState(initialEdges)
+
   const edgeReconnectSuccessful = useRef(true)
+
+  const reactFlowWrapper = useRef<HTMLDivElement>(null)
+
+  const { width, height } = useWindowDimensions()
 
   // Implement basic graph functionality.
   const onNodesChange = useCallback(
@@ -157,7 +176,7 @@ export default function App({ locked }: { locked?: boolean }) {
   )
 
   const onEdgesChange = useCallback(
-    (changes: EdgeChange<Edge>[]) => setEdges(eds => applyEdgeChanges(changes, eds)),
+    (changes: EdgeChange<AppEdge>[]) => setEdges(eds => applyEdgeChanges(changes, eds)),
     [setEdges],
   )
 
@@ -175,7 +194,7 @@ export default function App({ locked }: { locked?: boolean }) {
         return
 
       // Create a new edge based on the connection.
-      const edge: Edge = {
+      const edge: AppEdge = {
         id: `${connection.source}-${connection.target}-${Date.now()}`, // Unique ID
         source: connection.source,
         target: connection.target,
@@ -195,7 +214,7 @@ export default function App({ locked }: { locked?: boolean }) {
   }, [])
 
   const onReconnect = useCallback(
-    (oldEdge: Edge, newConnection: Connection) => {
+    (oldEdge: AppEdge, newConnection: Connection) => {
       edgeReconnectSuccessful.current = true
       setEdges(els => reconnectEdge(oldEdge, newConnection, els))
     },
@@ -203,7 +222,7 @@ export default function App({ locked }: { locked?: boolean }) {
   )
 
   const onReconnectEnd = useCallback(
-    (_: any, edge: Edge) => {
+    (_: any, edge: AppEdge) => {
       if (!edgeReconnectSuccessful.current) {
         setEdges(eds => eds.filter(e => e.id !== edge.id))
       }
@@ -212,6 +231,60 @@ export default function App({ locked }: { locked?: boolean }) {
     },
     [setEdges],
   )
+
+  const onNodeDragStop = useCallback(
+    (_: React.MouseEvent, node: AppNode) => {
+      if (!locked) // We don't need to do anything if the graph not locked.
+        return
+
+      if (!reactFlowInstance || !reactFlowWrapper.current)
+        return
+
+      if (!node.measured || !node.measured.width || !node.measured.height)
+        return
+
+      // Get the current viewport transformation
+      const { x: viewportX, y: viewportY, zoom } = reactFlowInstance.getViewport()
+
+      // Get the size of the React Flow wrapper element
+      const { clientWidth, clientHeight } = reactFlowWrapper.current
+
+      // Calculate the bounds in node coordinate space
+      const left = -viewportX / zoom
+      const top = -viewportY / zoom
+      const right = (-viewportX + clientWidth) / zoom
+      const bottom = (-viewportY + clientHeight) / zoom
+
+      // Now you can check if the node is within these bounds
+      const nodeRight = node.position.x + (node.width || 0)
+      const nodeBottom = node.position.y + (node.height || 0)
+
+      const isWithinBounds
+        = node.position.x >= left
+          && node.position.y >= top
+          && nodeRight <= right
+          && nodeBottom <= bottom
+
+      if (!isWithinBounds) {
+        // Clamp the node inside the boundaries.
+        const newX = Math.max(left, Math.min(node.position.x, right - node.measured.width))
+        const newY = Math.max(top, Math.min(node.position.y, bottom - node.measured.height))
+
+        setNodes(nds =>
+          nds.map(n =>
+            n.id === node.id ? { ...n, position: { x: newX, y: newY } } : n,
+          ),
+        )
+      }
+    },
+    [reactFlowInstance],
+  )
+
+  // If the viewport is resized, re-fit the view.
+  useEffect(() => {
+    if (reactFlowInstance)
+      reactFlowInstance.fitView()
+  }, [width, height])
 
   // Custom functionality.
   const addNode = (node: AppNode) => setNodes(nds => [...nds, node])
@@ -229,35 +302,42 @@ export default function App({ locked }: { locked?: boolean }) {
   }
 
   return (
-    <ReactFlow
-      nodes={nodes}
-      nodeTypes={nodeTypes} // Ensure this includes 'service' mapped to ServiceNodeComponent
-      onNodesChange={onNodesChange}
-      edges={edges}
-      edgeTypes={edgeTypes}
-      onEdgesChange={onEdgesChange}
-      onConnect={onConnect}
-      onReconnect={onReconnect}
-      onReconnectStart={onReconnectStart}
-      onReconnectEnd={onReconnectEnd}
-      fitView
-      panOnDrag={!locked}
-      zoomOnScroll={!locked}
-      zoomOnPinch={!locked}
-    >
-      <Panel position="top-left">
-        <Select
-          placeholder="Add a service"
-          options={serviceOptions}
-          value={null}
-          onChange={option => selectService(option)}
-        />
-      </Panel>
-      <Background
-        variant={BackgroundVariant.Dots}
-      />
-      <MiniMap />
-      <Controls />
-    </ReactFlow>
+    <ReactFlowProvider>
+      <div ref={reactFlowWrapper} className="reactflow-wrapper" style={{ width: '100%', height: '100%' }}>
+        <ReactFlow
+          onInit={instance => setReactFlowInstance(instance)}
+          nodes={nodes}
+          nodeTypes={nodeTypes} // Ensure this includes 'service' mapped to ServiceNodeComponent
+          onNodesChange={onNodesChange}
+          edges={edges}
+          edgeTypes={edgeTypes}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          onReconnect={onReconnect}
+          onReconnectStart={onReconnectStart}
+          onReconnectEnd={onReconnectEnd}
+          onNodeDragStop={onNodeDragStop}
+          fitView
+          autoPanOnNodeDrag={!locked}
+          panOnDrag={!locked}
+          zoomOnScroll={!locked}
+          zoomOnPinch={!locked}
+        >
+          <Panel position="top-left">
+            <Select
+              placeholder="Add a service"
+              options={serviceOptions}
+              value={null}
+              onChange={option => selectService(option)}
+            />
+          </Panel>
+          <Background
+            variant={BackgroundVariant.Dots}
+          />
+          {!hideMinimap && !locked && <MiniMap />}
+          {!hideControls && !locked && <Controls />}
+        </ReactFlow>
+      </div>
+    </ReactFlowProvider>
   )
 }
