@@ -35,4 +35,6 @@ The following props are available for embedding the Data Layer Viewer:
 
 | Prop | Description |
 | --- | --- |
-| `data-locked` | Locks the Data Layer Viewer in place so it doesn't move when scrolling |
+| `data-hide-controls` | Hides the controls (also hidden when locked) |
+| `data-hide-minimap` | Hides the minimap (also hidden when locked) |
+| `data-locked` | Locks the viewport in place |

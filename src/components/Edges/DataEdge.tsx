@@ -1,6 +1,6 @@
 import type { Edge, EdgeProps } from '@xyflow/react'
 
-import type { ServiceNode } from 'src/nodes/ServiceNode'
+import type { ServiceNode } from 'src/components/Nodes/ServiceNode'
 
 import { Status } from '@/types/status'
 import { BaseEdge, getSmoothStepPath, useNodesData } from '@xyflow/react'
@@ -12,6 +12,12 @@ export type DataEdge = Edge<
   },
   'data'
 >
+
+/*
+  DataEdge displays an edge between two nodes with a gizmo at the center of the edge.
+    - The gizmo is only visible if the source node is in a successful state.
+    - The color of the edge is determined by the status of the source node.
+*/
 
 export function DataEdgeComponent({
   id,
@@ -47,9 +53,9 @@ export function DataEdgeComponent({
       case Status.ErrorDataModelize:
       case Status.ErrorDataEgress:
       case Status.ErrorInternalUnknown:
-        return '#ff7090'
+        return 'var(--xy-custom-edge-stroke-error)'
       default:
-        return '#ccc'
+        return 'var(--xy-custom-edge-stroke-inactive)'
     }
   }, [status])
 
@@ -58,7 +64,7 @@ export function DataEdgeComponent({
   const size = 6 // Size of the gizmo.
   const dashes = isActive ? '5' : '0' // Dashed line for active edges.
   const style = {
-    animation: `dashdraw 0.25s linear infinite ${(!isActive && status !== Status.Unknown) ? ', blink 1s infinite' : ''}`,
+    animation: `dashdraw 0.25s linear infinite ${(!isActive && status !== Status.Unknown) ? ', blink-opacity 1s infinite' : ''}`,
     stroke: color,
   } satisfies React.CSSProperties
 

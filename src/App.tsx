@@ -1,11 +1,11 @@
 import type { BuiltInEdge, BuiltInNode, Connection, EdgeChange, EdgeTypes, NodeChange, NodeTypes, ReactFlowInstance } from '@xyflow/react'
-import type { DataEdge } from './edges/DataEdge'
-import type { ServiceNode } from './nodes/ServiceNode'
-import type { StageNode } from './nodes/StageNode'
-import type { WarehouseNode } from './nodes/WarehouseNode'
+import type { DataEdge } from './components/Edges/DataEdge'
+import type { ContainerNode } from './components/Nodes/ContainerNode'
+import type { ServiceNode } from './components/Nodes/ServiceNode'
+import type { StageNode } from './components/Nodes/StageNode'
+import type { WarehouseNode } from './components/Nodes/WarehouseNode'
 
-import { useWindowDimensions } from '@/lib/hooks/useWindowDimensions'
-
+import { Service } from '@/types/service'
 import { Stage } from '@/types/stage'
 import { Status } from '@/types/status'
 
@@ -26,20 +26,23 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 import Select from 'react-select'
 
-import { DataEdgeComponent } from './edges/DataEdge'
-import { ServiceNodeComponent } from './nodes/ServiceNode'
-import { StageNodeComponent } from './nodes/StageNode'
+import { DataEdgeComponent } from './components/Edges/DataEdge'
+import { ContainerNodeComponent } from './components/Nodes/ContainerNode'
+import { ServiceNodeComponent } from './components/Nodes/ServiceNode'
 
-import { WarehouseNodeComponent } from './nodes/WarehouseNode'
+import { StageNodeComponent } from './components/Nodes/StageNode'
+import { WarehouseNodeComponent } from './components/Nodes/WarehouseNode'
+import { useWindowDimensions } from './hooks/useWindowDimensions'
 import '@xyflow/react/dist/style.css'
 import './App.css'
 
 /* Set up various types of nodes and edges for the graph. */
-export type AppNode = BuiltInNode | StageNode | ServiceNode | WarehouseNode
+export type AppNode = BuiltInNode | StageNode | ServiceNode | WarehouseNode | ContainerNode
 export const nodeTypes = {
   stage: StageNodeComponent,
   service: ServiceNodeComponent,
   warehouse: WarehouseNodeComponent,
+  container: ContainerNodeComponent,
   // Add any of your custom nodes here!
 } satisfies NodeTypes
 
@@ -51,13 +54,13 @@ export const edgeTypes = {
 
 interface ServiceOption {
   label: string
-  value: string
+  value: Service
 }
 
 // The options for the select input.
 const serviceOptions: ServiceOption[] = [
-  { label: 'Salesforce', value: 'salesforce' },
-  { label: 'Custom', value: 'custom' },
+  { label: 'Database', value: Service.Database },
+  { label: 'Salesforce', value: Service.Salesforce },
 ]
 
 // The initial state of the graph.
@@ -77,6 +80,7 @@ const initialNodes: AppNode[] = [
     data: {
       label: 'Service A',
       status: Status.Success,
+      service: Service.Salesforce,
     },
   },
   {
@@ -85,16 +89,21 @@ const initialNodes: AppNode[] = [
     position: { x: 300, y: 0 },
     data: {
       label: 'Service B',
+      service: Service.Database,
     },
   },
   // Data Layer container sub-flow
   {
     id: 'data-layer',
-    type: 'group',
+    type: 'container',
     position: { x: -50, y: -125 },
     style: { width: 300, height: 300 },
     zIndex: -2,
-    data: {},
+    data: {
+      annotation: 'Data Layer',
+      annotationSize: 2,
+      color: '#77ddb1',
+    },
     draggable: false,
     selectable: false,
   },
@@ -108,10 +117,13 @@ const initialNodes: AppNode[] = [
   // },
   {
     id: 'data-layer-flow-1',
-    type: 'group',
-    position: { x: 24, y: 16 },
+    type: 'container',
+    position: { x: 24, y: 156 },
     style: { width: 256, height: 32, zIndex: -1 },
-    data: {},
+    data: {
+      label: 'Flow',
+      labelSize: 1,
+    },
     zIndex: -1,
     parentId: 'data-layer',
     extent: 'parent',
@@ -119,10 +131,11 @@ const initialNodes: AppNode[] = [
   },
   {
     id: 'warehouse',
-    position: { x: 8, y: 260 },
+    position: { x: 4, y: 264 },
+    style: { width: 292, height: 32 },
     type: 'warehouse',
     data: {
-      label: 'Warehouse',
+      label: 'Data Layer Warehouse',
     },
     parentId: 'data-layer',
     extent: 'parent',
@@ -202,6 +215,45 @@ export default function App(
         data: {
           shape: 'circle',
         },
+      }
+
+      // This is where we have to handle the different type of node connections and their rules.
+      if (reactFlowInstance) {
+        // Get the source node as we will be adjusting the data edge based on it.
+        const sourceNode = reactFlowInstance.getNode(connection.source)
+        const targetNode = reactFlowInstance.getNode(connection.target)
+
+        if (!sourceNode || !targetNode)
+          return
+
+        // A service node can only connect to another service node or a Stage Modelize node.
+        if (sourceNode.type === 'service') {
+          if (targetNode.type !== 'service' && targetNode.type !== 'stage') {
+            return
+          }
+
+          if (targetNode.type === 'stage') {
+            const stageNode = targetNode as StageNode
+
+            if (stageNode.data.stage !== Stage.Modelize) {
+              return
+            }
+          }
+        }
+
+        // A stage node has two variations: Modelize and Egress.
+        // - Modelize can only emit a connection to a Stage Egress or a Warehouse node.
+        if (sourceNode.type === 'stage') {
+          const stageNode = sourceNode as StageNode
+
+          if (stageNode.data.stage === Stage.Modelize) {
+            if (targetNode.type !== 'stage' && targetNode.type !== 'warehouse') {
+              return
+            }
+
+            edge.data!.shape = 'square'
+          }
+        }
       }
 
       setEdges(eds => addEdge(edge, eds))
@@ -297,7 +349,11 @@ export default function App(
       id: `${option.value}-${Date.now()}`, // Ensure unique ID
       type: 'service',
       position: { x: -256, y: Math.random() * 256 },
-      data: { label: option.label, status: Status.Success },
+      data: {
+        label: option.label,
+        status: Status.Success,
+        service: option.value,
+      },
     })
   }
 

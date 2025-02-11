@@ -13,12 +13,6 @@
     /* Bundler mode */
     "moduleResolution": "bundler",
     "paths": {
-      "@/app/*": [
-        "app/*"
-      ],
-      "@/lib/*": [
-        "lib/*"
-      ],
       "@/types/*": [
         "types/*"
       ]

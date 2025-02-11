@@ -45,7 +45,7 @@ export function StageNodeComponent({ id, data }: NodeProps<StageNode>) {
   }, [targetConnectionsData])
 
   return (
-    <>
+    <div className={`react-flow__node-stage-contents react-flow__node-stage-contents-${data.stage.toLowerCase()}-${data.status && String(data.status).toLowerCase().replace(/_/g, '-')}`}>
       <div>{data.stage}</div>
       {/* Depending on whether the stage is modelize or egress, either the target or source is square */}
       <Handle
@@ -64,6 +64,6 @@ export function StageNodeComponent({ id, data }: NodeProps<StageNode>) {
         isConnectable={sourceConnections.length === 0 || data.stage === Stage.Modelize}
       >
       </Handle>
-    </>
+    </div>
   )
 }

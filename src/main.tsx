@@ -8,13 +8,13 @@ const viewers = document.querySelectorAll('.data-layer-viewer')
 
 viewers.forEach((viewer) => {
   // Get the various data attributes to be passed as props.
-  const controls = viewer.getAttribute('data-controls') === 'true'
   const locked = viewer.getAttribute('data-locked') === 'true'
-  const minimap = viewer.getAttribute('data-minimap') === 'true'
+  const hideControls = viewer.getAttribute('data-hide-controls') === 'true'
+  const hideMinimap = viewer.getAttribute('data-hide-minimap') === 'true'
 
   createRoot(viewer).render(
     <StrictMode>
-      <App controls={controls} locked={locked} minimap={minimap} />
+      <App hideControls={hideControls} hideMinimap={hideMinimap} locked={locked} />
     </StrictMode>,
   )
 })

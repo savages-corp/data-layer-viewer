@@ -1,26 +1,36 @@
-import type { Status } from '@/types/status'
+import type { Service } from '@/types/service'
 import type { Node, NodeProps } from '@xyflow/react'
+import type { StageNode } from './StageNode'
 
-import { Handle, Position, useNodeConnections } from '@xyflow/react'
-import { useEffect, useState } from 'react'
+import { Status } from '@/types/status'
+import { Handle, Position, useNodeConnections, useNodesData, useReactFlow } from '@xyflow/react'
+import { useEffect, useMemo, useState } from 'react'
+import { Icon } from '../Common/Icon'
 
 /*
   ServiceNode displays various services that can be connected to other nodes.
     - It displays the label of the service and two handles, one for pushing data and one for pulling data.
     - The handles are only visible if the node is not already connected to another node.
     - A service node handle can only be connected to one other node.
-
 */
 
 export type ServiceNode = Node<
   {
+    color?: string
     status?: Status
     label?: string
+    service: Service
   },
   'service'
 >
 
-export function ServiceNodeComponent({ data }: NodeProps<ServiceNode>) {
+export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
+  const { updateNodeData } = useReactFlow()
+
+  if (data.status === undefined) {
+    data.status = Status.Unknown
+  }
+
   const targetConnections = useNodeConnections({
     handleType: 'target',
   })
@@ -29,18 +39,27 @@ export function ServiceNodeComponent({ data }: NodeProps<ServiceNode>) {
     handleType: 'source',
   })
 
+  // Get the data of the connected node.
+  const targetConnectionsData = useNodesData(targetConnections[0]?.source) as ServiceNode | StageNode | undefined
+
   const [isSource, setIsSource] = useState(false)
   const [isDestination, setIsDestination] = useState(false)
 
-  // Switch the visibility of the handles based on the connections.
+  // Switch the visibility of the handles based on the connections. Also, update the status of the node based on the connected node if we're not the source node.
   useEffect(() => {
     if (targetConnections.length > 0) {
       setIsDestination(true)
+
+      if (targetConnectionsData?.data.status) {
+        updateNodeData(id, { status: targetConnectionsData.data.status })
+        return
+      }
+
       return
     }
 
     setIsDestination(false)
-  }, [targetConnections])
+  }, [targetConnectionsData])
 
   useEffect(() => {
     if (sourceConnections.length > 0) {
@@ -52,7 +71,8 @@ export function ServiceNodeComponent({ data }: NodeProps<ServiceNode>) {
   }, [sourceConnections])
 
   return (
-    <div className="react-flow__node-default react-flow__node-service">
+    <div className={`react-flow__node-service-contents react-flow__node-service-contents-${isSource ? 'source' : ''}${isDestination ? 'destination' : ''}-${data.status && String(data.status).toLowerCase().replace(/_/g, '-')}`}>
+      <Icon size={32} variant={data.service} color={data.color} />
       <div>{data.label}</div>
       { (isSource) && <span className="react-flow__node-service-subtitle">Source</span> }
       { (isDestination) && <span className="react-flow__node-service-subtitle">Destination</span> }
