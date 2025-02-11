@@ -7,6 +7,7 @@ import type { Node, NodeProps } from '@xyflow/react'
 export type ContainerNode = Node<
   {
     color?: string
+    textColor?: string
     annotation?: string
     annotationAlignment?: 'left' | 'center' | 'right'
     annotationSide?: 'top' | 'bottom'
@@ -21,8 +22,8 @@ export type ContainerNode = Node<
 
 export function ContainerNodeComponent({ data }: NodeProps<ContainerNode>) {
   const containerStyle = {
-    background: data.color && `linear-gradient(48deg, ${data.color}, #ffffff)`,
-    color: data.color,
+    background: data.color && `linear-gradient(48deg, ${data.color}, ${data.color}, #f8f8f8,  #ffffff)`,
+    color: data.textColor || data.color,
     outlineColor: data.color && data.color,
     outlineStyle: data.outlineStyle,
     position: 'relative', // added to position annotation relative to container

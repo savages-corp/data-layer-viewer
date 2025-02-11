@@ -2,7 +2,7 @@
   --xy-edge-stroke-default: #31c787;
   --xy-edge-stroke-width-default: 1;
   --xy-edge-stroke-selected-default: #4d5553;
-  --xy-connectionline-stroke-default: #b1b1b7;
+  --xy-connectionline-stroke-default: #31c787;
   --xy-connectionline-stroke-width-default: 1;
   --xy-attribution-background-color-default: rgba(255, 255, 255, 0.5);
   --xy-minimap-background-color-default: #fff;
@@ -34,6 +34,12 @@
   --xy-custom-border-radius-default: 4px;
 }
 
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* Selected node styling */
 .selected {
   box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.08);
@@ -41,11 +47,12 @@
 
 /* Global node styling */
 .react-flow__node-default,
+.react-flow__node-container,
 .react-flow__node-service,
 .react-flow__node-stage {
   border-radius: var(--xy-custom-border-radius-default);
   transition: box-shadow .15s ease-out;
-  box-shadow: 1px 1px 4px 0px rgba(0, 0, 0, 0.3);
+  box-shadow: 1px 1px 4px 0px rgba(0, 0, 0, 0.15);
 }
 
 .react-flow__node-default.draggable:hover,
@@ -53,7 +60,8 @@
 .react-flow__node-service.draggable:hover,
 .react-flow__node-stage.draggable:hover,
 .react-flow__node-warehouse.draggable:hover {
-  box-shadow: 4px 4px 8px 0px rgba(0, 0, 0, 0.1);
+  box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.05);
+  outline: 1px solid var(--xy-custom-edge-stroke-inactive);
 }
 
 .react-flow__node-container-contents {
@@ -62,7 +70,7 @@
   border-radius: var(--xy-custom-border-radius-default);
   backdrop-filter: blur(4px);
   background: linear-gradient(48deg, #eee, #fff);
-  outline: 1px dotted #aaa;
+  outline: 1px dotted var(--xy-custom-edge-stroke-inactive);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -110,8 +118,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  max-width: 200px;
   min-width: 200px;
+  min-height: 36px;
 }
 
 .react-flow__node-service-contents--error-service-pull,
@@ -127,11 +135,14 @@
   border-color: var(--xy-custom-edge-stroke-error);
 }
 
-.react-flow__node-service .icon {
+.react-flow__node-service .react-flow__node-service-icon {
+  background: white;
+  top: -16px;
+  left: -16px;
   position: absolute;
-  top: 0;
-  left: 0;
-  filter: drop-shadow(4px 4px 2px rgba(0, 0, 0, .05));
+  padding: 8px;
+  border-radius: 100%;
+  filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, .1));
 }
 
 .react-flow__node-service-subtitle {

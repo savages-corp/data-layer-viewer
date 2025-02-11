@@ -4,7 +4,7 @@ import type { StageNode } from './StageNode'
 
 import { Status } from '@/types/status'
 import { Handle, Position, useNodeConnections, useNodesData, useReactFlow } from '@xyflow/react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Icon } from '../Common/Icon'
 
 /*
@@ -72,7 +72,9 @@ export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
 
   return (
     <div className={`react-flow__node-service-contents react-flow__node-service-contents-${isSource ? 'source' : ''}${isDestination ? 'destination' : ''}-${data.status && String(data.status).toLowerCase().replace(/_/g, '-')}`}>
-      <Icon size={32} variant={data.service} color={data.color} />
+      <div className="react-flow__node-service-icon">
+        <Icon size={16} variant={data.service} color={data.color} />
+      </div>
       <div>{data.label}</div>
       { (isSource) && <span className="react-flow__node-service-subtitle">Source</span> }
       { (isDestination) && <span className="react-flow__node-service-subtitle">Destination</span> }
@@ -81,7 +83,7 @@ export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
         position={Position.Left}
         id="push"
         style={{ visibility: isSource ? 'hidden' : 'visible' }}
-        isConnectable={!isDestination}
+        // isConnectable={!isDestination}
       >
         <div style={{ fontSize: 8, marginLeft: 12, lineHeight: 0.5 }}>Push</div>
       </Handle>

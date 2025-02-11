@@ -54,81 +54,144 @@ export const edgeTypes = {
 
 interface ServiceOption {
   label: string
-  value: Service
+  value: string
+  service: Service
+  status?: Status
 }
 
 // The options for the select input.
 const serviceOptions: ServiceOption[] = [
-  { label: 'Database', value: Service.Database },
-  { label: 'Salesforce', value: Service.Salesforce },
+  { value: 'Broken Service', label: '(Example Broken at Modelize)', service: Service.Broken, status: Status.ErrorDataModelize },
+  { value: 'AWS', label: 'Amazon Web Services (AWS)', service: Service.Aws },
+  { value: 'Azure', label: 'Microsoft Azure', service: Service.Azure },
+  { value: 'Database', label: 'Database', service: Service.Database },
+  { value: 'GCP', label: 'Google Cloud Platform (GCP)', service: Service.Gcp },
+  { value: 'Hubspot', label: 'Hubspot', service: Service.Hubspot },
+  { value: 'Salesforce', label: 'Salesforce', service: Service.Salesforce },
+  { value: 'Slack', label: 'Slack', service: Service.Slack },
+  { value: 'Zapier', label: 'Zapier', service: Service.Zapier },
 ]
 
 // The initial state of the graph.
 const initialEdges: AppEdge[] = [
-  { id: 'pull-1', source: 'service-a', target: 'modelize-1', type: 'data', data: { shape: 'circle' } },
+  { id: 'pull-1', source: 'service-source-1', target: 'modelize-1', type: 'data', data: { shape: 'circle' } },
   { id: 'stage-1', source: 'modelize-1', target: 'egress-1', type: 'data', data: { shape: 'square' } },
-  { id: 'push-1', source: 'egress-1', target: 'service-b', type: 'data', data: { shape: 'circle' } },
+  { id: 'push-1', source: 'egress-1', target: 'service-destination-1', type: 'data', data: { shape: 'circle' } },
   { id: 'warehouse-1', source: 'modelize-1', target: 'warehouse', type: 'data', data: { shape: 'square' } },
 
 ] satisfies AppEdge[]
 
+const dataLayer: AppNode = {
+  id: 'data-layer',
+  type: 'container',
+  position: { x: -50, y: -125 },
+  style: { width: 300, height: 300 },
+  zIndex: -2,
+  data: {
+    annotation: 'Data Layer',
+    annotationSize: 2,
+    label: 'Connect your own services!',
+    labelSize: 2,
+    textColor: '#31c787',
+    color: '#eaf9f3',
+  },
+  draggable: false,
+  selectable: false,
+}
+
+interface DataLayerFlow {
+  Flow: AppNode
+  Modelize: AppNode
+  Egress: AppNode
+}
+
+// interface DataLayer {
+//   Nodes: AppNode[]
+//   Edges: AppEdge[]
+//   Flows: DataLayerFlow[]
+// }
+
+function createFlow(id: string, x?: number, y?: number): DataLayerFlow {
+  return {
+    Flow: {
+      id: `flow-${id}`,
+      type: 'container',
+      position: { x: x || 0, y: y || 0 },
+      style: { width: 256, height: 32, zIndex: -1 },
+      data: {
+        label: 'Flow',
+        labelSize: 1,
+      },
+      parentId: 'data-layer',
+      extent: 'parent',
+    },
+    Modelize: {
+      id: `modelize-${id}`,
+      type: 'stage',
+      position: { x: 0, y: 0 },
+      data: { stage: Stage.Modelize },
+      parentId: `flow-${id}`,
+      extent: 'parent',
+    },
+    Egress: {
+      id: `egress-${id}`,
+      type: 'stage',
+      position: { x: 200, y: 0 },
+      data: { stage: Stage.Egress },
+      parentId: `flow-${id}`,
+      extent: 'parent',
+    },
+  }
+}
+
+const initialFlows: AppNode[] = [
+  // Expand the result of createFlow to individual nodes.
+  ...Object.values(createFlow('1', 24, 212)),
+  ...Object.values(createFlow('2', 24, 64)),
+] satisfies AppNode[]
+
 const initialNodes: AppNode[] = [
   {
-    id: 'service-a',
+    id: 'service-source-1',
     type: 'service',
-    position: { x: -300, y: 0 },
+    position: { x: -312, y: 48 },
     data: {
-      label: 'Service A',
+      label: 'Database',
+      status: Status.Success,
+      service: Service.Database,
+    },
+  },
+  {
+    id: 'service-source-2',
+    type: 'service',
+    position: { x: -312, y: -48 },
+    data: {
+      label: 'Hubspot',
+      status: Status.Success,
+      service: Service.Hubspot,
+    },
+  },
+  {
+    id: 'service-destination-1',
+    type: 'service',
+    position: { x: 296, y: 48 },
+    data: {
+      label: 'Salesforce',
       status: Status.Success,
       service: Service.Salesforce,
     },
   },
   {
-    id: 'service-b',
+    id: 'service-destination-2',
     type: 'service',
-    position: { x: 300, y: 0 },
+    position: { x: 296, y: -48 },
     data: {
-      label: 'Service B',
-      service: Service.Database,
+      label: 'Slack',
+      status: Status.Success,
+      service: Service.Slack,
     },
   },
-  // Data Layer container sub-flow
-  {
-    id: 'data-layer',
-    type: 'container',
-    position: { x: -50, y: -125 },
-    style: { width: 300, height: 300 },
-    zIndex: -2,
-    data: {
-      annotation: 'Data Layer',
-      annotationSize: 2,
-      color: '#77ddb1',
-    },
-    draggable: false,
-    selectable: false,
-  },
-  // {
-  //   id: 'data-layer-label',
-  //   position: { x: -50, y: -125 },
-  //   type: 'default',
-  //   data: { label: 'Data Layer' },
-  //   parentId: 'data-layer',
-  //   extent: 'parent',
-  // },
-  {
-    id: 'data-layer-flow-1',
-    type: 'container',
-    position: { x: 24, y: 156 },
-    style: { width: 256, height: 32, zIndex: -1 },
-    data: {
-      label: 'Flow',
-      labelSize: 1,
-    },
-    zIndex: -1,
-    parentId: 'data-layer',
-    extent: 'parent',
-    className: 'data-layer-flow',
-  },
+  dataLayer,
   {
     id: 'warehouse',
     position: { x: 4, y: 264 },
@@ -141,23 +204,8 @@ const initialNodes: AppNode[] = [
     extent: 'parent',
     draggable: false,
   },
-  {
-    id: 'modelize-1',
-    position: { x: 0, y: 125 },
-    type: 'stage',
-    data: { stage: Stage.Modelize },
-    parentId: 'data-layer-flow-1',
-    extent: 'parent',
-  },
-  {
-    id: 'egress-1',
-    position: { x: 200, y: 125 },
-    type: 'stage',
-    data: { stage: Stage.Egress },
-    parentId: 'data-layer-flow-1',
-    extent: 'parent',
-  },
-
+  ...initialFlows,
+  // Data Layer container sub-flow
 ] satisfies AppNode[]
 
 export default function App(
@@ -175,6 +223,7 @@ export default function App(
   const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance<AppNode, AppEdge>>()
   const [nodes, setNodes] = useState(initialNodes)
   const [edges, setEdges] = useState(initialEdges)
+  // const [_, setFlows] = useState(initialFlows)
 
   const edgeReconnectSuccessful = useRef(true)
 
@@ -341,6 +390,16 @@ export default function App(
   // Custom functionality.
   const addNode = (node: AppNode) => setNodes(nds => [...nds, node])
 
+  // const addFlow = () => {
+  //   const id = `${Date.now()}`
+  //   const newFlow = createFlow(id, 24, Math.random() * 100)
+
+  //   setFlows(flows => [...flows, newFlow.Flow])
+  //   addNode(newFlow.Flow)
+  //   addNode(newFlow.Modelize)
+  //   addNode(newFlow.Egress)
+  // }
+
   const selectService = (option: ServiceOption | null) => {
     if (!option)
       return
@@ -348,11 +407,11 @@ export default function App(
     addNode({
       id: `${option.value}-${Date.now()}`, // Ensure unique ID
       type: 'service',
-      position: { x: -256, y: Math.random() * 256 },
+      position: { x: -32 + Math.random() * 64, y: -256 + Math.random() * 16 },
       data: {
-        label: option.label,
-        status: Status.Success,
-        service: option.value,
+        label: option.value,
+        status: option.status || Status.Success,
+        service: option.service,
       },
     })
   }
@@ -379,7 +438,7 @@ export default function App(
           zoomOnScroll={!locked}
           zoomOnPinch={!locked}
         >
-          <Panel position="top-left">
+          <Panel position="top-left" style={{ width: '320px' }}>
             <Select
               placeholder="Add a service"
               options={serviceOptions}
@@ -387,6 +446,9 @@ export default function App(
               onChange={option => selectService(option)}
             />
           </Panel>
+          {/* <Panel position="top-right">
+            <button onClick={addFlow}>Add Flow</button>
+          </Panel> */}
           <Background
             variant={BackgroundVariant.Dots}
           />
