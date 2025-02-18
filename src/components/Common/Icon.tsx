@@ -3,7 +3,7 @@ import type { IconType } from 'react-icons'
 import React from 'react'
 
 import { DiGoogleCloudPlatform } from 'react-icons/di'
-import { FaAws, FaDatabase, FaHubspot, FaLinkSlash, FaSalesforce, FaSlack, FaTrash, FaTrashCan, FaWarehouse } from 'react-icons/fa6'
+import { FaAws, FaDatabase, FaHubspot, FaLinkSlash, FaSalesforce, FaSlack, FaTrashCan, FaWarehouse } from 'react-icons/fa6'
 import { TbBrandZapier } from 'react-icons/tb'
 import { VscAzure } from 'react-icons/vsc'
 
