@@ -9,6 +9,7 @@ import { useEffect } from 'react'
 export type StageNode = Node<
   {
     stage: Stage
+    partnerId: string
     status?: Status
   },
   'stage'
@@ -54,6 +55,7 @@ export function StageNodeComponent({ id, data }: NodeProps<StageNode>) {
         id="push"
         style={{ borderRadius: data.stage === Stage.Egress ? '0' : '50%' }}
         isConnectable={targetConnections.length === 0}
+        className={targetConnections.length > 0 ? 'react-flow__handle-plugged' : ''}
       >
       </Handle>
       <Handle
@@ -61,7 +63,8 @@ export function StageNodeComponent({ id, data }: NodeProps<StageNode>) {
         position={Position.Right}
         id="pull"
         style={{ borderRadius: data.stage === Stage.Modelize ? '0' : '50%' }}
-        isConnectable={sourceConnections.length === 0 || data.stage === Stage.Modelize}
+        isConnectable={sourceConnections.length === 0 || data.stage === Stage.Modelize && sourceConnections.length <= 1}
+        className={(sourceConnections.length > 0 && data.stage === Stage.Egress) || sourceConnections.length > 1 ? 'react-flow__handle-plugged' : ''}
       >
       </Handle>
     </div>

@@ -13,6 +13,9 @@
     /* Bundler mode */
     "moduleResolution": "bundler",
     "paths": {
+      "@/src/*": [
+        "src/*"
+      ],
       "@/types/*": [
         "types/*"
       ]

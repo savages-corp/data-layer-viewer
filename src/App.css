@@ -89,13 +89,13 @@
 .react-flow__handle {
   z-index: 100;
   background-color: white;
-  border: 1px solid #31c787;
+  border: 1px solid var(--xy-edge-stroke-default);
 
   transition: background-color 0.5s;
 }
 
 .react-flow__handle:hover {
-  background-color: #31c787;
+  background-color: var(--xy-edge-stroke-default);
 }
 
 /* Invisible handle to make dragging feel better */
@@ -107,6 +107,10 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+.react-flow__handle-plugged {
+  background-color: var(--xy-edge-stroke-default);
 }
 
 /* Service node */
@@ -122,6 +126,14 @@
   min-height: 36px;
 }
 
+.react-flow__node-service-information {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  flex-direction: column;
+}
+
 .react-flow__node-service-contents--error-service-pull,
 .react-flow__node-service-contents-source-error-service-pull,
 .react-flow__node-service-contents-destination-error-service-push {
@@ -135,7 +147,21 @@
   border-color: var(--xy-custom-edge-stroke-error);
 }
 
-.react-flow__node-service .react-flow__node-service-icon {
+.react-flow__node-service-contents--error-service-pull .react-flow__handle:hover,
+.react-flow__node-service-contents-source-error-service-pull .react-flow__handle:hover,
+.react-flow__node-service-contents-destination-error-service-push .react-flow__handle:hover {
+  background-color: var(--xy-custom-edge-stroke-error);
+}
+
+.react-flow__node-service-contents--error-service-pull .react-flow__handle-plugged,
+.react-flow__node-service-contents-source-error-service-pull .react-flow__handle-plugged,
+.react-flow__node-service-contents-destination-error-service-push .react-flow__handle-plugged {
+  background-color: var(--xy-custom-edge-stroke-error);
+}
+
+
+.react-flow__node-service .react-flow__node-service-icon,
+.react-flow__node-service .react-flow__node-service-icon-delete {
   background: white;
   top: -16px;
   left: -16px;
@@ -145,8 +171,36 @@
   filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, .1));
 }
 
+.react-flow__node-service-icon-delete {
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity .15s ease-out;
+}
+
+.react-flow__node-service-icon-delete:hover {
+  opacity: 1;
+}
+
+.react-flow__node-service .react-flow__node-service-title input {
+  display: flex;
+
+  padding: 0;
+  font-size: .75em;
+  text-align: center;
+  background: transparent;
+  border: none;
+}
+
 .react-flow__node-service-subtitle {
   font-size: .5em;
+}
+
+.react-flow__node-service-status-select {
+  transform: scale(.4);
+  position: absolute;
+  width: 192px;
+  top: -16px;
+  right: -64px;
 }
 
 /* Data Layer node */
@@ -171,6 +225,16 @@
 .react-flow__node-stage-contents-modelize-error-data-modelize .react-flow__handle,
 .react-flow__node-stage-contents-egress-error-data-egress .react-flow__handle {
   border-color: var(--xy-custom-edge-stroke-error);
+}
+
+.react-flow__node-stage-contents-modelize-error-data-modelize .react-flow__handle:hover,
+.react-flow__node-stage-contents-egress-error-data-egress .react-flow__handle:hover {
+  background-color: var(--xy-custom-edge-stroke-error);
+}
+
+.react-flow__node-stage-contents-modelize-error-data-modelize .react-flow__handle-plugged,
+.react-flow__node-stage-contents-egress-error-data-egress .react-flow__handle-plugged {
+  background-color: var(--xy-custom-edge-stroke-error);
 }
 
 /* Warehouse node */

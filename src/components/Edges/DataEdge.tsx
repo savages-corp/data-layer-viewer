@@ -8,6 +8,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 export type DataEdge = Edge<
   {
+    initialStatus?: Status
     shape?: 'circle' | 'square' | 'triangle'
   },
   'data'
@@ -30,14 +31,15 @@ export function DataEdgeComponent({
   targetPosition,
   data,
 }: EdgeProps<DataEdge>) {
-  const [status, setStatus] = useState<Status>(Status.Unknown) // Keep track of the status of the edge.
+  const [status, setStatus] = useState<Status>(data!.initialStatus || Status.Unknown) // Keep track of the status of the edge.
   const sourceNode = useNodesData(source) // Get the data of the source node for the edge.
 
   useEffect(() => { // Receive status from source node.
     if (sourceNode?.type === 'service' || sourceNode?.type === 'stage') {
       const serviceNode = sourceNode as ServiceNode
 
-      setStatus(serviceNode.data.status ?? Status.Unknown)
+      if (serviceNode.data.status)
+        setStatus(serviceNode.data.status ?? Status.Unknown)
     }
   }, [sourceNode])
 

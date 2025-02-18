@@ -5,10 +5,11 @@ import type { ServiceNode } from './components/Nodes/ServiceNode'
 import type { StageNode } from './components/Nodes/StageNode'
 import type { WarehouseNode } from './components/Nodes/WarehouseNode'
 
+import type { Layout } from './layouts/layouts'
 import { Service } from '@/types/service'
 import { Stage } from '@/types/stage'
-import { Status } from '@/types/status'
 
+import { Status } from '@/types/status'
 import {
   addEdge,
   applyEdgeChanges,
@@ -22,17 +23,18 @@ import {
   ReactFlowProvider,
   reconnectEdge,
 } from '@xyflow/react'
+
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 import Select from 'react-select'
-
 import { DataEdgeComponent } from './components/Edges/DataEdge'
 import { ContainerNodeComponent } from './components/Nodes/ContainerNode'
-import { ServiceNodeComponent } from './components/Nodes/ServiceNode'
 
+import { ServiceNodeComponent } from './components/Nodes/ServiceNode'
 import { StageNodeComponent } from './components/Nodes/StageNode'
 import { WarehouseNodeComponent } from './components/Nodes/WarehouseNode'
 import { useWindowDimensions } from './hooks/useWindowDimensions'
+import { layouts } from './layouts/layouts'
 import '@xyflow/react/dist/style.css'
 import './App.css'
 
@@ -52,6 +54,20 @@ export const edgeTypes = {
 } satisfies EdgeTypes
 /* --------------------------------------------------------- */
 
+interface LayoutOption {
+  label: string
+  value: string
+  layout: Layout
+}
+
+const layoutOptions: LayoutOption[] = [
+  ...Object.entries(layouts).map(([key, value]) => ({
+    label: value.name,
+    value: key,
+    layout: value.builder(),
+  })),
+]
+
 interface ServiceOption {
   label: string
   value: string
@@ -61,7 +77,6 @@ interface ServiceOption {
 
 // The options for the select input.
 const serviceOptions: ServiceOption[] = [
-  { value: 'Broken Service', label: '(Example Broken at Modelize)', service: Service.Broken, status: Status.ErrorDataModelize },
   { value: 'AWS', label: 'Amazon Web Services (AWS)', service: Service.Aws },
   { value: 'Azure', label: 'Microsoft Azure', service: Service.Azure },
   { value: 'Database', label: 'Database', service: Service.Database },
@@ -71,142 +86,6 @@ const serviceOptions: ServiceOption[] = [
   { value: 'Slack', label: 'Slack', service: Service.Slack },
   { value: 'Zapier', label: 'Zapier', service: Service.Zapier },
 ]
-
-// The initial state of the graph.
-const initialEdges: AppEdge[] = [
-  { id: 'pull-1', source: 'service-source-1', target: 'modelize-1', type: 'data', data: { shape: 'circle' } },
-  { id: 'stage-1', source: 'modelize-1', target: 'egress-1', type: 'data', data: { shape: 'square' } },
-  { id: 'push-1', source: 'egress-1', target: 'service-destination-1', type: 'data', data: { shape: 'circle' } },
-  { id: 'warehouse-1', source: 'modelize-1', target: 'warehouse', type: 'data', data: { shape: 'square' } },
-
-] satisfies AppEdge[]
-
-const dataLayer: AppNode = {
-  id: 'data-layer',
-  type: 'container',
-  position: { x: -50, y: -125 },
-  style: { width: 300, height: 300 },
-  zIndex: -2,
-  data: {
-    annotation: 'Data Layer',
-    annotationSize: 2,
-    label: 'Connect your own services!',
-    labelSize: 2,
-    textColor: '#31c787',
-    color: '#eaf9f3',
-  },
-  draggable: false,
-  selectable: false,
-}
-
-interface DataLayerFlow {
-  Flow: AppNode
-  Modelize: AppNode
-  Egress: AppNode
-}
-
-// interface DataLayer {
-//   Nodes: AppNode[]
-//   Edges: AppEdge[]
-//   Flows: DataLayerFlow[]
-// }
-
-function createFlow(id: string, x?: number, y?: number): DataLayerFlow {
-  return {
-    Flow: {
-      id: `flow-${id}`,
-      type: 'container',
-      position: { x: x || 0, y: y || 0 },
-      style: { width: 256, height: 32, zIndex: -1 },
-      data: {
-        label: 'Flow',
-        labelSize: 1,
-      },
-      parentId: 'data-layer',
-      extent: 'parent',
-    },
-    Modelize: {
-      id: `modelize-${id}`,
-      type: 'stage',
-      position: { x: 0, y: 0 },
-      data: { stage: Stage.Modelize },
-      parentId: `flow-${id}`,
-      extent: 'parent',
-    },
-    Egress: {
-      id: `egress-${id}`,
-      type: 'stage',
-      position: { x: 200, y: 0 },
-      data: { stage: Stage.Egress },
-      parentId: `flow-${id}`,
-      extent: 'parent',
-    },
-  }
-}
-
-const initialFlows: AppNode[] = [
-  // Expand the result of createFlow to individual nodes.
-  ...Object.values(createFlow('1', 24, 212)),
-  ...Object.values(createFlow('2', 24, 64)),
-] satisfies AppNode[]
-
-const initialNodes: AppNode[] = [
-  {
-    id: 'service-source-1',
-    type: 'service',
-    position: { x: -312, y: 48 },
-    data: {
-      label: 'Database',
-      status: Status.Success,
-      service: Service.Database,
-    },
-  },
-  {
-    id: 'service-source-2',
-    type: 'service',
-    position: { x: -312, y: -48 },
-    data: {
-      label: 'Hubspot',
-      status: Status.Success,
-      service: Service.Hubspot,
-    },
-  },
-  {
-    id: 'service-destination-1',
-    type: 'service',
-    position: { x: 296, y: 48 },
-    data: {
-      label: 'Salesforce',
-      status: Status.Success,
-      service: Service.Salesforce,
-    },
-  },
-  {
-    id: 'service-destination-2',
-    type: 'service',
-    position: { x: 296, y: -48 },
-    data: {
-      label: 'Slack',
-      status: Status.Success,
-      service: Service.Slack,
-    },
-  },
-  dataLayer,
-  {
-    id: 'warehouse',
-    position: { x: 4, y: 264 },
-    style: { width: 292, height: 32 },
-    type: 'warehouse',
-    data: {
-      label: 'Data Layer Warehouse',
-    },
-    parentId: 'data-layer',
-    extent: 'parent',
-    draggable: false,
-  },
-  ...initialFlows,
-  // Data Layer container sub-flow
-] satisfies AppNode[]
 
 export default function App(
   {
@@ -221,15 +100,29 @@ export default function App(
   },
 ) {
   const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance<AppNode, AppEdge>>()
-  const [nodes, setNodes] = useState(initialNodes)
-  const [edges, setEdges] = useState(initialEdges)
-  // const [_, setFlows] = useState(initialFlows)
+  const reactFlowWrapper = useRef<HTMLDivElement>(null)
+  const { width, height } = useWindowDimensions()
 
   const edgeReconnectSuccessful = useRef(true)
 
-  const reactFlowWrapper = useRef<HTMLDivElement>(null)
+  const defaultLayout = layouts.default.builder() // Build the default layout.
 
-  const { width, height } = useWindowDimensions()
+  const [nodes, setNodes] = useState(defaultLayout.nodes)
+  const [edges, setEdges] = useState(defaultLayout.edges)
+
+  // In case of a layout change, we need to update the nodes and edges separately.
+  const [pendingEdges, setPendingEdges] = useState<AppEdge[] | null>(null)
+
+  // New effect that runs after nodes update.
+  useEffect(() => {
+    if (pendingEdges) {
+      setEdges(pendingEdges)
+      setPendingEdges(null)
+
+      if (reactFlowInstance)
+        reactFlowInstance.fitView()
+    }
+  }, [pendingEdges])
 
   // Implement basic graph functionality.
   const onNodesChange = useCallback(
@@ -298,6 +191,11 @@ export default function App(
           if (stageNode.data.stage === Stage.Modelize) {
             if (targetNode.type !== 'stage' && targetNode.type !== 'warehouse') {
               return
+            }
+            else {
+              // If the target is a stage node, ensure it's the corresponding Egress node.
+              if (targetNode.type === 'stage' && targetNode.id !== stageNode.data.partnerId)
+                return
             }
 
             edge.data!.shape = 'square'
@@ -400,6 +298,19 @@ export default function App(
   //   addNode(newFlow.Egress)
   // }
 
+  // Modify setLayout to update nodes and pendingEdges only.
+  const setLayout = (layout: Layout) => {
+    setNodes(layout.nodes)
+    setPendingEdges(layout.edges)
+  }
+
+  const selectLayout = (option: LayoutOption | null) => {
+    if (!option)
+      return
+
+    setLayout(option.layout)
+  }
+
   const selectService = (option: ServiceOption | null) => {
     if (!option)
       return
@@ -439,6 +350,14 @@ export default function App(
           zoomOnPinch={!locked}
         >
           <Panel position="top-left" style={{ width: '320px' }}>
+            <Select
+              placeholder="Select a layout"
+              options={layoutOptions}
+              value={null}
+              onChange={option => selectLayout(option)}
+            />
+          </Panel>
+          <Panel position="top-right" style={{ width: '320px' }}>
             <Select
               placeholder="Add a service"
               options={serviceOptions}

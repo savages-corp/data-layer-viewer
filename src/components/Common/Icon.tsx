@@ -3,17 +3,18 @@ import type { IconType } from 'react-icons'
 import React from 'react'
 
 import { DiGoogleCloudPlatform } from 'react-icons/di'
-import { FaAws, FaDatabase, FaHubspot, FaLinkSlash, FaSalesforce, FaSlack, FaWarehouse } from 'react-icons/fa6'
+import { FaAws, FaDatabase, FaHubspot, FaLinkSlash, FaSalesforce, FaSlack, FaTrash, FaTrashCan, FaWarehouse } from 'react-icons/fa6'
 import { TbBrandZapier } from 'react-icons/tb'
 import { VscAzure } from 'react-icons/vsc'
 
 interface IconProps extends React.SVGProps<SVGElement> {
-  variant?: Service
+  variant?: Service | string
   color?: string
   size?: number
 }
 
 const iconMap: Record<string, IconType> = {
+  trash: FaTrashCan,
   aws: FaAws,
   azure: VscAzure,
   broken: FaLinkSlash,

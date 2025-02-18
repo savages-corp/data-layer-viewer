@@ -1,10 +1,14 @@
 import type { Service } from '@/types/service'
 import type { Node, NodeProps } from '@xyflow/react'
 import type { StageNode } from './StageNode'
-
 import { Status } from '@/types/status'
+
 import { Handle, Position, useNodeConnections, useNodesData, useReactFlow } from '@xyflow/react'
+
 import { useEffect, useState } from 'react'
+
+import Select from 'react-select'
+
 import { Icon } from '../Common/Icon'
 
 /*
@@ -24,8 +28,24 @@ export type ServiceNode = Node<
   'service'
 >
 
+export interface StatusOption {
+  value: Status
+  label: string
+}
+
+export const statusOptions: StatusOption[] = [
+  { value: Status.Success, label: 'Success' },
+  { value: Status.SuccessNothingNew, label: 'Success Nothing New' },
+  { value: Status.ErrorServicePull, label: 'Error Service Pull' },
+  { value: Status.ErrorDataEgress, label: 'Error Data Egress' },
+  { value: Status.ErrorDataModelize, label: 'Error Data Modelize' },
+  { value: Status.ErrorServicePush, label: 'Error Service Push' },
+  { value: Status.Unknown, label: 'Inactive' },
+]
+
 export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
-  const { updateNodeData } = useReactFlow()
+  const [label, setLabel] = useState(data.label)
+  const { updateNodeData, setNodes, setEdges } = useReactFlow()
 
   if (data.status === undefined) {
     data.status = Status.Unknown
@@ -70,14 +90,52 @@ export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
     setIsSource(false)
   }, [sourceConnections])
 
+  const handleLabelChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setLabel(event.target.value)
+    updateNodeData(id, { label: event.target.value })
+  }
+
+  const handleDelete = () => {
+    // Remove the node from the nodes array.
+    setNodes(nodes => nodes.filter(node => node.id !== id))
+
+    // Remove the edges connected to the node.
+    setEdges(edges => edges.filter(edge => edge.source !== id && edge.target !== id))
+
+    // Update the connected node if we're the source node.
+    if (isSource && targetConnectionsData) {
+      updateNodeData(targetConnectionsData.id, { status: Status.Unknown })
+    }
+  }
+
   return (
     <div className={`react-flow__node-service-contents react-flow__node-service-contents-${isSource ? 'source' : ''}${isDestination ? 'destination' : ''}-${data.status && String(data.status).toLowerCase().replace(/_/g, '-')}`}>
       <div className="react-flow__node-service-icon">
         <Icon size={16} variant={data.service} color={data.color} />
       </div>
-      <div>{data.label}</div>
-      { (isSource) && <span className="react-flow__node-service-subtitle">Source</span> }
-      { (isDestination) && <span className="react-flow__node-service-subtitle">Destination</span> }
+      <div className="react-flow__node-service-icon-delete">
+        <Icon onClick={handleDelete} size={16} variant="trash" color={data.color} />
+      </div>
+      <div className="react-flow__node-service-information">
+        <div className="react-flow__node-service-title">
+          <input value={label} maxLength={24} onChange={handleLabelChange} />
+        </div>
+        { (isSource) && <span className="react-flow__node-service-subtitle">Source</span> }
+        { (isDestination) && <span className="react-flow__node-service-subtitle">Destination</span> }
+      </div>
+      { isSource && (
+
+        <div className="react-flow__node-service-status-select nodrag">
+          <Select
+            value={statusOptions.find(option => option.value === data.status)}
+            onChange={option => updateNodeData(id, { status: option?.value })}
+            menuPortalTarget={document.body}
+            styles={{ menuPortal: base => ({ ...base, zIndex: 9999, fontSize: '.75em' }) }}
+            options={statusOptions}
+          >
+          </Select>
+        </div>
+      )}
       <Handle
         type="target"
         position={Position.Left}
@@ -93,6 +151,7 @@ export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
         id="pull"
         style={{ visibility: isDestination ? 'hidden' : 'visible' }}
         isConnectable={!isSource}
+        className={isSource ? 'react-flow__handle-plugged' : ''}
       >
         <div style={{ fontSize: 8, marginLeft: -30, lineHeight: 0.5 }}>Pull</div>
       </Handle>
