@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Protest+Riot&display=swap');
+
 .react-flow {
   --xy-edge-stroke-default: #31c787;
   --xy-edge-stroke-width-default: 1;
@@ -280,4 +282,53 @@
 
 .react-flow__edge-data__gizmo {
   animation: in-out 2s linear infinite;
+}
+
+.react-flow__node-annotation {
+  background: transparent;
+  padding: 8px;
+  border: none;
+  filter: none;
+  box-shadow: none;
+  align-items: center;
+  color: #888;
+}
+
+.react-flow__node-annotation-text {
+  font-family: "Protest Riot", serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 0.6em;
+}
+
+.react-flow__node-annotation-arrow {
+  position: absolute;
+}
+
+.react-flow__node-annotation-arrow-top-left {
+  transform: scaleY(-1) rotate(-80deg);
+  left: -8px;
+  top: 0px;
+}
+
+.react-flow__node-annotation-arrow-top-right {
+  transform: rotate(100deg);
+  right: -8px;
+  top: 0;
+}
+
+.react-flow__node-annotation-arrow-right {
+  transform: rotate(0deg);
+}
+
+.react-flow__node-annotation-arrow-bottom-left {
+  transform: rotate(-90deg);
+  left: -8px;
+  bottom: -4px;
+}
+
+.react-flow__node-annotation-arrow-bottom-right {
+  transform: scaleX(-1) scaleY(-1) rotate(-30deg);
+  right: -12px;
+  bottom: 0px;
 }

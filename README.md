@@ -38,3 +38,7 @@ The following props are available for embedding the Data Layer Viewer:
 | `data-hide-controls` | Hides the controls (also hidden when locked) |
 | `data-hide-minimap` | Hides the minimap (also hidden when locked) |
 | `data-locked` | Locks the viewport in place |
+
+## Why no Tailwind / Shadcn? ##
+
+Due to this app being possibly embedded as a widget on other sites, we want to keep the bundle size as small as possible. Tailwind and Shadcn are great for development, but most of the styling can be done on top of the base ReactFlow styles with a few core React components thrown in to aid with specific functionality (i.e. react-select and react-modal for dropdowns and modals).

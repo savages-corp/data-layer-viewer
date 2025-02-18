@@ -96,8 +96,8 @@ export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
   }
 
   const handleDelete = () => {
-    // Remove the node from the nodes array.
-    setNodes(nodes => nodes.filter(node => node.id !== id))
+    // Remove the node from the nodes array. Remove any nodes that have it as a parent.
+    setNodes(nodes => nodes.filter(node => node.id !== id && node.parentId !== id))
 
     // Remove the edges connected to the node.
     setEdges(edges => edges.filter(edge => edge.source !== id && edge.target !== id))
@@ -141,7 +141,8 @@ export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
         position={Position.Left}
         id="push"
         style={{ visibility: isSource ? 'hidden' : 'visible' }}
-        // isConnectable={!isDestination}
+        isConnectable={!isDestination}
+        className={isDestination ? 'react-flow__handle-plugged' : ''}
       >
         <div style={{ fontSize: 8, marginLeft: 12, lineHeight: 0.5 }}>Push</div>
       </Handle>

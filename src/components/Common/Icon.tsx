@@ -4,6 +4,7 @@ import React from 'react'
 
 import { DiGoogleCloudPlatform } from 'react-icons/di'
 import { FaAws, FaDatabase, FaHubspot, FaLinkSlash, FaSalesforce, FaSlack, FaTrashCan, FaWarehouse } from 'react-icons/fa6'
+import { PiArrowArcLeftBold } from 'react-icons/pi'
 import { TbBrandZapier } from 'react-icons/tb'
 import { VscAzure } from 'react-icons/vsc'
 
@@ -15,6 +16,8 @@ interface IconProps extends React.SVGProps<SVGElement> {
 
 const iconMap: Record<string, IconType> = {
   trash: FaTrashCan,
+  arrowCurved: PiArrowArcLeftBold,
+
   aws: FaAws,
   azure: VscAzure,
   broken: FaLinkSlash,

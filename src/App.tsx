@@ -1,15 +1,17 @@
 import type { BuiltInEdge, BuiltInNode, Connection, EdgeChange, EdgeTypes, NodeChange, NodeTypes, ReactFlowInstance } from '@xyflow/react'
 import type { DataEdge } from './components/Edges/DataEdge'
+import type { AnnotationNode } from './components/Nodes/AnnotationNode'
 import type { ContainerNode } from './components/Nodes/ContainerNode'
 import type { ServiceNode } from './components/Nodes/ServiceNode'
 import type { StageNode } from './components/Nodes/StageNode'
-import type { WarehouseNode } from './components/Nodes/WarehouseNode'
 
+import type { WarehouseNode } from './components/Nodes/WarehouseNode'
 import type { Layout } from './layouts/layouts'
 import { Service } from '@/types/service'
-import { Stage } from '@/types/stage'
 
+import { Stage } from '@/types/stage'
 import { Status } from '@/types/status'
+
 import {
   addEdge,
   applyEdgeChanges,
@@ -25,11 +27,11 @@ import {
 } from '@xyflow/react'
 
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-
 import Select from 'react-select'
 import { DataEdgeComponent } from './components/Edges/DataEdge'
-import { ContainerNodeComponent } from './components/Nodes/ContainerNode'
+import { AnnotationNodeComponent } from './components/Nodes/AnnotationNode'
 
+import { ContainerNodeComponent } from './components/Nodes/ContainerNode'
 import { ServiceNodeComponent } from './components/Nodes/ServiceNode'
 import { StageNodeComponent } from './components/Nodes/StageNode'
 import { WarehouseNodeComponent } from './components/Nodes/WarehouseNode'
@@ -39,8 +41,9 @@ import '@xyflow/react/dist/style.css'
 import './App.css'
 
 /* Set up various types of nodes and edges for the graph. */
-export type AppNode = BuiltInNode | StageNode | ServiceNode | WarehouseNode | ContainerNode
+export type AppNode = BuiltInNode | AnnotationNode | StageNode | ServiceNode | WarehouseNode | ContainerNode
 export const nodeTypes = {
+  annotation: AnnotationNodeComponent,
   stage: StageNodeComponent,
   service: ServiceNodeComponent,
   warehouse: WarehouseNodeComponent,
@@ -64,7 +67,7 @@ const layoutOptions: LayoutOption[] = [
   ...Object.entries(layouts).map(([key, value]) => ({
     label: value.name,
     value: key,
-    layout: value.builder(),
+    layout: value.builder({}),
   })),
 ]
 
@@ -105,7 +108,7 @@ export default function App(
 
   const edgeReconnectSuccessful = useRef(true)
 
-  const defaultLayout = layouts.default.builder() // Build the default layout.
+  const defaultLayout = layouts.default.builder({}) // Build the default layout.
 
   const [nodes, setNodes] = useState(defaultLayout.nodes)
   const [edges, setEdges] = useState(defaultLayout.edges)
@@ -119,8 +122,8 @@ export default function App(
       setEdges(pendingEdges)
       setPendingEdges(null)
 
-      if (reactFlowInstance)
-        reactFlowInstance.fitView()
+      if (reactFlowInstance) // Fit the view to all nodes except annotations.
+        reactFlowInstance.fitView({ nodes: nodes.filter(n => n.type !== 'annotation') })
     }
   }, [pendingEdges])
 
@@ -154,6 +157,7 @@ export default function App(
         source: connection.source,
         target: connection.target,
         type: 'data',
+        zIndex: 1,
         data: {
           shape: 'circle',
         },
@@ -279,11 +283,64 @@ export default function App(
     [reactFlowInstance],
   )
 
-  // If the viewport is resized, re-fit the view.
+  // If the viewport is resized, re-fit the view but ignore annotations. Re-pin annotations to the corners.
   useEffect(() => {
-    if (reactFlowInstance)
-      reactFlowInstance.fitView()
-  }, [width, height])
+    if (!reactFlowInstance || !reactFlowWrapper.current)
+      return
+
+    const { x: vx, y: vy, zoom } = reactFlowInstance.getViewport()
+    const { clientWidth /* , clientHeight */ } = reactFlowWrapper.current
+    const left = -vx / zoom
+    const top = -vy / zoom
+    const right = (-vx + clientWidth) / zoom
+    // const bottom = (-vy + clientHeight) / zoom
+
+    setNodes(nds =>
+      nds.map((n) => {
+        if (n.type === 'annotation' && n.data.isPinned) {
+          let newX = n.position.x
+          let newY = n.position.y
+
+          // Use n.data.pinnedPosition with default to 'top-right'
+          const pos = n.data.pinnedPosition || 'top-right'
+
+          // Use n.width and n.height if available; else fallback values
+          const nodeWidth = (n.width as number) || 150
+          const nodeHeight = (n.height as number) || 50
+
+          switch (pos) {
+            case 'top-left':
+              newX = left + nodeWidth - 192
+              newY = top + nodeHeight - 16
+              break
+
+            case 'top-right':
+              newX = right - nodeWidth - 8
+              newY = top + nodeHeight - 16
+              break
+
+              // case 'bottom-left':
+              //   newX = left + 0
+              //   newY = bottom - nodeHeight - 0
+              //   break
+
+              // case 'bottom-right':
+              //   newX = right - nodeWidth - 0
+              //   newY = bottom - nodeHeight - 0
+              //   break
+
+            default:
+              newX = right - nodeWidth - 0
+              newY = top + 0
+          }
+          return { ...n, position: { x: newX, y: newY } }
+        }
+        return n
+      }),
+    )
+
+    reactFlowInstance.fitView({ nodes: nodes.filter(n => n.type !== 'annotation') })
+  }, [reactFlowInstance, width, height, pendingEdges])
 
   // Custom functionality.
   const addNode = (node: AppNode) => setNodes(nds => [...nds, node])
@@ -344,6 +401,7 @@ export default function App(
           onReconnectEnd={onReconnectEnd}
           onNodeDragStop={onNodeDragStop}
           fitView
+          fitViewOptions={{ nodes: nodes.filter(n => n.type !== 'annotation') }}
           autoPanOnNodeDrag={!locked}
           panOnDrag={!locked}
           zoomOnScroll={!locked}

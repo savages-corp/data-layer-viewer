@@ -3,7 +3,7 @@ import { DefaultDefinition } from './default'
 
 export interface LayoutDefinition {
   name: string
-  builder: () => Layout
+  builder: ({ mobile, language }: { mobile?: boolean, language?: string }) => Layout
 }
 
 export interface Layout {
