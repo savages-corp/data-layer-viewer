@@ -340,7 +340,7 @@ export default function App(
     )
 
     reactFlowInstance.fitView({ nodes: nodes.filter(n => n.type !== 'annotation') })
-  }, [reactFlowInstance, width, height, pendingEdges])
+  }, [reactFlowInstance, reactFlowWrapper, width, height, pendingEdges])
 
   // Custom functionality.
   const addNode = (node: AppNode) => setNodes(nds => [...nds, node])

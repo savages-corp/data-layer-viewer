@@ -292,6 +292,7 @@
   box-shadow: none;
   align-items: center;
   color: #888;
+  cursor: default !important;
 }
 
 .react-flow__node-annotation-text {
