@@ -1,20 +1,25 @@
-import type { AppEdge, AppNode } from 'src/App'
+import type { AppEdge, AppNode } from '@/src/App'
 import type { AnnotationNode } from '../components/Nodes/AnnotationNode'
-import type { ServiceNode } from '../components/Nodes/ServiceNode'
 
+import type { ContainerNode } from '../components/Nodes/ContainerNode'
+import type { ServiceNode } from '../components/Nodes/ServiceNode'
 import type { WarehouseNode } from '../components/Nodes/WarehouseNode'
 import type { Layout, LayoutDefinition } from './layouts'
-import { CreateFlow } from '@/src/helpers/flow'
+
 import { Service } from '@/types/service'
 import { Status } from '@/types/status'
+
+import { CreateFlowPrefab } from '../components/Prefabs/FlowPrefab'
 import { getTimedId } from '../helpers/id'
+import { calculateDataLayerHeight, calculateDataLayerY, calculateNextFlowY, calculateWarehouseY } from '../helpers/positioning'
 
 function builder() : (Layout) {
-  const datalayer: AppNode = {
-    id: getTimedId('data-layer'),
+  const datalayerHeight = calculateDataLayerHeight(2)
+  const datalayer: ContainerNode = {
+    id: getTimedId('datalayer'),
     type: 'container',
-    position: { x: -50, y: -125 },
-    style: { width: 300, height: 300 },
+    position: { x: -48, y: calculateDataLayerY(2) },
+    style: { width: 300, height: datalayerHeight },
     zIndex: -2,
     data: {
       annotation: 'Data Layer',
@@ -24,6 +29,19 @@ function builder() : (Layout) {
     },
     draggable: false,
     selectable: false,
+  }
+
+  const warehouse: WarehouseNode = {
+    id: getTimedId('warehouse'),
+    position: { x: 4, y: calculateWarehouseY(datalayerHeight) },
+    style: { width: 292, height: 32 },
+    type: 'warehouse',
+    data: {
+      label: 'Data Layer Warehouse',
+    },
+    parentId: datalayer.id,
+    extent: 'parent',
+    draggable: false,
   }
 
   const source1: ServiceNode = {
@@ -70,21 +88,8 @@ function builder() : (Layout) {
     },
   }
 
-  const warehouse: WarehouseNode = {
-    id: getTimedId('warehouse'),
-    position: { x: 4, y: 264 },
-    style: { width: 292, height: 32 },
-    type: 'warehouse',
-    data: {
-      label: 'Data Layer Warehouse',
-    },
-    parentId: datalayer.id,
-    extent: 'parent',
-    draggable: false,
-  }
-
-  const flow1 = CreateFlow(datalayer, '1', 24, 212)
-  const flow2 = CreateFlow(datalayer, '2', 24, 64)
+  const flow1 = CreateFlowPrefab(datalayer, '2', 24, calculateNextFlowY(0))
+  const flow2 = CreateFlowPrefab(datalayer, '1', 24, calculateNextFlowY(1))
 
   const annotationMenu1: AnnotationNode = {
     id: getTimedId('annotation-menu-1'),
@@ -144,7 +149,7 @@ function builder() : (Layout) {
       showArrow: true,
       arrowPosition: 'bottom-left',
     },
-    parentId: flow1.modelize.id,
+    parentId: flow2.modelize.id,
     draggable: false,
   }
 
@@ -172,7 +177,7 @@ function builder() : (Layout) {
       text: 'Try connecting a flow yourself!',
       textAlignment: 'center',
     },
-    parentId: flow2.flow.id,
+    parentId: flow1.container.id,
     draggable: false,
   }
 
@@ -197,16 +202,19 @@ function builder() : (Layout) {
 
   // The initial state of the graph.
   const edges: AppEdge[] = [
-    { id: 'pull-1', source: source1.id, target: flow1.modelize.id, type: 'data', data: { initialStatus: Status.Success, shape: 'circle' }, zIndex: 1 },
-    { id: 'flow-1', source: flow1.modelize.id, target: flow1.egress.id, type: 'data', data: { initialStatus: Status.Success, shape: 'square' }, zIndex: 1 },
-    { id: 'push-1', source: flow1.egress.id, target: destination1.id, type: 'data', data: { initialStatus: Status.Success, shape: 'circle' }, zIndex: 1 },
-    { id: 'warehouse-1', source: flow1.modelize.id, target: warehouse.id, type: 'data', data: { initialStatus: Status.Success, shape: 'square' }, zIndex: 1 },
+    { id: 'pull-modelize-1', source: source1.id, target: flow2.modelize.id, type: 'data', data: { initialStatus: Status.Success, shape: 'circle' }, zIndex: 1 },
+    { id: 'modelize-egress-1', source: flow2.modelize.id, target: flow2.egress.id, type: 'data', data: { initialStatus: Status.Success, shape: 'square' }, zIndex: 1 },
+    { id: 'egress-push-1', source: flow2.egress.id, target: destination1.id, type: 'data', data: { initialStatus: Status.Success, shape: 'circle' }, zIndex: 1 },
+    { id: 'warehouse-1', source: flow2.modelize.id, target: warehouse.id, type: 'data', data: { initialStatus: Status.Success, shape: 'square' }, zIndex: 1 },
 
   ] satisfies AppEdge[]
 
   const layout: Layout = {
+    datalayer,
+    warehouse,
     nodes,
     edges,
+    flows: [flow1, flow2],
   } satisfies Layout
 
   return layout
