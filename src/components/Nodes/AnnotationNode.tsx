@@ -9,7 +9,6 @@ export type AnnotationNode = Node<
     textAlignment?: 'left' | 'center' | 'right'
     showArrow?: boolean
     arrowPosition?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
-    isPinned?: boolean
     pinnedPosition?: 'top-left' | 'top-right'
   },
   'annotation'
@@ -20,7 +19,7 @@ export function AnnotationNodeComponent({ data }: NodeProps<AnnotationNode>) {
   return (
     <>
       <div
-        className={`react-flow__node-annotation-text ${data.isPinned ? 'pinned' : ''}`}
+        className="react-flow__node-annotation-text"
         style={{ textAlign: data.textAlignment || 'left' }}
       >
         {lines.map((line, idx) => (

@@ -1,61 +1,60 @@
 @import url('https://fonts.googleapis.com/css2?family=Protest+Riot&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
-.react-flow {
-  --xy-edge-stroke-default: #31c787;
-  --xy-edge-stroke-width-default: 1;
-  --xy-edge-stroke-selected-default: #4d5553;
-  --xy-connectionline-stroke-default: #31c787;
-  --xy-connectionline-stroke-width-default: 1;
-  --xy-attribution-background-color-default: rgba(255, 255, 255, 0.5);
-  --xy-minimap-background-color-default: #fff;
-  --xy-background-pattern-dots-color-default: #a2ccb5;
-  --xy-background-pattern-line-color-default: #eee;
-  --xy-background-pattern-cross-color-default: #e2e2e2;
-  --xy-node-color-default: inherit;
-  --xy-node-border-default: 1px solid #4e4e4e;
-  --xy-node-background-color-default: #fff;
-  --xy-node-group-background-color-default: rgba(240, 240, 240, 0.25);
-  --xy-node-boxshadow-hover-default: 2px 2px 2px 2px rgba(0, 0, 0, 0.08);
-  --xy-node-boxshadow-selected-default: 1px 1px 1px 1px rgba(0, 0, 0, 0.08);
-  --xy-handle-background-color-default: #1a192b;
-  --xy-handle-border-color-default: #fff;
-  --xy-selection-background-color-default: rgba(0, 89, 220, 0.08);
-  --xy-selection-border-default: 1px dotted rgba(0, 89, 220, 0.8);
-  --xy-controls-button-background-color-default: #fefefe;
-  --xy-controls-button-background-color-hover-default: #f4f4f4;
-  --xy-controls-button-color-default: inherit;
-  --xy-controls-button-color-hover-default: inherit;
-  --xy-controls-button-border-color-default: #eee;
-  --xy-controls-box-shadow-default: 0 0 2px 1px rgba(0, 0, 0, 0.08);
-  --xy-resize-background-color-default: #3367d9;
+* {
+  --viewer-background: #fff;
+  --viewer-secondary: #f8f8f8;
+  --viewer-muted: #aaa;
+  --viewer-border: 1px solid #aaa;
+  --viewer-border-radius: 4px;
 
-  --xy-custom-node-background: linear-gradient(165deg, #ffffff, #f8f8f8);
-  --xy-custom-node-padding: 10px;
-  --xy-custom-edge-stroke-error: #ff7090;
-  --xy-custom-edge-stroke-inactive: #aaa;
-  --xy-custom-border-radius-default: 4px;
+  --viewer-button-primary: #007bff;
+  --viewer-button-primary-hover: #0056b3;
+  --viewer-button-secondary: #6c757d;
+  --viewer-button-secondary-hover: #545b62;
+  --viewer-button-destructive: #dc3545;
+  --viewer-button-destructive-hover: #bd2130;
+  --viewer-button-ghost: transparent;
 }
 
-/* Custom Button Styles */
+pre {
+  padding: 16px;
+  background-color: var(--viewer-secondary);
+  border-radius: var(--viewer-border-radius);
+}
+
 .button {
   font-family: 'Poppins', sans-serif;
   font-size: 1rem;
-  background-color: var(--xy-controls-button-background-color-default);
-  border: none;
-  border-radius: var(--xy-custom-border-radius-default);
+  color: white;
+  border-radius: var(--viewer-border-radius);
   padding: 10px 16px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
-.button:hover {
-  background-color: var(--xy-controls-button-background-color-hover-default);
+.button-primary {
+  background-color: var(--viewer-button-primary);
 }
 
-/* Handle button pressing */
-.button:active {
-  transform: translateY(1px);
+.button-primary:hover {
+  background-color: var(--viewer-button-primary-hover);
+}
+
+.button-secondary {
+  background-color: var(--viewer-button-secondary);
+}
+
+.button-secondary:hover {
+  background-color: var(--viewer-button-secondary-hover);
+}
+
+.button-destructive {
+  background-color: var(--viewer-button-destructive);
+}
+
+.button-destructive:hover {
+  background-color: var(--viewer-button-destructive-hover);
 }
 
 .icon {
@@ -69,8 +68,128 @@
   box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.08);
 }
 
+.modal {
+  position: absolute;
+  top: 5%;
+  left: 5%;
+  right: 5%;
+  bottom: 5%;
+  background: white;
+  border-radius: var(--viewer-border-radius);
+  border: var(--viewer-border);
+  padding: 32px;
+}
+
+.modal-shrink {
+  top: 10%;
+  left: 10%;
+  right: 10%;
+  bottom: 10%;
+}
+
+.modal-overlay {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.modal-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-heading {
+  margin-top: 0;
+}
+
+.modal-close {
+  background-color: #888;
+  cursor: pointer;
+}
+
+.modal-content {
+  border-radius: var(--viewer-border-radius);
+  overflow-y: scroll;
+  max-height: calc(100% - 64px);
+}
+
+.modal-content h1,
+.modal-content h2,
+.modal-content h3,
+.modal-content h4,
+.modal-content h5,
+.modal-content h6 {
+  margin-top: 0;
+}
+
+.modal-content .modal-split {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.modal-content .modal-split .modal-split-container {
+  flex-grow: 1;
+}
+
+.react-flow {
+  --xy-edge-stroke-default: #31c787;
+  --xy-edge-stroke-width-default: 1;
+  --xy-edge-stroke-selected-default: #4d5553;
+  --xy-connectionline-stroke-default: #31c787;
+  --xy-connectionline-stroke-width-default: 1;
+  --xy-attribution-background-color-default: rgba(255, 255, 255, 0.5);
+  --xy-minimap-background-color-default: var(--viewer-background);
+  --xy-background-pattern-dots-color-default: #a2ccb5;
+  --xy-background-pattern-line-color-default: #eee;
+  --xy-background-pattern-cross-color-default: #e2e2e2;
+  --xy-node-color-default: inherit;
+  --xy-node-border-default: var(--viewer-border);
+  --xy-node-background-color-default: var(--viewer-background);
+  --xy-node-group-background-color-default: rgba(240, 240, 240, 0.25);
+  --xy-node-boxshadow-hover-default: 2px 2px 2px 2px rgba(0, 0, 0, 0.08);
+  --xy-node-boxshadow-selected-default: 1px 1px 1px 1px rgba(0, 0, 0, 0.08);
+  --xy-handle-background-color-default: #1a192b;
+  --xy-handle-border-color-default: var(--viewer-background);
+  --xy-selection-background-color-default: rgba(0, 89, 220, 0.08);
+  --xy-selection-border-default: 1px dotted rgba(0, 89, 220, 0.8);
+  --xy-controls-button-background-color-default: var(--viewer-button);
+  --xy-controls-button-background-color-hover-default: var(--viewer-secondary);
+  --xy-controls-button-color-default: inherit;
+  --xy-controls-button-color-hover-default: inherit;
+  --xy-controls-button-border-color-default: #eee;
+  --xy-controls-box-shadow-default: 0 0 2px 1px rgba(0, 0, 0, 0.08);
+  --xy-resize-background-color-default: #3367d9;
+
+  --xy-custom-node-background: linear-gradient(165deg, var(--viewer-background), #f8f8f8);
+  --xy-custom-node-padding: 10px;
+  --xy-custom-edge-stroke-error: #ff7090;
+  --xy-custom-edge-stroke-inactive: #aaa;
+  --xy-custom-border-radius-default: var(--viewer-border-radius);
+}
+
+/* Custom Button Styles */
+.react-flow__panel .button {
+  color: black;
+  background-color: var(--viewer-background);
+}
+
+.react-flow__panel .button:hover {
+  background-color: var(--viewer-secondary);
+}
+
+/* Handle button pressing */
+.button:active {
+  transform: translateY(1px);
+}
+
 .reactflow-panel {
-  margin: 32px 0px;
   border: 1px solid #eee;
   border-radius: var(--xy-custom-border-radius-default);
 }
@@ -89,7 +208,7 @@
 
 .reactflow-panel-flow-add:hover,
 .reactflow-panel-flow-remove:hover {
-  background: #f4f4f4;
+  background: var(--viewer-secondary);
 }
 
 .reactflow-panel-flow-add {
@@ -130,7 +249,7 @@
   height: 100%;
   border-radius: var(--xy-custom-border-radius-default);
   backdrop-filter: blur(4px);
-  background: linear-gradient(48deg, #eee, #fff);
+  background: linear-gradient(48deg, #eee, var(--viewer-background));
   outline: 1px dotted var(--xy-custom-edge-stroke-inactive);
   display: flex;
   flex-direction: column;
@@ -141,7 +260,7 @@
   color: #ddd
 }
 
-.data-layer-flow {
+.viewer {
   background: white;
   border: 1px solid #eee;
 }

@@ -1,6 +1,8 @@
 import type { AppEdge, AppNode } from '../App'
-import type { ContainerNode } from '../components/Nodes/ContainerNode'
-import type { FlowPrefab } from '../components/Prefabs/FlowPrefab'
+
+import type { DatalayerPrefab } from '../prefabs/datalayer'
+import type { FlowPrefab } from '../prefabs/flow'
+
 import { DefaultDefinition } from './default'
 
 export interface LayoutDefinition {
@@ -9,8 +11,7 @@ export interface LayoutDefinition {
 }
 
 export interface Layout {
-  datalayer: ContainerNode
-  warehouse: AppNode
+  datalayer: DatalayerPrefab
   nodes: AppNode[]
   edges: AppEdge[]
   flows: FlowPrefab[]

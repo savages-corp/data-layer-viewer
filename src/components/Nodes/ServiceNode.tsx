@@ -1,4 +1,4 @@
-import type { Service } from '@/types/service'
+import type { ServiceConfiguration } from '@/types/service'
 import type { Node, NodeProps } from '@xyflow/react'
 import type { StageNode } from './StageNode'
 import { Status } from '@/types/status'
@@ -20,10 +20,14 @@ import { Icon } from '../Common/Icon'
 
 export type ServiceNode = Node<
   {
-    color?: string
     status?: Status
-    label?: string
-    service: Service
+
+    // Flow specific properties
+    interval?: number
+    warehouse?: string
+
+    // Service specific configuration
+    configuration: ServiceConfiguration
   },
   'service'
 >
@@ -44,7 +48,6 @@ export const statusOptions: StatusOption[] = [
 ]
 
 export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
-  const [label, setLabel] = useState(data.label)
   const { updateNodeData, setNodes, setEdges } = useReactFlow()
 
   if (data.status === undefined) {
@@ -91,8 +94,7 @@ export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
   }, [sourceConnections])
 
   const handleLabelChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setLabel(event.target.value)
-    updateNodeData(id, { label: event.target.value })
+    updateNodeData(id, { configuration: { ...data.configuration, identifier: event.target.value } })
   }
 
   const handleDelete = () => {
@@ -111,14 +113,14 @@ export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
   return (
     <div className={`react-flow__node-service-contents react-flow__node-service-contents-${isSource ? 'source' : ''}${isDestination ? 'destination' : ''}-${data.status && String(data.status).toLowerCase().replace(/_/g, '-')}`}>
       <div className="react-flow__node-service-icon">
-        <Icon size={16} variant={data.service} color={data.color} />
+        <Icon size={16} variant={data.configuration?.type} />
       </div>
       <div className="react-flow__node-service-icon-delete">
-        <Icon onClick={handleDelete} size={16} variant="trash" color={data.color} />
+        <Icon onClick={handleDelete} size={16} variant="trash" />
       </div>
       <div className="react-flow__node-service-information">
         <div className="react-flow__node-service-title">
-          <input value={label} maxLength={24} onChange={handleLabelChange} />
+          <input value={data.configuration.identifier} maxLength={24} onChange={handleLabelChange} />
         </div>
         { (isSource) && <span className="react-flow__node-service-subtitle">Source</span> }
         { (isDestination) && <span className="react-flow__node-service-subtitle">Destination</span> }

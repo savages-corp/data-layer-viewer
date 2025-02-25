@@ -1,15 +1,18 @@
-import type { BuiltInEdge, BuiltInNode, Connection, EdgeChange, EdgeTypes, FitViewOptions, NodeChange, NodeTypes, ReactFlowInstance } from '@xyflow/react'
+import type { ServiceConfiguration } from '@/types/service'
+import type { BuiltInEdge, BuiltInNode, Connection, EdgeChange, EdgeTypes, FitViewOptions, NodeChange, NodeTypes, ReactFlowInstance, Viewport } from '@xyflow/react'
+import type { GroupBase } from 'react-select'
 import type { DataEdge } from './components/Edges/DataEdge'
 import type { AnnotationNode } from './components/Nodes/AnnotationNode'
 import type { ContainerNode } from './components/Nodes/ContainerNode'
+
 import type { ServiceNode } from './components/Nodes/ServiceNode'
 import type { StageNode } from './components/Nodes/StageNode'
-
 import type { WarehouseNode } from './components/Nodes/WarehouseNode'
-import type { Layout } from './layouts/layouts'
-import { Service } from '@/types/service'
 
+import type { Layout } from './layouts/layouts'
+import { ServiceType } from '@/types/service'
 import { Stage } from '@/types/stage'
+
 import { Status } from '@/types/status'
 
 import {
@@ -25,22 +28,31 @@ import {
   ReactFlowProvider,
   reconnectEdge,
 } from '@xyflow/react'
-
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Select from 'react-select'
-import Button from './components/Common/Button'
-import { DataEdgeComponent } from './components/Edges/DataEdge'
 
+import { stringify as YAMLStringify } from 'yaml'
+
+import Button from './components/Common/Button'
+import Modal from './components/Common/Modal'
+
+import { DataEdgeComponent } from './components/Edges/DataEdge'
 import { AnnotationNodeComponent } from './components/Nodes/AnnotationNode'
 import { ContainerNodeComponent } from './components/Nodes/ContainerNode'
 import { ServiceNodeComponent } from './components/Nodes/ServiceNode'
 import { StageNodeComponent } from './components/Nodes/StageNode'
 import { WarehouseNodeComponent } from './components/Nodes/WarehouseNode'
-import { CreateFlowPrefab } from './components/Prefabs/FlowPrefab'
-import { translateToConfig } from './helpers/configConverter'
+
+import { translateToConfig } from './helpers/config'
 import { calculateDataLayerHeight, calculateDataLayerY, calculateNextFlowY, calculateWarehouseY } from './helpers/positioning'
+import { slugify } from './helpers/string'
+
 import { useWindowDimensions } from './hooks/useWindowDimensions'
+
 import { layouts } from './layouts/layouts'
+
+import { CreateFlowPrefab } from './prefabs/flow'
+
 import '@xyflow/react/dist/style.css'
 import './App.css'
 
@@ -77,21 +89,109 @@ const layoutOptions: LayoutOption[] = [
 
 interface ServiceOption {
   label: string
-  value: string
-  service: Service
   status?: Status
+  configuration: ServiceConfiguration
+}
+
+interface GroupedOption {
+  label: string
+  options: ServiceOption[]
 }
 
 // The options for the select input.
-const serviceOptions: ServiceOption[] = [
-  { value: 'AWS', label: 'Amazon Web Services (AWS)', service: Service.Aws },
-  { value: 'Azure', label: 'Microsoft Azure', service: Service.Azure },
-  { value: 'Database', label: 'Database', service: Service.Database },
-  { value: 'GCP', label: 'Google Cloud Platform (GCP)', service: Service.Gcp },
-  { value: 'Hubspot', label: 'Hubspot', service: Service.Hubspot },
-  { value: 'Salesforce', label: 'Salesforce', service: Service.Salesforce },
-  { value: 'Slack', label: 'Slack', service: Service.Slack },
-  { value: 'Zapier', label: 'Zapier', service: Service.Zapier },
+const groupedServiceOptions: GroupedOption[] = [
+  {
+    label: 'Common Services',
+    options: [
+      {
+        label: 'Amazon Web Services (AWS)',
+        configuration: {
+          identifier: 'AWS',
+          type: ServiceType.CommonAws,
+        },
+      },
+      {
+        label: 'Azure',
+        configuration: {
+          identifier: 'Microsoft Azure',
+          type: ServiceType.CommonAzure,
+        },
+      },
+      {
+        label: 'Google Cloud Platform (GCP)',
+        configuration: {
+          identifier: 'GCP',
+          type: ServiceType.CommonGcp,
+        },
+      },
+      {
+        label: 'Hubspot',
+        configuration: {
+          identifier: 'Hubspot',
+          type: ServiceType.CommonHubspot,
+        },
+      },
+      {
+        label: 'Salesforce',
+        configuration: {
+          identifier: 'Salesforce',
+          type: ServiceType.CommonSalesforce,
+        },
+      },
+      {
+        label: 'Slack',
+        configuration: {
+          identifier: 'Slack',
+          type: ServiceType.CommonSlack,
+        },
+      },
+      {
+        label: 'Zapier',
+        configuration: {
+          identifier: 'Zapier',
+          type: ServiceType.CommonZapier,
+        },
+      },
+    ],
+  },
+  {
+    label: 'Infrastructure Services',
+    options: [
+      {
+        label: 'Database',
+        configuration: {
+          identifier: 'Database',
+          type: ServiceType.InfrastructureDb,
+        },
+      },
+      {
+        label: 'Warehouse',
+        configuration: {
+          identifier: 'Warehouse',
+          type: ServiceType.InfrastructureWarehouse,
+        },
+      },
+    ],
+  },
+  {
+    label: 'Generic Services',
+    options: [
+      {
+        label: 'HTTP',
+        configuration: {
+          identifier: 'Generic HTTP Service',
+          type: ServiceType.GenericHttp,
+        },
+      },
+      {
+        label: 'SQL',
+        configuration: {
+          identifier: 'Generic SQL Service',
+          type: ServiceType.GenericDatabase,
+        },
+      },
+    ],
+  },
 ]
 
 export default function App(
@@ -106,6 +206,7 @@ export default function App(
     hideControls?: boolean
   },
 ) {
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance<AppNode, AppEdge>>()
   const reactFlowWrapper = useRef<HTMLDivElement>(null)
   const { width, height } = useWindowDimensions()
@@ -117,7 +218,6 @@ export default function App(
   const [layoutFlag, setLayoutFlag] = useState(false)
   const [layout, setLayout] = useState<Layout>(defaultLayout)
   const [datalayer, setDatalayer] = useState(defaultLayout.datalayer)
-  const [warehouse, setWarehouse] = useState(defaultLayout.warehouse)
   const [flows, setFlows] = useState(defaultLayout.flows)
   const [nodes, setNodes] = useState(defaultLayout.nodes)
   const [edges, setEdges] = useState(defaultLayout.edges)
@@ -147,7 +247,6 @@ export default function App(
   useEffect(() => {
     setLayoutFlag(false)
     setDatalayer(layout.datalayer)
-    setWarehouse(layout.warehouse)
     setFlows(layout.flows)
     setNodes(layout.nodes)
     setPendingEdges(layout.edges)
@@ -309,71 +408,76 @@ export default function App(
     [reactFlowInstance],
   )
 
+  // TODO: This should be done outside the React Flow component - specifically we shouldn't use nodes for this.
   // If the viewport is resized, re-fit the view but ignore annotations. Re-pin annotations to the corners.
+  // const onViewportChange = useCallback((viewport: Viewport) => {
+  //   if (!reactFlowInstance || !reactFlowWrapper.current)
+  //     return
+
+  //   const { x: vx, y: vy, zoom } = viewport
+  //   const { clientWidth /* , clientHeight */ } = reactFlowWrapper.current
+  //   const left = -vx / zoom
+  //   const top = -vy / zoom
+  //   const right = (-vx + clientWidth) / zoom
+  //   // const bottom = (-vy + clientHeight) / zoom
+
+  //   setNodes(nds =>
+  //     nds.map((n) => {
+  //       if (n.type === 'annotation' && n.data.isPinned) {
+  //         let newX = n.position.x
+  //         let newY = n.position.y
+
+  //         // Use n.data.pinnedPosition with default to 'top-right'
+  //         const pos = n.data.pinnedPosition || 'top-right'
+
+  //         // Use n.width and n.height if available; else fallback values
+  //         const nodeWidth = (n.width as number) || 150
+  //         const nodeHeight = (n.height as number) || 50
+
+  //         switch (pos) {
+  //           case 'top-left':
+  //             newX = left + nodeWidth - 192
+  //             newY = top + nodeHeight - 16
+  //             break
+
+  //           case 'top-right':
+  //             newX = right - nodeWidth - 8
+  //             newY = top + nodeHeight - 16
+  //             break
+
+  //             // case 'bottom-left':
+  //             //   newX = left + 0
+  //             //   newY = bottom - nodeHeight - 0
+  //             //   break
+
+  //             // case 'bottom-right':
+  //             //   newX = right - nodeWidth - 0
+  //             //   newY = bottom - nodeHeight - 0
+  //             //   break
+
+  //           default:
+  //             newX = right - nodeWidth - 0
+  //             newY = top + 0
+  //         }
+  //         return { ...n, position: { x: newX, y: newY } }
+  //       }
+  //       return n
+  //     }),
+  //   )
+  // }, [reactFlowInstance, reactFlowWrapper]) // Layout flag is captured too to make sure a reset still pins the annotations.
+
+  // If the viewport is resized, make sure to re-fit the view.
   useEffect(() => {
-    if (!reactFlowInstance || !reactFlowWrapper.current)
-      return
-
-    reactFlowInstance.fitView(fitViewOptions)
-
-    const { x: vx, y: vy, zoom } = reactFlowInstance.getViewport()
-    const { clientWidth /* , clientHeight */ } = reactFlowWrapper.current
-    const left = -vx / zoom
-    const top = -vy / zoom
-    const right = (-vx + clientWidth) / zoom
-    // const bottom = (-vy + clientHeight) / zoom
-
-    setNodes(nds =>
-      nds.map((n) => {
-        if (n.type === 'annotation' && n.data.isPinned) {
-          let newX = n.position.x
-          let newY = n.position.y
-
-          // Use n.data.pinnedPosition with default to 'top-right'
-          const pos = n.data.pinnedPosition || 'top-right'
-
-          // Use n.width and n.height if available; else fallback values
-          const nodeWidth = (n.width as number) || 150
-          const nodeHeight = (n.height as number) || 50
-
-          switch (pos) {
-            case 'top-left':
-              newX = left + nodeWidth - 192
-              newY = top + nodeHeight - 16
-              break
-
-            case 'top-right':
-              newX = right - nodeWidth - 8
-              newY = top + nodeHeight - 16
-              break
-
-              // case 'bottom-left':
-              //   newX = left + 0
-              //   newY = bottom - nodeHeight - 0
-              //   break
-
-              // case 'bottom-right':
-              //   newX = right - nodeWidth - 0
-              //   newY = bottom - nodeHeight - 0
-              //   break
-
-            default:
-              newX = right - nodeWidth - 0
-              newY = top + 0
-          }
-          return { ...n, position: { x: newX, y: newY } }
-        }
-        return n
-      }),
-    )
-  }, [reactFlowInstance, reactFlowWrapper, width, height, pendingEdges, layoutFlag]) // Layout flag is captured too to make sure a reset still pins the annotations.
+    if (reactFlowInstance)
+      reactFlowInstance.fitView(fitViewOptions)
+  }, [reactFlowInstance, reactFlowWrapper, width, height, pendingEdges, layoutFlag])
 
   // Resize the Data Layer container based on the amount of child nodes.
   // Recommended defaults for the Data Layer container:
   // position: { x: -48, y: -128 },
   // style: { width: 300, height: 256 },
   useEffect(() => {
-    if (!reactFlowInstance || !datalayer || !warehouse)
+    if (!reactFlowInstance || !datalayer)
       return
 
     // Calculate the new height based on the number of flows.
@@ -383,7 +487,7 @@ export default function App(
     const newY = calculateDataLayerY(flows.length)
 
     setNodes(nds => nds.map((n) => {
-      if (n.id === datalayer.id) {
+      if (n.id === datalayer.container.id) {
         return {
           ...n,
           position: { x: -48, y: newY },
@@ -393,7 +497,7 @@ export default function App(
 
       // Adjust the position of the warehouse node.
       // Recommended position with two flows: { x: 4, y: 264 }
-      if (n.id === warehouse.id) {
+      if (n.id === datalayer.warehouse.id) {
         return {
           ...n,
           position: { x: 4, y: calculateWarehouseY(newHeight) },
@@ -402,7 +506,7 @@ export default function App(
 
       return n
     }))
-  }, [datalayer, flows, warehouse])
+  }, [datalayer, flows])
 
   // Custom functionality.
   const addNode = (node: AppNode) => setNodes(nds => [...nds, node])
@@ -411,7 +515,7 @@ export default function App(
     if (!datalayer)
       return
 
-    const flow = CreateFlowPrefab(datalayer, Date.now().toString(), 24, calculateNextFlowY(flows.length))
+    const flow = CreateFlowPrefab(datalayer.container, Date.now().toString(), 24, calculateNextFlowY(flows.length))
 
     setNodes(nds => [...nds, flow.container, flow.modelize, flow.egress])
     setFlows(flws => [...flws, flow])
@@ -454,87 +558,95 @@ export default function App(
       return
 
     addNode({
-      id: `${option.value}-${Date.now()}`,
+      id: `${slugify(option.configuration.type)}-${Date.now()}`,
       type: 'service',
       position: { x: -32 + Math.random() * 64, y: -256 + Math.random() * 16 },
       data: {
-        label: option.value,
         status: option.status || Status.Success,
-        service: option.service,
+        interval: 15, // Default interval of 15 seconds.
+        configuration: option.configuration,
       },
     })
   }
 
-  const generateJsonConfig = () => {
-    const config = {
-      // translate node connections to deployed config flows.
-      flows: translateToConfig(flows, nodes, edges),
-    }
-    console
-      .info(JSON.stringify(config, null, 2))
-  }
-
   return (
-    <ReactFlowProvider>
-      <div ref={reactFlowWrapper} className="reactflow-wrapper" style={{ width: '100%', height: '100%' }}>
-        <ReactFlow
-          onInit={instance => setReactFlowInstance(instance)}
-          fitView={true}
-          fitViewOptions={fitViewOptions}
-          nodes={nodes}
-          nodeTypes={nodeTypes}
-          onNodesChange={onNodesChange}
-          edges={edges}
-          edgeTypes={edgeTypes}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          onReconnect={onReconnect}
-          onReconnectStart={onReconnectStart}
-          onReconnectEnd={onReconnectEnd}
-          onNodeDragStop={onNodeDragStop}
-          autoPanOnNodeDrag={!locked}
-          panOnDrag={!locked}
-          zoomOnScroll={!locked}
-          zoomOnPinch={!locked}
-          zoomOnDoubleClick={!locked}
-        >
-          <Panel position="top-left" style={{ width: '320px' }}>
-            <Select
-              placeholder="Select a layout"
-              options={layoutOptions}
-              value={null}
-              onChange={option => selectLayout(option)}
+    <>
+      <Modal title="Configuration" isOpen={isModalOpen} setIsOpen={setIsModalOpen} onClose={() => setIsModalOpen(false)}>
+        <div className="modal-split">
+          <div className="modal-split-container">
+            <h2>JSON</h2>
+            <pre>
+              {JSON.stringify(translateToConfig(flows, nodes, edges), null, 2)}
+            </pre>
+          </div>
+          <div className="modal-split-container">
+            <h2>YAML</h2>
+            <pre>
+              {YAMLStringify(translateToConfig(flows, nodes, edges), null, 2)}
+            </pre>
+          </div>
+        </div>
+      </Modal>
+      <ReactFlowProvider>
+        <div ref={reactFlowWrapper} className="reactflow-wrapper" style={{ width: '100%', height: '100%' }}>
+          <ReactFlow
+            onInit={instance => setReactFlowInstance(instance)}
+            nodes={nodes}
+            nodeTypes={nodeTypes}
+            edges={edges}
+            edgeTypes={edgeTypes}
+
+            onConnect={onConnect}
+            onEdgesChange={onEdgesChange}
+            onNodesChange={onNodesChange}
+            onReconnect={onReconnect}
+            onReconnectStart={onReconnectStart}
+            onReconnectEnd={onReconnectEnd}
+            onNodeDragStop={onNodeDragStop}
+
+            autoPanOnNodeDrag={!locked}
+            panOnDrag={!locked}
+            zoomOnScroll={!locked}
+            zoomOnPinch={!locked}
+            zoomOnDoubleClick={!locked}
+          >
+            <Panel position="top-left" style={{ width: '320px' }}>
+              <Select
+                placeholder="Select a layout"
+                options={layoutOptions}
+                value={null}
+                onChange={option => selectLayout(option)}
+              />
+            </Panel>
+            <Panel position="top-right" style={{ width: '320px' }}>
+              <Select<ServiceOption, false, GroupBase<ServiceOption>>
+                placeholder="Add a service"
+                options={groupedServiceOptions}
+                value={null}
+                onChange={option => selectService(option)}
+              />
+            </Panel>
+            <Panel position="bottom-center">
+              <div className="reactflow-panel reactflow-panel-flow">
+                <Button className="reactflow-panel-flow-add" onClick={addFlow}>Add Flow</Button>
+                <Button className="reactflow-panel-flow-remove" onClick={removeFlow}>Remove Flow</Button>
+              </div>
+            </Panel>
+            <Panel position="bottom-right">
+              <div className="reactflow-panel">
+                <Button onClick={() => setIsModalOpen(true)}>
+                  Config
+                </Button>
+              </div>
+            </Panel>
+            <Background
+              variant={BackgroundVariant.Dots}
             />
-          </Panel>
-          <Panel position="top-right" style={{ width: '320px' }}>
-            <Select
-              placeholder="Add a service"
-              options={serviceOptions}
-              value={null}
-              onChange={option => selectService(option)}
-            />
-          </Panel>
-          <Panel position="bottom-center">
-            <div className="reactflow-panel reactflow-panel-flow">
-              <Button className="reactflow-panel-flow-add" onClick={addFlow}>Add Flow</Button>
-              <Button className="reactflow-panel-flow-remove" onClick={removeFlow}>Remove Flow</Button>
-            </div>
-          </Panel>
-          <Panel position="bottom-right">
-            <div className="reactflow-panel">
-              <Button onClick={() => generateJsonConfig()}>Config</Button>
-            </div>
-          </Panel>
-          {/* <Panel position="top-right">
-            <button onClick={addFlow}>Add Flow</button>
-          </Panel> */}
-          <Background
-            variant={BackgroundVariant.Dots}
-          />
-          {!hideMinimap && !locked && <MiniMap />}
-          {!hideControls && !locked && <Controls />}
-        </ReactFlow>
-      </div>
-    </ReactFlowProvider>
+            {!hideMinimap && !locked && <MiniMap />}
+            {!hideControls && !locked && <Controls />}
+          </ReactFlow>
+        </div>
+      </ReactFlowProvider>
+    </>
   )
 }

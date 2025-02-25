@@ -1,10 +1,27 @@
 import React from 'react'
 
-interface ButtonProps extends React.HTMLAttributes<HTMLDivElement> {
-  children: React.ReactNode
+enum ButtonType {
+  Primary = 'primary',
+  Secondary = 'secondary',
+  Destructive = 'destructive',
+  Ghost = 'ghost',
 }
 
-export const Button: React.FC<ButtonProps> = ({ children, style, onClick, className, ...props }) => {
+interface ButtonProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode
+  type?: ButtonType
+}
+
+export const Button: React.FC<ButtonProps> = (
+  {
+    type,
+    children,
+    style,
+    onClick,
+    className,
+    ...props
+  },
+) => {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter' || e.key === ' ') {
       if (onClick)
@@ -19,7 +36,7 @@ export const Button: React.FC<ButtonProps> = ({ children, style, onClick, classN
       tabIndex={0}
       onClick={onClick}
       onKeyDown={handleKeyDown}
-      className={`button ${className || ''}`.trim()}
+      className={`button button-${type || ButtonType.Primary} ${className || ''}`.trim()}
     >
       {children}
     </div>

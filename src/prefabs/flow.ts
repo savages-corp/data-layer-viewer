@@ -1,8 +1,8 @@
 import type { AppNode } from '@/src/App'
 import type { StageNode } from '@/src/components/Nodes/StageNode'
-import type { ContainerNode } from '../Nodes/ContainerNode'
+import type { ContainerNode } from '../components/Nodes/ContainerNode'
 
-import { getTimedId } from '@/src/helpers/id'
+import { getTimedId } from '@/src/helpers/nodes'
 import { Stage } from '@/types/stage'
 
 export interface FlowPrefab {
