@@ -38,6 +38,10 @@ pre .icon:hover {
   color: var(--viewer-button-secondary-hover);
 }
 
+pre .icon:active {
+  transform: translateY(1px);
+}
+
 .button {
   display: flex;
   gap: 8px;
@@ -47,6 +51,7 @@ pre .icon:hover {
   border-radius: var(--viewer-border-radius);
   padding: 10px 16px;
   cursor: pointer;
+  user-select: none;
   transition: background-color 0.3s ease;
 }
 
@@ -72,6 +77,11 @@ pre .icon:hover {
 
 .button-destructive:hover {
   background-color: var(--viewer-button-destructive-hover);
+}
+
+/* Handle button pressing */
+.button:active {
+  transform: translateY(1px);
 }
 
 .icon {
@@ -170,7 +180,7 @@ pre .icon:hover {
   font-size: 0.75rem;
 }
 
-/* positioning for each overlay */
+/* Positioning for each overlay */
 .tutorial-layout {
   bottom: -32px;
   left: 0;
@@ -228,11 +238,6 @@ pre .icon:hover {
   background-color: var(--viewer-secondary);
 }
 
-/* Handle button pressing */
-.button:active {
-  transform: translateY(1px);
-}
-
 .reactflow-panel-button {
   border: 1px solid #eee;
   border-radius: var(--xy-custom-border-radius-default);
@@ -249,7 +254,6 @@ pre .icon:hover {
   border-radius: 0;
   border-top: 1px solid #eee;
   border-bottom: 1px solid #eee;
-  user-select: none;
 }
 
 .reactflow-panel-group-left:hover,
