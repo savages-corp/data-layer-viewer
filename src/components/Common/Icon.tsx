@@ -3,7 +3,7 @@ import { ServiceType } from '@/types/service'
 import React from 'react'
 
 import { DiGoogleCloudPlatform } from 'react-icons/di'
-import { FaAws, FaDatabase, FaHubspot, FaSalesforce, FaSlack, FaTrashCan, FaWarehouse } from 'react-icons/fa6'
+import { FaArrowTurnUp, FaAws, FaClipboard, FaDatabase, FaFileExport, FaGlobe, FaHubspot, FaSalesforce, FaSlack, FaTrashCan, FaWarehouse } from 'react-icons/fa6'
 import { PiArrowArcLeftBold } from 'react-icons/pi'
 import { TbBrandZapier } from 'react-icons/tb'
 import { VscAzure } from 'react-icons/vsc'
@@ -17,7 +17,11 @@ interface IconProps extends React.SVGProps<SVGElement> {
 const iconMap: Record<string, IconType> = {
   trash: FaTrashCan,
   arrowCurved: PiArrowArcLeftBold,
+  arrowUp: FaArrowTurnUp,
+  export: FaFileExport,
+  clipboard: FaClipboard,
 
+  // ServiceType matching icons.
   CommonAws: FaAws,
   CommonAzure: VscAzure,
   CommonGcp: DiGoogleCloudPlatform,
@@ -27,7 +31,7 @@ const iconMap: Record<string, IconType> = {
   CommonZapier: TbBrandZapier,
 
   GenericDatabase: FaDatabase,
-  GenericHttp: FaSalesforce,
+  GenericHttp: FaGlobe,
 
   InfrastructureDb: FaDatabase,
   InfrastructureWarehouse: FaWarehouse,
@@ -42,8 +46,8 @@ const colorMap: Record<string, string> = {
   CommonSlack: '#4a154b',
   CommonZapier: '#ff4a00',
 
-  GenericDatabase: '#0078d4',
-  GenericHttp: '#00a1e0',
+  GenericDatabase: '#333',
+  GenericHttp: '#333',
 
   InfrastructureDb: '#0078d4',
   InfrastructureWarehouse: '#333',

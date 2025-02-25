@@ -11,10 +11,11 @@ viewers.forEach((viewer) => {
   const locked = viewer.getAttribute('data-locked') === 'true'
   const hideControls = viewer.getAttribute('data-hide-controls') === 'true'
   const hideMinimap = viewer.getAttribute('data-hide-minimap') === 'true'
+  const tutorial = viewer.getAttribute('data-tutorial') === 'true'
 
   createRoot(viewer).render(
     <StrictMode>
-      <App hideControls={hideControls} hideMinimap={hideMinimap} locked={locked} />
+      <App hideControls={hideControls} hideMinimap={hideMinimap} locked={locked} tutorial={tutorial} />
     </StrictMode>,
   )
 })

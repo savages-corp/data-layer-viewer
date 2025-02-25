@@ -70,38 +70,6 @@ function builder() : (Layout) {
   const flow1 = CreateFlowPrefab(datalayer.container, '2', 24, calculateNextFlowY(0))
   const flow2 = CreateFlowPrefab(datalayer.container, '1', 24, calculateNextFlowY(1))
 
-  // const annotationMenu1: AnnotationNode = {
-  //   id: getTimedId('annotation-menu-1'),
-  //   type: 'annotation',
-  //   position: { x: 0, y: 0 },
-  //   width: 200,
-  //   data: {
-  //     text: 'Choose preset scenarios',
-  //     textAlignment: 'left',
-  //     showArrow: true,
-  //     arrowPosition: 'top-left',
-  //     isPinned: true,
-  //     pinnedPosition: 'top-left',
-  //   },
-  //   draggable: false,
-  // }
-
-  // const annotationMenu2: AnnotationNode = {
-  //   id: getTimedId('annotation-menu-2'),
-  //   type: 'annotation',
-  //   position: { x: 0, y: 0 },
-  //   width: 200,
-  //   data: {
-  //     text: 'Add your own services',
-  //     textAlignment: 'right',
-  //     showArrow: true,
-  //     arrowPosition: 'top-right',
-  //     isPinned: true,
-  //     pinnedPosition: 'top-right',
-  //   },
-  //   draggable: false,
-  // }
-
   const annotation1: AnnotationNode = {
     id: getTimedId('annotation-1'),
     type: 'annotation',

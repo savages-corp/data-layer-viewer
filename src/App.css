@@ -24,6 +24,8 @@ pre {
 }
 
 .button {
+  display: flex;
+  gap: 8px;
   font-family: 'Poppins', sans-serif;
   font-size: 1rem;
   color: white;
@@ -138,6 +140,30 @@ pre {
   flex-grow: 1;
 }
 
+.tutorial-overlay {
+  width: 95%;
+  display: flex;
+  gap: 4px;
+  position: absolute;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+/* positioning for each overlay */
+.tutorial-layout {
+  bottom: -32px;
+  left: 0;
+}
+
+.tutorial-service {
+  justify-content: end;
+  bottom: -32px;
+  right: 0;
+}
+
 .react-flow {
   --xy-edge-stroke-default: #31c787;
   --xy-edge-stroke-width-default: 1;
@@ -189,39 +215,39 @@ pre {
   transform: translateY(1px);
 }
 
-.reactflow-panel {
+.reactflow-panel-button {
   border: 1px solid #eee;
   border-radius: var(--xy-custom-border-radius-default);
 }
 
-.reactflow-panel-flow {
+.reactflow-panel-group {
   display: flex;
   border: none;
 }
 
-.reactflow-panel-flow-left,
-.reactflow-panel-flow-middle,
-.reactflow-panel-flow-right {
+.reactflow-panel-group-left,
+.reactflow-panel-group-middle,
+.reactflow-panel-group-right {
   border-radius: 0;
   border-top: 1px solid #eee;
   border-bottom: 1px solid #eee;
   user-select: none;
 }
 
-.reactflow-panel-flow-left:hover,
-.reactflow-panel-flow-middle:hover,
-.reactflow-panel-flow-right:hover {
+.reactflow-panel-group-left:hover,
+.reactflow-panel-group-middle:hover,
+.reactflow-panel-group-right:hover {
   background: var(--viewer-secondary);
 }
 
-.reactflow-panel-flow-left {
+.reactflow-panel-group-left {
   border-left: 1px solid #eee;
   border-top-left-radius: var(--xy-custom-border-radius-default);
   border-bottom-left-radius: var(--xy-custom-border-radius-default);
   border-right: 1px solid #eee;
 }
 
-.reactflow-panel-flow-middle {
+.reactflow-panel-group-middle {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   border-top-right-radius: 0;
@@ -229,7 +255,7 @@ pre {
   border-right: 1px solid #eee;
 }
 
-.reactflow-panel-flow-right {
+.reactflow-panel-group-right {
   border-right: 1px solid #eee;
   border-radius: 0;
   border-top-right-radius: var(--xy-custom-border-radius-default);

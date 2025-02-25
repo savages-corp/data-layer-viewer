@@ -34,17 +34,19 @@ import Select from 'react-select'
 import { stringify as YAMLStringify } from 'yaml'
 
 import Button from './components/Common/Button'
-import Modal from './components/Common/Modal'
+import { Icon } from './components/Common/Icon'
 
+import Modal from './components/Common/Modal'
 import { DataEdgeComponent } from './components/Edges/DataEdge'
 import { AnnotationNodeComponent } from './components/Nodes/AnnotationNode'
 import { ContainerNodeComponent } from './components/Nodes/ContainerNode'
 import { ServiceNodeComponent } from './components/Nodes/ServiceNode'
 import { StageNodeComponent } from './components/Nodes/StageNode'
-import { WarehouseNodeComponent } from './components/Nodes/WarehouseNode'
 
+import { WarehouseNodeComponent } from './components/Nodes/WarehouseNode'
 import { translateToConfig } from './helpers/config'
 import { calculateDataLayerHeight, calculateDataLayerY, calculateNextFlowY, calculateWarehouseY } from './helpers/positioning'
+
 import { slugify } from './helpers/string'
 
 import { useWindowDimensions } from './hooks/useWindowDimensions'
@@ -52,7 +54,6 @@ import { useWindowDimensions } from './hooks/useWindowDimensions'
 import { layouts } from './layouts/layouts'
 
 import { CreateFlowPrefab } from './prefabs/flow'
-
 import '@xyflow/react/dist/style.css'
 import './App.css'
 
@@ -177,9 +178,9 @@ const groupedServiceOptions: GroupedOption[] = [
     label: 'Generic Services',
     options: [
       {
-        label: 'HTTP',
+        label: 'HTTP/S',
         configuration: {
-          identifier: 'Generic HTTP Service',
+          identifier: 'Generic HTTP/S Service',
           type: ServiceType.GenericHttp,
         },
       },
@@ -194,19 +195,19 @@ const groupedServiceOptions: GroupedOption[] = [
   },
 ]
 
-export default function App(
-  {
-    locked,
-    hideMinimap,
-    hideControls,
+interface AppProps {
+  locked?: boolean
+  hideMinimap?: boolean
+  hideControls?: boolean
+  tutorial?: boolean
+}
 
-  }: {
-    locked?: boolean
-    hideMinimap?: boolean
-    hideControls?: boolean
-  },
-) {
-  const [isModalOpen, setIsModalOpen] = useState(false)
+export default function App({
+  locked,
+  hideMinimap,
+  hideControls,
+  tutorial,
+}: AppProps) {
   const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance<AppNode, AppEdge>>()
   const reactFlowWrapper = useRef<HTMLDivElement>(null)
   const { width, height } = useWindowDimensions()
@@ -214,6 +215,10 @@ export default function App(
   const edgeReconnectSuccessful = useRef(true)
 
   const defaultLayout = layouts.default.builder({}) // Build the default layout.
+
+  const [showTutorialLayout, setShowTutorialLayout] = useState(tutorial)
+  const [showTutorialService, setShowTutorialService] = useState(tutorial)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const [layoutFlag, setLayoutFlag] = useState(false)
   const [layout, setLayout] = useState<Layout>(defaultLayout)
@@ -408,68 +413,14 @@ export default function App(
     [reactFlowInstance],
   )
 
-  // TODO: This should be done outside the React Flow component - specifically we shouldn't use nodes for this.
-  // If the viewport is resized, re-fit the view but ignore annotations. Re-pin annotations to the corners.
-  // const onViewportChange = useCallback((viewport: Viewport) => {
-  //   if (!reactFlowInstance || !reactFlowWrapper.current)
-  //     return
-
-  //   const { x: vx, y: vy, zoom } = viewport
-  //   const { clientWidth /* , clientHeight */ } = reactFlowWrapper.current
-  //   const left = -vx / zoom
-  //   const top = -vy / zoom
-  //   const right = (-vx + clientWidth) / zoom
-  //   // const bottom = (-vy + clientHeight) / zoom
-
-  //   setNodes(nds =>
-  //     nds.map((n) => {
-  //       if (n.type === 'annotation' && n.data.isPinned) {
-  //         let newX = n.position.x
-  //         let newY = n.position.y
-
-  //         // Use n.data.pinnedPosition with default to 'top-right'
-  //         const pos = n.data.pinnedPosition || 'top-right'
-
-  //         // Use n.width and n.height if available; else fallback values
-  //         const nodeWidth = (n.width as number) || 150
-  //         const nodeHeight = (n.height as number) || 50
-
-  //         switch (pos) {
-  //           case 'top-left':
-  //             newX = left + nodeWidth - 192
-  //             newY = top + nodeHeight - 16
-  //             break
-
-  //           case 'top-right':
-  //             newX = right - nodeWidth - 8
-  //             newY = top + nodeHeight - 16
-  //             break
-
-  //             // case 'bottom-left':
-  //             //   newX = left + 0
-  //             //   newY = bottom - nodeHeight - 0
-  //             //   break
-
-  //             // case 'bottom-right':
-  //             //   newX = right - nodeWidth - 0
-  //             //   newY = bottom - nodeHeight - 0
-  //             //   break
-
-  //           default:
-  //             newX = right - nodeWidth - 0
-  //             newY = top + 0
-  //         }
-  //         return { ...n, position: { x: newX, y: newY } }
-  //       }
-  //       return n
-  //     }),
-  //   )
-  // }, [reactFlowInstance, reactFlowWrapper]) // Layout flag is captured too to make sure a reset still pins the annotations.
-
   // If the viewport is resized, make sure to re-fit the view.
   useEffect(() => {
-    if (reactFlowInstance)
-      reactFlowInstance.fitView(fitViewOptions)
+    if (reactFlowInstance) {
+      // Delay fitView to allow the layout to settle.
+      setTimeout(() => {
+        reactFlowInstance.fitView(fitViewOptions)
+      }, 100) // Adjust the delay time if necessary.
+    }
   }, [reactFlowInstance, reactFlowWrapper, width, height, pendingEdges, layoutFlag])
 
   // Resize the Data Layer container based on the amount of child nodes.
@@ -548,7 +499,7 @@ export default function App(
     if (!option)
       return
 
-    // Since some times the layout is the same, we need to call setLayoutFlag to force the update.
+    // Since sometimes the layout is the same we need to call setLayoutFlag to force the update.
     setLayoutFlag(true)
     setLayout(option.layout)
   }
@@ -563,7 +514,7 @@ export default function App(
       position: { x: -32 + Math.random() * 64, y: -256 + Math.random() * 16 },
       data: {
         status: option.status || Status.Success,
-        interval: 15, // Default interval of 15 seconds.
+        interval: 15,
         configuration: option.configuration,
       },
     })
@@ -596,6 +547,8 @@ export default function App(
             edges={edges}
             edgeTypes={edgeTypes}
 
+            fitViewOptions={fitViewOptions}
+
             onConnect={onConnect}
             onEdgesChange={onEdgesChange}
             onNodesChange={onNodesChange}
@@ -616,7 +569,14 @@ export default function App(
                 options={layoutOptions}
                 value={null}
                 onChange={option => selectLayout(option)}
+                onMenuOpen={() => setShowTutorialLayout(false)}
               />
+              {showTutorialLayout && (
+                <div className="tutorial-overlay tutorial-layout">
+                  <Icon variant="arrowUp" size={10} style={{ transform: 'scaleX(-1)' }} />
+                  Explore various Data Layer configurations
+                </div>
+              )}
             </Panel>
             <Panel position="top-right" style={{ width: '320px' }}>
               <Select<ServiceOption, false, GroupBase<ServiceOption>>
@@ -624,14 +584,24 @@ export default function App(
                 options={groupedServiceOptions}
                 value={null}
                 onChange={option => selectService(option)}
+                onMenuOpen={() => setShowTutorialService(false)}
               />
+              {showTutorialService && (
+                <div className="tutorial-overlay tutorial-service">
+                  Build your own use-case with various services
+                  <Icon variant="arrowUp" size={10} />
+                </div>
+              )}
             </Panel>
-            <Panel position="bottom-center">
-              <div className="reactflow-panel reactflow-panel-flow">
-                <Button className="reactflow-panel-flow-left" onClick={addFlow}>Add Flow</Button>
-                <Button className="reactflow-panel-flow-middle" onClick={removeFlow}>Remove Flow</Button>
-                <Button className="reactflow-panel-flow-right" onClick={() => setIsModalOpen(true)}>Config</Button>
+            <Panel position="bottom-center" style={{ display: 'flex', gap: '8px' }}>
+              <div className="reactflow-panel-group">
+                <Button className="reactflow-panel-group-left" onClick={addFlow}>Add Flow</Button>
+                <Button className="reactflow-panel-group-right" onClick={removeFlow}>Remove Flow</Button>
               </div>
+              <Button className="reactflow-panel-button" onClick={() => setIsModalOpen(true)}>
+                <Icon variant="export" size={16} />
+                Config
+              </Button>
             </Panel>
             <Panel position="bottom-right">
               <div className="reactflow-panel">
