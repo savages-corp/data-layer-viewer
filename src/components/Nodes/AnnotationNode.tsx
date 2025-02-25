@@ -31,7 +31,7 @@ export function AnnotationNodeComponent({ data }: NodeProps<AnnotationNode>) {
       </div>
       {data.showArrow && (
         <div className={`react-flow__node-annotation-arrow react-flow__node-annotation-arrow-${data.arrowPosition || 'right'}`}>
-          <Icon variant="arrowCurved" size={16} />
+          <Icon icon="arrowCurved" size={16} />
         </div>
       )}
     </>

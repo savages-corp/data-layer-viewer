@@ -113,10 +113,10 @@ export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
   return (
     <div className={`react-flow__node-service-contents react-flow__node-service-contents-${isSource ? 'source' : ''}${isDestination ? 'destination' : ''}-${data.status && String(data.status).toLowerCase().replace(/_/g, '-')}`}>
       <div className="react-flow__node-service-icon">
-        <Icon size={16} variant={data.configuration?.type} />
+        <Icon size={16} icon={data.configuration?.type} />
       </div>
       <div className="react-flow__node-service-icon-delete">
-        <Icon onClick={handleDelete} size={16} variant="trash" />
+        <Icon onClick={handleDelete} size={16} icon="trash" />
       </div>
       <div className="react-flow__node-service-information">
         <div className="react-flow__node-service-title">

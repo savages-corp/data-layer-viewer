@@ -18,9 +18,24 @@
 }
 
 pre {
+  position: relative;
   padding: 16px;
   background-color: var(--viewer-secondary);
   border-radius: var(--viewer-border-radius);
+}
+
+pre .icon {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  color: var(--viewer-button-secondary);
+  padding: 4px;
+  border-radius: var(--viewer-border-radius);
+  cursor: pointer;
+}
+
+pre .icon:hover {
+  color: var(--viewer-button-secondary-hover);
 }
 
 .button {
@@ -76,6 +91,9 @@ pre {
   left: 5%;
   right: 5%;
   bottom: 5%;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1000px;
   background: white;
   border-radius: var(--viewer-border-radius);
   border: var(--viewer-border);

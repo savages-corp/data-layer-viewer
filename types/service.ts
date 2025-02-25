@@ -18,5 +18,5 @@ export enum ServiceType {
 export interface ServiceConfiguration {
   type: ServiceType
   identifier: string
-  parameters?: Record<string, string>
+  parameters?: Record<string, string | number | boolean>
 }

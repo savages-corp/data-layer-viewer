@@ -28,6 +28,7 @@ export function Modal(
       contentLabel="Application Modal"
       className="modal" // App-specific styles
       overlayClassName="modal-overlay"
+      ariaHideApp={false} // We're removing this as we can't control the app instance since this is a widget.
     >
       <div className="modal-navbar">
         <h1 className="modal-heading">{title}</h1>

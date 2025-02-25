@@ -9,11 +9,12 @@ import { TbBrandZapier } from 'react-icons/tb'
 import { VscAzure } from 'react-icons/vsc'
 
 interface IconProps extends React.SVGProps<SVGElement> {
-  variant?: ServiceType | string
+  icon?: ServiceType | string
   color?: string
   size?: number
 }
 
+// If you're wondering about the limited selection of icons: due to this being an embedded component, we're trying to keep the bundle size down.
 const iconMap: Record<string, IconType> = {
   trash: FaTrashCan,
   arrowCurved: PiArrowArcLeftBold,
@@ -53,13 +54,13 @@ const colorMap: Record<string, string> = {
   InfrastructureWarehouse: '#333',
 }
 
-export const Icon: React.FC<IconProps> = ({ color = '', variant = 'database', size = 16, ...svgProps }) => {
+export const Icon: React.FC<IconProps> = ({ color = '', icon = 'database', size = 16, ...svgProps }) => {
   // Try to derive the enum key if variant matches a ServiceType value
   const serviceKey = (() => {
     // Check if variant is one of the ServiceType values
     const enumKeys = Object.keys(ServiceType) as Array<keyof typeof ServiceType>
-    const key = enumKeys.find(k => ServiceType[k] === variant)
-    return key || variant
+    const key = enumKeys.find(k => ServiceType[k] === icon)
+    return key || icon
   })()
 
   const SpecificIcon = iconMap[serviceKey] || FaSalesforce

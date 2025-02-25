@@ -237,6 +237,11 @@ export default function App({
     } satisfies FitViewOptions
   ), [nodes])
 
+  // Translate the graph to a configuration object.
+  const config = useMemo(() => translateToConfig(flows, nodes, edges), [flows, nodes, edges])
+  const configJSON = useMemo(() => JSON.stringify(config, null, 2), [config])
+  const configYAML = useMemo(() => YAMLStringify({ flows: config }, null, 2), [config])
+
   // New effect that runs after nodes update.
   useEffect(() => {
     if (pendingEdges) {
@@ -270,6 +275,10 @@ export default function App({
 
   const onConnect = useCallback(
     (connection: Connection) => {
+      if (!reactFlowInstance) {
+        return
+      }
+
       if (connection.source === connection.target)
         return // Prevent self-connections
 
@@ -282,7 +291,7 @@ export default function App({
         return
 
       // Create a new edge based on the connection.
-      const edge: AppEdge = {
+      const edge: DataEdge = {
         id: `${connection.source}-${connection.target}-${Date.now()}`, // Unique ID
         source: connection.source,
         target: connection.target,
@@ -294,52 +303,56 @@ export default function App({
       }
 
       // This is where we have to handle the different type of node connections and their rules.
-      if (reactFlowInstance) {
-        // Get the source node as we will be adjusting the data edge based on it.
-        const sourceNode = reactFlowInstance.getNode(connection.source)
-        const targetNode = reactFlowInstance.getNode(connection.target)
 
-        if (!sourceNode || !targetNode)
+      // Get the source node as we will be adjusting the data edge based on it.
+      const sourceNode = reactFlowInstance.getNode(connection.source)
+      const targetNode = reactFlowInstance.getNode(connection.target)
+
+      if (!sourceNode || !targetNode)
+        return
+
+      // A service node can only connect to another service node or a Stage Modelize node.
+      if (sourceNode.type === 'service') {
+        if (targetNode.type !== 'service' && targetNode.type !== 'stage') {
           return
-
-        // A service node can only connect to another service node or a Stage Modelize node.
-        if (sourceNode.type === 'service') {
-          if (targetNode.type !== 'service' && targetNode.type !== 'stage') {
-            return
-          }
-
-          if (targetNode.type === 'stage') {
-            const stageNode = targetNode as StageNode
-
-            if (stageNode.data.stage !== Stage.Modelize) {
-              return
-            }
-          }
         }
 
-        // A stage node has two variations: Modelize and Egress.
-        // - Modelize can only emit a connection to a Stage Egress or a Warehouse node.
-        if (sourceNode.type === 'stage') {
-          const stageNode = sourceNode as StageNode
+        if (targetNode.type === 'stage') {
+          const stageNode = targetNode as StageNode
 
-          if (stageNode.data.stage === Stage.Modelize) {
-            if (targetNode.type !== 'stage' && targetNode.type !== 'warehouse') {
+          if (stageNode.data.stage !== Stage.Modelize) {
+            return
+          }
+        }
+      }
+
+      // A stage node has two variations: Modelize and Egress.
+      // - Modelize can only emit a connection to a Stage Egress or a Warehouse node.
+      if (sourceNode.type === 'stage') {
+        const stageNode = sourceNode as StageNode
+
+        if (stageNode.data.stage === Stage.Modelize) {
+          if (targetNode.type !== 'stage' && targetNode.type !== 'warehouse') {
+            return
+          }
+          else {
+            // If the target is a stage node, ensure it's the corresponding Egress node.
+            if (targetNode.type === 'stage' && targetNode.id !== stageNode.data.partnerId)
               return
-            }
-            else {
-              // If the target is a stage node, ensure it's the corresponding Egress node.
-              if (targetNode.type === 'stage' && targetNode.id !== stageNode.data.partnerId)
-                return
-            }
+          }
 
-            edge.data!.shape = 'square'
+          edge.data!.shape = 'square'
+        }
+        else if (stageNode.data.stage === Stage.Egress) {
+          if (targetNode.type !== 'service') {
+            return
           }
         }
       }
 
       setEdges(eds => addEdge(edge, eds))
     },
-    [edges, setEdges],
+    [reactFlowInstance, edges, setEdges],
   )
 
   const onReconnectStart = useCallback(() => {
@@ -499,6 +512,9 @@ export default function App({
     if (!option)
       return
 
+    // To make UX better, especially when presenting a specific layout, we want to hide the service tutorial.
+    setShowTutorialService(false)
+
     // Since sometimes the layout is the same we need to call setLayoutFlag to force the update.
     setLayoutFlag(true)
     setLayout(option.layout)
@@ -522,18 +538,33 @@ export default function App({
 
   return (
     <>
-      <Modal title="Configuration" isOpen={isModalOpen} setIsOpen={setIsModalOpen} onClose={() => setIsModalOpen(false)}>
+      <Modal title="Data Layer Flow Configurations" isOpen={isModalOpen} setIsOpen={setIsModalOpen} onClose={() => setIsModalOpen(false)}>
+        <p>
+          This is your current Data Layer configuration based on the connected flows. This configuration can be directly used during deployment of your Data Layer instance.
+        </p>
         <div className="modal-split">
           <div className="modal-split-container">
             <h2>JSON</h2>
             <pre>
-              {JSON.stringify(translateToConfig(flows, nodes, edges), null, 2)}
+              <Icon
+                icon="clipboard"
+                onClick={() => {
+                  navigator.clipboard.writeText(configJSON)
+                }}
+              />
+              {configJSON}
             </pre>
           </div>
           <div className="modal-split-container">
             <h2>YAML</h2>
             <pre>
-              {YAMLStringify(translateToConfig(flows, nodes, edges), null, 2)}
+              <Icon
+                icon="clipboard"
+                onClick={() => {
+                  navigator.clipboard.writeText(configYAML)
+                }}
+              />
+              {configYAML}
             </pre>
           </div>
         </div>
@@ -573,7 +604,7 @@ export default function App({
               />
               {showTutorialLayout && (
                 <div className="tutorial-overlay tutorial-layout">
-                  <Icon variant="arrowUp" size={10} style={{ transform: 'scaleX(-1)' }} />
+                  <Icon icon="arrowUp" size={10} style={{ transform: 'scaleX(-1)' }} />
                   Explore various Data Layer configurations
                 </div>
               )}
@@ -589,7 +620,7 @@ export default function App({
               {showTutorialService && (
                 <div className="tutorial-overlay tutorial-service">
                   Build your own use-case with various services
-                  <Icon variant="arrowUp" size={10} />
+                  <Icon icon="arrowUp" size={10} />
                 </div>
               )}
             </Panel>
@@ -599,7 +630,7 @@ export default function App({
                 <Button className="reactflow-panel-group-right" onClick={removeFlow}>Remove Flow</Button>
               </div>
               <Button className="reactflow-panel-button" onClick={() => setIsModalOpen(true)}>
-                <Icon variant="export" size={16} />
+                <Icon icon="export" size={16} />
                 Config
               </Button>
             </Panel>
