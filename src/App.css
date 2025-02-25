@@ -199,26 +199,37 @@ pre {
   border: none;
 }
 
-.reactflow-panel-flow-add,
-.reactflow-panel-flow-remove {
+.reactflow-panel-flow-left,
+.reactflow-panel-flow-middle,
+.reactflow-panel-flow-right {
   border-radius: 0;
   border-top: 1px solid #eee;
   border-bottom: 1px solid #eee;
+  user-select: none;
 }
 
-.reactflow-panel-flow-add:hover,
-.reactflow-panel-flow-remove:hover {
+.reactflow-panel-flow-left:hover,
+.reactflow-panel-flow-middle:hover,
+.reactflow-panel-flow-right:hover {
   background: var(--viewer-secondary);
 }
 
-.reactflow-panel-flow-add {
+.reactflow-panel-flow-left {
   border-left: 1px solid #eee;
   border-top-left-radius: var(--xy-custom-border-radius-default);
   border-bottom-left-radius: var(--xy-custom-border-radius-default);
   border-right: 1px solid #eee;
 }
 
-.reactflow-panel-flow-remove {
+.reactflow-panel-flow-middle {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-right: 1px solid #eee;
+}
+
+.reactflow-panel-flow-right {
   border-right: 1px solid #eee;
   border-radius: 0;
   border-top-right-radius: var(--xy-custom-border-radius-default);

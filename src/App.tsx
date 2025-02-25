@@ -1,5 +1,5 @@
 import type { ServiceConfiguration } from '@/types/service'
-import type { BuiltInEdge, BuiltInNode, Connection, EdgeChange, EdgeTypes, FitViewOptions, NodeChange, NodeTypes, ReactFlowInstance, Viewport } from '@xyflow/react'
+import type { BuiltInEdge, BuiltInNode, Connection, EdgeChange, EdgeTypes, FitViewOptions, NodeChange, NodeTypes, ReactFlowInstance } from '@xyflow/react'
 import type { GroupBase } from 'react-select'
 import type { DataEdge } from './components/Edges/DataEdge'
 import type { AnnotationNode } from './components/Nodes/AnnotationNode'
@@ -628,15 +628,13 @@ export default function App(
             </Panel>
             <Panel position="bottom-center">
               <div className="reactflow-panel reactflow-panel-flow">
-                <Button className="reactflow-panel-flow-add" onClick={addFlow}>Add Flow</Button>
-                <Button className="reactflow-panel-flow-remove" onClick={removeFlow}>Remove Flow</Button>
+                <Button className="reactflow-panel-flow-left" onClick={addFlow}>Add Flow</Button>
+                <Button className="reactflow-panel-flow-middle" onClick={removeFlow}>Remove Flow</Button>
+                <Button className="reactflow-panel-flow-right" onClick={() => setIsModalOpen(true)}>Config</Button>
               </div>
             </Panel>
             <Panel position="bottom-right">
               <div className="reactflow-panel">
-                <Button onClick={() => setIsModalOpen(true)}>
-                  Config
-                </Button>
               </div>
             </Panel>
             <Background
