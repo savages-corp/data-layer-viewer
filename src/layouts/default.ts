@@ -23,7 +23,7 @@ function builder() : (Layout) {
       status: Status.Success,
       configuration: {
         identifier: 'Database',
-        type: ServiceType.InfrastructureDb,
+        type: ServiceType.GenericDatabase,
       },
     },
   }
