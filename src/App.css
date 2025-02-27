@@ -192,6 +192,15 @@ pre .icon:active {
   right: 0;
 }
 
+/* Service option styles */
+.service-option {
+  font-family: 'Poppins', sans-serif;
+}
+
+.service-option:hover {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
 .react-flow {
   --xy-edge-stroke-default: #31c787;
   --xy-edge-stroke-width-default: 1;
