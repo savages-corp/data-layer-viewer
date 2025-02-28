@@ -1,3 +1,5 @@
+import type { Ti18n } from '@zealsprince/ti18n'
+
 import type { AppEdge, AppNode } from '../App'
 
 import type { DatalayerPrefab } from '../prefabs/datalayer'
@@ -7,7 +9,7 @@ import { DefaultDefinition } from './default'
 
 export interface LayoutDefinition {
   name: string
-  builder: ({ mobile, language }: { mobile?: boolean, language?: string }) => Layout
+  builder: ({ ti18n, mobile }: { ti18n: Ti18n, mobile?: boolean }) => Layout
 }
 
 export interface Layout {

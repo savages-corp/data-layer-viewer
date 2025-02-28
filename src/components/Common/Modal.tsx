@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactModal from 'react-modal'
-import Button from './Button'
+import { Button } from './Button'
 
 export function Modal(
   {
@@ -40,5 +40,3 @@ export function Modal(
     </ReactModal>
   )
 }
-
-export default Modal

@@ -1,0 +1,10 @@
+{
+  "languages": {
+    "en": "Englisch",
+    "de": "Deutsch"
+  },
+  "dictionary": {
+    "select-service-category-hypervisor": "Cloud Dienste",
+    "service-generic-database": "Generischer Datenbankdienst"
+  }
+}

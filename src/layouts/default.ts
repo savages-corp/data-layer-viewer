@@ -1,7 +1,10 @@
 import type { AppEdge, AppNode } from '@/src/App'
-import type { AnnotationNode } from '../components/Nodes/AnnotationNode'
+import type { Key } from '@/types/i18n'
+import type { Ti18n } from '@zealsprince/ti18n'
 
+import type { AnnotationNode } from '../components/Nodes/AnnotationNode'
 import type { ServiceNode } from '../components/Nodes/ServiceNode'
+
 import type { Layout, LayoutDefinition } from './layouts'
 
 import { ServiceType } from '@/types/service'
@@ -9,20 +12,21 @@ import { Status } from '@/types/status'
 
 import { getTimedId } from '../helpers/nodes'
 import { calculateNextFlowY } from '../helpers/positioning'
+
 import { CreateDatalayerPrefab } from '../prefabs/datalayer'
 import { CreateFlowPrefab } from '../prefabs/flow'
 
-function builder() : (Layout) {
+function builder({ ti18n, mobile = false }: { ti18n: Ti18n<Key>, mobile?: boolean }) : (Layout) {
   const datalayer = CreateDatalayerPrefab(2)
 
   const source1: ServiceNode = {
     id: getTimedId('service-source-1'),
     type: 'service',
-    position: { x: -312, y: 48 },
+    position: mobile ? { x: 0, y: 0 } : { x: -312, y: 48 },
     data: {
       status: Status.Success,
       configuration: {
-        identifier: 'Database',
+        identifier: ti18n.translate(ti18n.keys.serviceGenericDatabase),
         type: ServiceType.GenericDatabase,
       },
     },
