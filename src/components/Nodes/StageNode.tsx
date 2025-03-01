@@ -4,7 +4,9 @@ import type { ServiceNode } from './ServiceNode'
 import { Stage } from '@/types/stage'
 import { Status } from '@/types/status'
 import { Handle, Position, useNodeConnections, useNodesData, useReactFlow } from '@xyflow/react'
-import { useEffect } from 'react'
+
+import { useEffect, useMemo } from 'react'
+import { useTi18n } from '../Core/Ti18nProvider'
 
 export type StageNode = Node<
   {
@@ -24,6 +26,8 @@ export type StageNode = Node<
 */
 
 export function StageNodeComponent({ id, data }: NodeProps<StageNode>) {
+  const ti18n = useTi18n() // Get the translation function.
+
   const { updateNodeData } = useReactFlow() // Update the status of the node.
 
   // Get the connections to the node.
@@ -45,9 +49,19 @@ export function StageNodeComponent({ id, data }: NodeProps<StageNode>) {
     updateNodeData(id, { status: Status.Unknown })
   }, [targetConnectionsData])
 
+  const label = useMemo(() => {
+    switch (data.stage) {
+      case Stage.Modelize:
+        return ti18n.translate(ti18n.keys.stageModelize)
+
+      case Stage.Egress:
+        return ti18n.translate(ti18n.keys.stageEgress)
+    }
+  }, [data.stage])
+
   return (
     <div className={`react-flow__node-stage-contents react-flow__node-stage-contents-${data.stage.toLowerCase()}-${data.status && String(data.status).toLowerCase().replace(/_/g, '-')}`}>
-      <div>{data.stage}</div>
+      <div>{label}</div>
       {/* Depending on whether the stage is modelize or egress, either the target or source is square */}
       <Handle
         type="target"

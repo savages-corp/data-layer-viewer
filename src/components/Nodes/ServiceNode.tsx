@@ -1,6 +1,7 @@
 import type { ServiceConfiguration } from '@/types/service'
 import type { Node, NodeProps } from '@xyflow/react'
 import type { StageNode } from './StageNode'
+
 import { Status } from '@/types/status'
 
 import { Handle, Position, useNodeConnections, useNodesData, useReactFlow } from '@xyflow/react'
@@ -10,6 +11,7 @@ import { useEffect, useState } from 'react'
 import Select from 'react-select'
 
 import { Icon } from '../Common/Icon'
+import { useTi18n } from '../Core/Ti18nProvider'
 
 /*
   ServiceNode displays various services that can be connected to other nodes.
@@ -32,23 +34,25 @@ export type ServiceNode = Node<
   'service'
 >
 
-export interface StatusOption {
+interface StatusOption {
   value: Status
   label: string
 }
 
-export const statusOptions: StatusOption[] = [
-  { value: Status.Success, label: 'Success' },
-  { value: Status.SuccessNothingNew, label: 'Success Nothing New' },
-  { value: Status.ErrorServicePull, label: 'Error Service Pull' },
-  { value: Status.ErrorDataEgress, label: 'Error Data Egress' },
-  { value: Status.ErrorDataModelize, label: 'Error Data Modelize' },
-  { value: Status.ErrorServicePush, label: 'Error Service Push' },
-  { value: Status.Unknown, label: 'Inactive' },
-]
-
 export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
+  const ti18n = useTi18n() // Get the translation function.
+
   const { updateNodeData, setNodes, setEdges } = useReactFlow()
+
+  const statusOptions: StatusOption[] = [
+    { value: Status.Success, label: ti18n.translate(ti18n.keys.statusSuccess) },
+    { value: Status.SuccessNothingNew, label: ti18n.translate(ti18n.keys.statusSuccessNothingNew) },
+    { value: Status.ErrorServicePull, label: ti18n.translate(ti18n.keys.statusErrorServicePull) },
+    { value: Status.ErrorDataEgress, label: ti18n.translate(ti18n.keys.statusErrorDataEgress) },
+    { value: Status.ErrorDataModelize, label: ti18n.translate(ti18n.keys.statusErrorDataModelize) },
+    { value: Status.ErrorServicePush, label: ti18n.translate(ti18n.keys.statusErrorServicePush) },
+    { value: Status.Unknown, label: ti18n.translate(ti18n.keys.statusInactive) },
+  ]
 
   if (data.status === undefined) {
     data.status = Status.Unknown
@@ -122,11 +126,10 @@ export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
         <div className="react-flow__node-service-title">
           <input value={data.configuration.identifier} maxLength={24} onChange={handleLabelChange} />
         </div>
-        { (isSource) && <span className="react-flow__node-service-subtitle">Source</span> }
-        { (isDestination) && <span className="react-flow__node-service-subtitle">Destination</span> }
+        { (isSource) && <span className="react-flow__node-service-subtitle">{ti18n.translate(ti18n.keys.serviceLabelSource)}</span> }
+        { (isDestination) && <span className="react-flow__node-service-subtitle">{ti18n.translate(ti18n.keys.serviceLabelDestination)}</span> }
       </div>
       { isSource && (
-
         <div className="react-flow__node-service-status-select nodrag">
           <Select
             value={statusOptions.find(option => option.value === data.status)}
@@ -146,7 +149,7 @@ export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
         isConnectable={!isDestination}
         className={isDestination ? 'react-flow__handle-plugged' : ''}
       >
-        <div style={{ fontSize: 8, marginLeft: 12, lineHeight: 0.5 }}>Push</div>
+        <div style={{ fontSize: 8, marginLeft: 12, lineHeight: 0.5 }}>{ti18n.translate(ti18n.keys.serviceLabelPush)}</div>
       </Handle>
       <Handle
         type="source"
@@ -156,7 +159,7 @@ export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
         isConnectable={!isSource}
         className={isSource ? 'react-flow__handle-plugged' : ''}
       >
-        <div style={{ fontSize: 8, marginLeft: -30, lineHeight: 0.5 }}>Pull</div>
+        <div style={{ fontSize: 8, marginLeft: -30, lineHeight: 0.5 }}>{ti18n.translate(ti18n.keys.serviceLabelPull)}</div>
       </Handle>
     </div>
   )

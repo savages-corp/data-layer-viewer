@@ -1,5 +1,8 @@
 import React from 'react'
 import ReactModal from 'react-modal'
+
+import { useTi18n } from '../Core/Ti18nProvider'
+
 import { Button } from './Button'
 
 export function Modal(
@@ -21,6 +24,8 @@ export function Modal(
     children: React.ReactNode
   },
 ) {
+  const ti18n = useTi18n()
+
   return (
     <ReactModal
       isOpen={isOpen}
@@ -32,7 +37,7 @@ export function Modal(
     >
       <div className="modal-navbar">
         <h1 className="modal-heading">{title}</h1>
-        <Button onClick={() => setIsOpen(false)}>Close</Button>
+        <Button onClick={() => setIsOpen(false)}>{ti18n.translate(ti18n.keys.genericClose)}</Button>
       </div>
       <div className="modal-content">
         {children}

@@ -1,5 +1,5 @@
 import type { AppEdge, AppNode } from '@/src/App'
-import type { Key } from '@/types/i18n'
+import type { TranslationKey } from '@/types/i18n'
 import type { Ti18n } from '@zealsprince/ti18n'
 
 import type { AnnotationNode } from '../components/Nodes/AnnotationNode'
@@ -16,7 +16,7 @@ import { calculateNextFlowY } from '../helpers/positioning'
 import { CreateDatalayerPrefab } from '../prefabs/datalayer'
 import { CreateFlowPrefab } from '../prefabs/flow'
 
-function builder({ ti18n, mobile = false }: { ti18n: Ti18n<Key>, mobile?: boolean }) : (Layout) {
+function builder({ ti18n, mobile = false }: { ti18n: Ti18n<TranslationKey>, mobile?: boolean }) : (Layout) {
   const datalayer = CreateDatalayerPrefab(2)
 
   const source1: ServiceNode = {
@@ -80,7 +80,7 @@ function builder({ ti18n, mobile = false }: { ti18n: Ti18n<Key>, mobile?: boolea
     position: { x: 32, y: 56 },
     width: 200,
     data: {
-      text: 'Sources pull data to a given destination\n(They have a single output)',
+      text: ti18n.translate(ti18n.keys.annotationSource),
       textAlignment: 'right',
       showArrow: true,
       arrowPosition: 'top-right',
@@ -95,7 +95,7 @@ function builder({ ti18n, mobile = false }: { ti18n: Ti18n<Key>, mobile?: boolea
     position: { x: -8, y: -32 },
     width: 300,
     data: {
-      text: 'Data is validated, standardized and optionally warehoused',
+      text: ti18n.translate(ti18n.keys.annotationModelize),
       textAlignment: 'left',
       showArrow: true,
       arrowPosition: 'bottom-left',
@@ -110,7 +110,7 @@ function builder({ ti18n, mobile = false }: { ti18n: Ti18n<Key>, mobile?: boolea
     position: { x: -8, y: 56 },
     width: 300,
     data: {
-      text: 'Data is pushed to a destination completing a flow',
+      text: ti18n.translate(ti18n.keys.annotationDestination),
       textAlignment: 'left',
       showArrow: true,
       arrowPosition: 'top-left',
@@ -125,7 +125,7 @@ function builder({ ti18n, mobile = false }: { ti18n: Ti18n<Key>, mobile?: boolea
     position: { x: -22, y: -32 },
     width: 300,
     data: {
-      text: 'Try connecting a flow yourself!',
+      text: ti18n.translate(ti18n.keys.annotationFlowConnect),
       textAlignment: 'center',
     },
     parentId: flow1.container.id,

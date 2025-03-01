@@ -36,7 +36,7 @@ import { Button } from './components/Common/Button'
 
 import { Icon } from './components/Common/Icon'
 import { Modal } from './components/Common/Modal'
-import { useLocale } from './components/Core/LocaleProvider'
+import { useTi18n } from './components/Core/Ti18nProvider'
 
 import { DataEdgeComponent } from './components/Edges/DataEdge'
 import { AnnotationNodeComponent } from './components/Nodes/AnnotationNode'
@@ -132,9 +132,9 @@ export default function App({
   const { width, height } = useWindowDimensions()
 
   const edgeReconnectSuccessful = useRef(true)
-  const locale = useLocale()
+  const ti18n = useTi18n() // Get the translation instance.
 
-  const defaultLayout = layouts.default.builder({ ti18n: locale }) // Build the default layout.
+  const defaultLayout = layouts.default.builder({ ti18n }) // Build the default layout.
 
   const [showTutorialLayout, setShowTutorialLayout] = useState(tutorial)
   const [showTutorialService, setShowTutorialService] = useState(tutorial)
@@ -167,14 +167,14 @@ export default function App({
     ...Object.entries(layouts).map(([key, value]) => ({
       label: value.name,
       value: key,
-      layout: value.builder({ ti18n: locale }),
+      layout: value.builder({ ti18n }),
     })),
-  ] as LayoutOption[], [locale])
+  ] as LayoutOption[], [ti18n])
 
   // The options for the select input.
   const groupedServiceOptions = useMemo(() => [
     {
-      label: locale.translate(locale.keys.selectServiceCategoryHypervisor),
+      label: ti18n.translate(ti18n.keys.selectServiceCategoryHypervisor),
       options: [
         {
           label: 'Amazon Web Services (AWS)',
@@ -200,7 +200,7 @@ export default function App({
       ],
     },
     {
-      label: 'Generic Services',
+      label: ti18n.translate(ti18n.keys.selectServiceCategoryGeneric),
       options: [
         {
           label: 'GraphQL API',
@@ -247,7 +247,7 @@ export default function App({
       ],
     },
     {
-      label: 'SaaS (CRM & Marketing)',
+      label: ti18n.translate(ti18n.keys.selectServiceCategorySaasCrm),
       options: [
         {
           label: 'Hubspot',
@@ -280,7 +280,7 @@ export default function App({
       ],
     },
     {
-      label: 'SaaS (Project Management)',
+      label: ti18n.translate(ti18n.keys.selectServiceCategorySaasPm),
       options: [
         {
           label: 'Asana',
@@ -341,7 +341,7 @@ export default function App({
       ],
     },
     {
-      label: 'SaaS (Development & DevOps)',
+      label: ti18n.translate(ti18n.keys.selectServiceCategorySaasDev),
       options: [
         {
           label: 'GitHub',
@@ -395,7 +395,7 @@ export default function App({
       ],
     },
     {
-      label: 'SaaS (Identity & Auth)',
+      label: ti18n.translate(ti18n.keys.selectServiceCategorySaasAuth),
       options: [
         {
           label: 'Auth0',
@@ -414,7 +414,7 @@ export default function App({
       ],
     },
     {
-      label: 'SaaS (Payment & Finance)',
+      label: ti18n.translate(ti18n.keys.selectServiceCategorySaasPayment),
       options: [
         {
           label: 'Stripe',
@@ -439,7 +439,7 @@ export default function App({
         },
       ],
     },
-  ] as GroupedOption[], [locale])
+  ] as GroupedOption[], [ti18n])
 
   // New effect that runs after nodes update.
   useEffect(() => {
@@ -737,13 +737,18 @@ export default function App({
 
   return (
     <>
-      <Modal title="Data Layer Flow Configurations" isOpen={isModalOpen} setIsOpen={setIsModalOpen} onClose={() => setIsModalOpen(false)}>
+      <Modal
+        title={ti18n.translate(ti18n.keys.modalConfigTitle)}
+        isOpen={isModalOpen}
+        setIsOpen={setIsModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      >
         <p>
-          This is your current Data Layer configuration based on the connected flows. This configuration can be directly used during deployment of your Data Layer instance.
+          {ti18n.translate(ti18n.keys.modalConfigDescription)}
         </p>
         <div className="modal-split">
           <div className="modal-split-container">
-            <h2>JSON</h2>
+            <h2>{ti18n.translate(ti18n.keys.modalConfigJson)}</h2>
             <pre>
               <Icon
                 icon="clipboard"
@@ -755,7 +760,7 @@ export default function App({
             </pre>
           </div>
           <div className="modal-split-container">
-            <h2>YAML</h2>
+            <h2>{ti18n.translate(ti18n.keys.modalConfigYaml)}</h2>
             <pre>
               <Icon
                 icon="clipboard"
@@ -795,7 +800,7 @@ export default function App({
           >
             <Panel position="top-left" style={{ width: '320px' }}>
               <Select
-                placeholder="Select a layout"
+                placeholder={ti18n.translate(ti18n.keys.selectLayoutPlaceholder)}
                 options={layoutOptions}
                 value={null}
                 onChange={option => selectLayout(option)}
@@ -804,13 +809,13 @@ export default function App({
               {showTutorialLayout && (
                 <div className="tutorial-overlay tutorial-layout">
                   <Icon icon="arrowUp" size={10} style={{ transform: 'scaleX(-1)' }} />
-                  Explore various Data Layer configurations
+                  {ti18n.translate(ti18n.keys.tutorialLayout)}
                 </div>
               )}
             </Panel>
             <Panel position="top-right" style={{ width: '320px' }}>
               <Select<ServiceOption, false, GroupBase<ServiceOption>>
-                placeholder="Add a service"
+                placeholder={ti18n.translate(ti18n.keys.selectServicePlaceholder)}
                 options={groupedServiceOptions}
                 value={null}
                 onChange={option => selectService(option)}
@@ -821,25 +826,29 @@ export default function App({
                 styles={{
                   option: baseStyles => ({
                     ...baseStyles,
-                    padding: 0, // Remove default padding as we handle it in our custom component
+                    padding: 0,
                   }),
                 }}
               />
               {showTutorialService && (
                 <div className="tutorial-overlay tutorial-service">
-                  Build your own use-case with various services
+                  {ti18n.translate(ti18n.keys.tutorialService)}
                   <Icon icon="arrowUp" size={10} />
                 </div>
               )}
             </Panel>
             <Panel position="bottom-center" style={{ display: 'flex', gap: '8px' }}>
               <div className="reactflow-panel-group">
-                <Button className="reactflow-panel-group-left" onClick={addFlow}>Add Flow</Button>
-                <Button className="reactflow-panel-group-right" onClick={removeFlow}>Remove Flow</Button>
+                <Button className="reactflow-panel-group-left" onClick={addFlow}>
+                  {ti18n.translate(ti18n.keys.buttonAddFlow)}
+                </Button>
+                <Button className="reactflow-panel-group-right" onClick={removeFlow}>
+                  {ti18n.translate(ti18n.keys.buttonRemoveFlow)}
+                </Button>
               </div>
               <Button className="reactflow-panel-button" onClick={() => setIsModalOpen(true)}>
                 <Icon icon="export" size={16} />
-                Config
+                {ti18n.translate(ti18n.keys.buttonConfig)}
               </Button>
             </Panel>
             <Panel position="bottom-right">

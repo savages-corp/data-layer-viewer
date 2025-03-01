@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 
 import App from './App'
-import { LocaleProvider } from './components/Core/LocaleProvider'
+import { LocaleProvider } from './components/Core/Ti18nProvider'
 
 // Find all viewers and render the app in them.
 const viewers = document.querySelectorAll('.data-layer-viewer')

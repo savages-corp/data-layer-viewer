@@ -4,7 +4,52 @@
     "de": "Deutsch"
   },
   "dictionary": {
-    "select-service-category-hypervisor": "Cloud Dienste",
-    "service-generic-database": "Generischer Datenbankdienst"
+    "generic-close": "Schließen",
+
+    "service-label-source": "Quelle",
+    "service-label-destination": "Ziel",
+    "service-label-pull": "Pull",
+    "service-label-push": "Push",
+
+    "stage-modelize": "Modellierung",
+    "stage-egress": "Ausgabe",
+
+    "status-success": "Erfolgreich",
+    "status-success-nothing-new": "Erfolgreich - Keine Änderungen",
+    "status-error-service-pull": "Fehler beim Service-Abruf",
+    "status-error-data-egress": "Fehler bei der Datenausgabe",
+    "status-error-data-modelize": "Fehler bei der Datenmodellierung",
+    "status-error-service-push": "Fehler beim Service-Push",
+    "status-inactive": "Inaktiv",
+
+    "service-generic-database": "Generischer Datenbankdienst",
+
+    "modal-config-title": "Data Layer Flow Konfigurationen",
+    "modal-config-description": "Dies ist Ihre aktuelle Data Layer Konfiguration, welche sich auf den verbundenen Flows basiert. Diese Konfiguration kann direkt bei der Bereitstellung Ihrer Data Layer-Instanz verwendet werden.",
+    "modal-config-json": "JSON",
+    "modal-config-yaml": "YAML",
+
+    "select-layout-placeholder": "Konfiguration wählen",
+    "select-service-placeholder": "Diest hinzufügen",
+    "select-service-category-hypervisor": "Cloud-Dienste",
+    "select-service-category-generic": "Generische Dienste",
+    "select-service-category-saas-crm": "SaaS (CRM & Marketing)",
+    "select-service-category-saas-pm": "SaaS (Projektmanagement)",
+    "select-service-category-saas-dev": "SaaS (Entwicklung & DevOps)",
+    "select-service-category-saas-auth": "SaaS (Identität & Auth)",
+    "select-service-category-saas-payment": "SaaS (Zahlung & Finanzen)",
+
+    "button-add-flow": "Flow hinzufügen",
+    "button-remove-flow": "Flow entfernen",
+    "button-config": "Konfiguration",
+
+    "tutorial-layout": "Testen Sie verschieden Konfigurationen",
+    "tutorial-service": "Clicken Sie hier um neue Dienste hinzuzufügen",
+
+    "annotation-source": "Quellen übermitteln Daten zu einem Ziel\n(Nur ein Ziel möglich)",
+    "annotation-modelize": "Daten werden validiert, standardisiert und optional gespeichert",
+    "annotation-destination": "Daten werden an ein Ziel gesendet und vervollständigen einen Flow",
+    "annotation-flow-connect": "Verbinden Sie selbst einen Flow!"
+
   }
 }

@@ -4,7 +4,51 @@
     "de": "German"
   },
   "dictionary": {
+    "generic-close": "Close",
+
+    "stage-modelize": "Modelize",
+    "stage-egress": "Egress",
+
+    "status-success": "Success",
+    "status-success-nothing-new": "Success Nothing New",
+    "status-error-service-pull": "Error Service Pull",
+    "status-error-data-egress": "Error Data Egress",
+    "status-error-data-modelize": "Error Data Modelize",
+    "status-error-service-push": "Error Service Push",
+    "status-inactive": "Inactive",
+
+    "service-generic-database": "Generic Database Service",
+
+    "modal-config-title": "Data Layer Flow Configurations",
+    "modal-config-description": "This is your current Data Layer configuration based on the connected flows. This configuration can be directly used during deployment of your Data Layer instance.",
+    "modal-config-json": "JSON",
+    "modal-config-yaml": "YAML",
+
+    "select-layout-placeholder": "Select a layout",
+    "select-service-placeholder": "Add a service",
     "select-service-category-hypervisor": "Cloud Services",
-    "service-generic-database": "Generic Database Service"
+    "select-service-category-generic": "Generic Services",
+    "select-service-category-saas-crm": "SaaS (CRM & Marketing)",
+    "select-service-category-saas-pm": "SaaS (Project Management)",
+    "select-service-category-saas-dev": "SaaS (Development & DevOps)",
+    "select-service-category-saas-auth": "SaaS (Identity & Auth)",
+    "select-service-category-saas-payment": "SaaS (Payment & Finance)",
+
+    "button-add-flow": "Add Flow",
+    "button-remove-flow": "Remove Flow",
+    "button-config": "Config",
+
+    "tutorial-layout": "Explore various Data Layer configurations",
+    "tutorial-service": "Build your own use-case with various services",
+
+    "annotation-source": "Sources pull data to a given destination\n(They have a single output)",
+    "annotation-modelize": "Data is validated, standardized and optionally warehoused",
+    "annotation-destination": "Data is pushed to a destination completing a flow",
+    "annotation-flow-connect": "Try connecting a flow yourself!",
+
+    "service-label-source": "Source",
+    "service-label-destination": "Destination",
+    "service-label-pull": "Pull",
+    "service-label-push": "Push"
   }
 }
