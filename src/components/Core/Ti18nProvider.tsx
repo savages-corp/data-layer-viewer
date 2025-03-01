@@ -16,7 +16,7 @@ const Ti18nContext = createContext<Ti18n<TranslationKey>>(ti18n)
 export const useTi18n = () => useContext(Ti18nContext)
 
 export function LocaleProvider({ locale, children }: { locale: string | null, children: any }) {
-  const i18n = new Ti18n<TranslationKey>({ keys: TRANSLATION_KEYS })
+  const i18n = new Ti18n<TranslationKey>({ keys: Array.from(TRANSLATION_KEYS) })
   i18n.loadLocales({
     de,
     en,
