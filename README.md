@@ -37,7 +37,9 @@ The following props are available for embedding the Data Layer Viewer:
 | --- | --- |
 | `data-hide-controls` | Hides the controls (also hidden when locked) |
 | `data-hide-minimap` | Hides the minimap (also hidden when locked) |
+| `data-locale` | Sets the locale for the viewer (en, de) |
 | `data-locked` | Locks the viewport in place |
+| `data-tutorial` | Enables hints within the visualization |
 
 ## Why no Tailwind / Shadcn? ##
 
