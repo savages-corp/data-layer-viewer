@@ -5,6 +5,13 @@
   },
   "dictionary": {
     "generic-close": "Schließen",
+    "generic-edit": "Bearbeiten",
+    "generic-delete": "Löschen",
+    "generic-identifier": "Name",
+    "generic-type": "Typ",
+    "generic-interval": "Aktualisierungsintervall",
+    "generic-minutes": "Minuten",
+    "generic-status": "Status",
 
     "service-label-source": "Quelle",
     "service-label-destination": "Ziel",
@@ -50,6 +57,5 @@
     "annotation-modelize": "Daten werden validiert, standardisiert und optional gespeichert",
     "annotation-destination": "Daten werden an ein Ziel gesendet und vervollständigen einen Flow",
     "annotation-flow-connect": "Verbinden Sie selbst einen Flow!"
-
   }
 }

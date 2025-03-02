@@ -5,6 +5,13 @@
   },
   "dictionary": {
     "generic-close": "Close",
+    "generic-edit": "Edit",
+    "generic-delete": "Delete",
+    "generic-identifier": "Name",
+    "generic-type": "Type",
+    "generic-interval": "Pull Interval",
+    "generic-minutes": "minutes",
+    "generic-status": "Status",
 
     "stage-modelize": "Modelize",
     "stage-egress": "Egress",

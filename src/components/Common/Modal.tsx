@@ -12,6 +12,8 @@ export function Modal(
     onClose,
 
     title,
+    subtitle,
+    buttons,
 
     children,
   }: {
@@ -20,6 +22,8 @@ export function Modal(
     onClose: () => void
 
     title: string
+    subtitle?: React.ReactNode
+    buttons?: React.ReactNode
 
     children: React.ReactNode
   },
@@ -36,8 +40,14 @@ export function Modal(
       ariaHideApp={false} // We're removing this as we can't control the app instance since this is a widget.
     >
       <div className="modal-navbar">
-        <h1 className="modal-heading">{title}</h1>
-        <Button onClick={() => setIsOpen(false)}>{ti18n.translate(ti18n.keys.genericClose)}</Button>
+        <div className="modal-header">
+          <h1 className="modal-heading">{title}</h1>
+          {subtitle && <div className="modal-subtitle">{subtitle}</div>}
+        </div>
+        <div className="modal-actions">
+          {buttons}
+          <Button onClick={() => setIsOpen(false)}>{ti18n.translate(ti18n.keys.genericClose)}</Button>
+        </div>
       </div>
       <div className="modal-content">
         {children}

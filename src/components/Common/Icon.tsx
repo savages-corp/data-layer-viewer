@@ -4,7 +4,7 @@ import React from 'react'
 
 import { BiNetworkChart } from 'react-icons/bi'
 import { DiGoogleCloudPlatform, DiMongodb } from 'react-icons/di'
-import { FaArrowTurnUp, FaAws, FaClipboard, FaDatabase, FaFileExport, FaHubspot, FaJira, FaMailchimp, FaSalesforce, FaSlack, FaStripe, FaTrashCan, FaWarehouse } from 'react-icons/fa6'
+import { FaArrowTurnUp, FaAws, FaClipboard, FaDatabase, FaFileExport, FaGear, FaHubspot, FaJira, FaMailchimp, FaSalesforce, FaSlack, FaStripe, FaTrashCan, FaWarehouse } from 'react-icons/fa6'
 import { PiArrowArcLeftBold } from 'react-icons/pi'
 import { SiCircleci, SiClickup, SiDocker, SiIntercom, SiJenkins, SiMiro, SiNotion, SiOkta, SiPaypal, SiTrello, SiZendesk } from 'react-icons/si'
 import { TbApi, TbBrandAsana, TbBrandAuth0, TbBrandGithub, TbBrandGitlab, TbBrandGraphql, TbBrandTwilio, TbBrandVercel, TbBrandZapier } from 'react-icons/tb'
@@ -20,6 +20,7 @@ interface IconProps extends React.SVGProps<SVGElement> {
 const iconMap: Record<string, IconType> = {
   // General icons
   trash: FaTrashCan,
+  gear: FaGear,
   arrowCurved: PiArrowArcLeftBold,
   arrowUp: FaArrowTurnUp,
   export: FaFileExport,

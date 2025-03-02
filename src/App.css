@@ -8,6 +8,8 @@
   --viewer-border: 1px solid #aaa;
   --viewer-border-radius: 4px;
 
+  --viewer-icon-primary: #000;
+  --viewer-icon-secondary: #888;
   --viewer-button-primary: #007bff;
   --viewer-button-primary-hover: #0056b3;
   --viewer-button-secondary: #6c757d;
@@ -73,10 +75,16 @@ pre .icon:active {
 
 .button-destructive {
   background-color: var(--viewer-button-destructive);
+  color: white;
 }
 
 .button-destructive:hover {
   background-color: var(--viewer-button-destructive-hover);
+}
+
+
+.button-destructive:hover {
+  background-color: #d32f2f;
 }
 
 /* Handle button pressing */
@@ -131,10 +139,27 @@ pre .icon:active {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+/* Modal button improvements */
+.modal-actions {
+  display: flex;
+  gap: 10px;
 }
 
 .modal-heading {
   margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* Modal subtitle styles */
+.modal-subtitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
+  color: #666;
 }
 
 .modal-close {
@@ -303,7 +328,32 @@ pre .icon:active {
   box-shadow: 1px 1px 4px 0px rgba(0, 0, 0, 0.15);
 }
 
+.react-flow__node .react-flow__node-service .selected {
+  box-shadow: var(--xy-node-boxshadow-selected-default);
+  outline: 1px solid var(--xy-custom-edge-stroke-inactive);
+}
+
 .react-flow__node-default.draggable:hover,
+.react-flow__node-container.draggable:hover,
+.react-flow__node-container.draggable:hover,
+.react-flow__node-service.draggable:hover,
+.react-flow__node-stage.draggable:hover,
+.react-flow__node-warehouse.draggable:hover {
+  box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.05);
+  outline: 1px solid var(--xy-custom-edge-stroke-inactive);
+}
+
+.react-flow__node-default.selected,
+.react-flow__node-container.selected,
+.react-flow__node-service.selected,
+.react-flow__node-stage.selected,
+.react-flow__node-warehouse.selected {
+  box-shadow: var(--xy-node-boxshadow-selected-default);
+  outline: 1px solid var(--xy-custom-edge-stroke-inactive);
+}
+
+.react-flow__node-default.draggable:hover,
+.react-flow__node-container.draggable:hover,
 .react-flow__node-container.draggable:hover,
 .react-flow__node-service.draggable:hover,
 .react-flow__node-stage.draggable:hover,
@@ -380,6 +430,104 @@ pre .icon:active {
   justify-content: center;
   flex-wrap: wrap;
   flex-direction: column;
+}
+
+/* Service node action buttons */
+.react-flow__node-service-action-button {
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-radius: 50%;
+  padding: 4px;
+  cursor: pointer;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+}
+
+.react-flow__node-service:hover .react-flow__node-service-action-buttons .react-flow__node-service-action-button,
+.react-flow__node-service.selected .react-flow__node-service-action-buttons .react-flow__node-service-action-button {
+  pointer-events: all;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.react-flow__node-service:hover .react-flow__node-service-action-buttons .react-flow__node-service-action-button:nth-child(2),
+.react-flow__node-service.selected .react-flow__node-service-action-buttons .react-flow__node-service-action-button:nth-child(2) {
+  transition-delay: 0.05s;
+}
+
+.react-flow__node-service-action-buttons {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  display: flex;
+  gap: 6px;
+  z-index: 10;
+}
+
+/* Animation for buttons appearing */
+.react-flow__node-service-action-buttons.active .react-flow__node-service-action-button {
+  pointer-events: all;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.react-flow__node-service-action-buttons.active .react-flow__node-service-action-button:nth-child(2) {
+  transition-delay: 0.05s;
+}
+
+.react-flow__node.selected .react-flow__node-service-action-button-destructive {
+  transition: color 0.1s ease-out;
+}
+
+.react-flow__node.selected .react-flow__node-service-action-button-destructive:hover {
+  color: var(--viewer-button-destructive);
+}
+
+/* Service node modal form styles */
+.react-flow__node-service-form {
+  height: 1080px;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.react-flow__node-service-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.react-flow__node-service-form-field h3 {
+  margin-bottom: 4px;
+}
+
+.react-flow__node-service-form-field input {
+  width: 320px;
+  padding: 8px;
+  font-size: 1rem;
+  border: var(--viewer-border);
+  border-radius: var(--viewer-border-radius);
+}
+
+.react-flow__node-service-form-field input:focus {
+  outline: 2px solid var(--viewer-button-primary);
+  border-color: var(--viewer-button-primary);
+}
+
+.react-flow__node-service-form-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.react-flow__node-service-delete {
+  margin-top: 24px;
 }
 
 .react-flow__node-service-contents--error-service-pull,
@@ -579,4 +727,27 @@ pre .icon:active {
   transform: scaleX(-1) scaleY(-1) rotate(-30deg);
   right: -12px;
   bottom: 0px;
+}
+
+/* Service Node Styles */
+.react-flow__node-service-action-button-gear {
+  transition: transform 0.6s ease-in-out;
+}
+
+.react-flow__node-service-action-button:hover .react-flow__node-service-action-button-gear {
+  transform: rotate(180deg);
+}
+
+/* Service Form Layout */
+.react-flow__node-service-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.react-flow__node-service-form-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
