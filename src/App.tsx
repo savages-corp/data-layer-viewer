@@ -214,6 +214,14 @@ export default function App({
           configuration: {
             identifier: 'Generic HTTP/S Service',
             type: ServiceType.GenericHttp,
+            parameters: {
+              clientId: '',
+              clientSecret: '',
+              hostAddress: 'localhost',
+              hostPort: 443,
+              hostSecure: true,
+              strict: true,
+            },
           },
         },
         {

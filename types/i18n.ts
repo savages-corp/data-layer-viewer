@@ -7,6 +7,9 @@ export const TRANSLATION_KEYS = [
   'generic-interval',
   'generic-minutes',
   'generic-status',
+  'generic-enabled',
+  'generic-disabled',
+  'generic-parameters',
 
   'stage-modelize',
   'stage-egress',

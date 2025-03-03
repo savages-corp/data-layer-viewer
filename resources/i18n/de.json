@@ -12,6 +12,9 @@
     "generic-interval": "Aktualisierungsintervall",
     "generic-minutes": "Minuten",
     "generic-status": "Status",
+    "generic-enabled": "Aktiviert",
+    "generic-disabled": "Deaktiviert",
+    "generic-parameters": "Parameter",
 
     "service-label-source": "Quelle",
     "service-label-destination": "Ziel",

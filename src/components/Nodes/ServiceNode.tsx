@@ -41,6 +41,47 @@ interface StatusOption {
   label: string
 }
 
+// Function to get status color based on status value
+function getStatusColor(status: Status): string {
+  if (status === Status.Unknown)
+    return '#aaa' // Gray for unknown/inactive
+  if (status.startsWith('SUCCESS'))
+    return '#31c787' // Green for success states
+  if (status.startsWith('ERROR'))
+    return '#ff7090' // Red for error states
+  return '#aaa' // Default gray
+}
+
+// Custom component to render status options with colored status indicators
+function StatusOptionComponent({ innerProps, data }: any) {
+  return (
+    <div
+      {...innerProps}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        padding: '8px 12px',
+        cursor: 'pointer',
+        userSelect: 'none',
+        transition: 'background-color 0.2s ease',
+        backgroundColor: innerProps.isFocused ? 'rgba(0, 0, 0, 0.05)' : 'transparent',
+      }}
+      className="service-option"
+    >
+      <div
+        style={{
+          width: 12,
+          height: 12,
+          borderRadius: '50%',
+          backgroundColor: getStatusColor(data.value),
+          marginRight: 10,
+        }}
+      />
+      {data.label}
+    </div>
+  )
+}
+
 export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
   const ti18n = useTi18n() // Get the translation function.
 
@@ -115,6 +156,67 @@ export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
     updateNodeData(id, { interval: value })
   }
 
+  // Function to handle parameter changes
+  const handleParameterChange = (key: string, value: any) => {
+    const updatedParameters = {
+      ...data.configuration.parameters || {},
+      [key]: value,
+    }
+
+    updateNodeData(id, {
+      configuration: {
+        ...data.configuration,
+        parameters: updatedParameters,
+      },
+    })
+  }
+
+  // Helper function to render the appropriate input field based on parameter type
+  const renderParameterInput = (key: string, value: any) => {
+    const type = typeof value
+
+    switch (type) {
+      case 'boolean':
+        return (
+          <div className="react-flow__node-service-form-field" key={key}>
+            <div className="react-flow__node-service-form-checkbox">
+              <input
+                type="checkbox"
+                checked={value}
+                onChange={e => handleParameterChange(key, e.target.checked)}
+                id={`param-${key}`}
+              />
+              <label htmlFor={`param-${key}`}>{key}</label>
+            </div>
+          </div>
+        )
+
+      case 'number':
+        return (
+          <div className="react-flow__node-service-form-field" key={key}>
+            <h5>{key}</h5>
+            <input
+              type="number"
+              value={value}
+              onChange={e => handleParameterChange(key, Number(e.target.value))}
+            />
+          </div>
+        )
+
+      default:
+        return (
+          <div className="react-flow__node-service-form-field" key={key}>
+            <h5>{key}</h5>
+            <input
+              type="text"
+              value={value}
+              onChange={e => handleParameterChange(key, e.target.value)}
+            />
+          </div>
+        )
+    }
+  }
+
   const handleDelete = () => {
     // Remove the node from the nodes array. Remove any nodes that have it as a parent.
     setNodes(nodes => nodes.filter(node => node.id !== id && node.parentId !== id))
@@ -169,11 +271,31 @@ export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
 
             {isSource && (
               <div className="react-flow__node-service-form-field">
-                <h3>{ti18n.translate(ti18n.keys.genericStatus)}</h3>
+                <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  {ti18n.translate(ti18n.keys.genericStatus)}
+                  <div
+                    style={{
+                      width: 12,
+                      height: 12,
+                      borderRadius: '50%',
+                      backgroundColor: getStatusColor(data.status || Status.Unknown),
+                      display: 'inline-block',
+                    }}
+                  />
+                </h3>
                 <Select
                   value={statusOptions.find(option => option.value === data.status)}
                   onChange={option => updateNodeData(id, { status: option?.value })}
                   options={statusOptions}
+                  components={{
+                    Option: StatusOptionComponent,
+                  }}
+                  styles={{
+                    option: baseStyles => ({
+                      ...baseStyles,
+                      padding: 0,
+                    }),
+                  }}
                 />
               </div>
             )}
@@ -192,6 +314,18 @@ export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
               <span>{ti18n.translate(ti18n.keys.genericMinutes)}</span>
             </div>
           </div>
+
+          {/* Parameters section */}
+          {data.configuration.parameters && Object.keys(data.configuration.parameters).length > 0 && (
+            <div className="react-flow__node-service-form-field">
+              <h3 className="react-flow__node-service-form-section">{ti18n.translate(ti18n.keys.genericParameters) || 'Parameters'}</h3>
+              <div className="react-flow__node-service-form-parameters">
+                {Object.entries(data.configuration.parameters).map(([key, value]) =>
+                  renderParameterInput(key, value),
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </Modal>
 
