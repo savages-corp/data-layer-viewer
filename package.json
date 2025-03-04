@@ -1,7 +1,7 @@
 {
   "name": "data-layer-viewer",
   "type": "module",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "description": "An embeddable React widget to visualize Data Layer configurations",
   "author": {
