@@ -1,5 +1,16 @@
-import type { ServiceNode } from '../components/Nodes/ServiceNode'
+import type { ServiceNode } from '@/components/Nodes/ServiceNode'
+import type { AppEdge, AppNode } from '../App'
+import type { DatalayerPrefab } from '../prefabs/datalayer'
 import type { FlowPrefab } from '../prefabs/flow'
+
+import { ServiceType } from '@/types/service'
+import { Status } from '@/types/status'
+
+import { CreateDatalayerPrefab } from '../prefabs/datalayer'
+import { CreateFlowPrefab } from '../prefabs/flow'
+
+import { getTimedId } from './nodes'
+import { calculateNextFlowY } from './positioning'
 import { slugify } from './string'
 
 export interface ConfigFlow {
@@ -73,4 +84,163 @@ export function translateToConfig(flows: FlowPrefab[], nodes: any[], edges: any[
     })
     return acc
   }, [])
+}
+
+// Convert imported config back to flow graph structure
+export function translateFromConfig(importedConfig: ConfigFlow[]): {
+  datalayer: DatalayerPrefab
+  flows: FlowPrefab[]
+  nodes: AppNode[]
+  edges: AppEdge[]
+} {
+  // Create a new data layer with enough capacity for all the flows
+  const datalayer = CreateDatalayerPrefab(importedConfig.length)
+
+  // Create array to hold all our flows, nodes and edges
+  const flows: FlowPrefab[] = []
+  const nodes: AppNode[] = [...Object.values(datalayer)]
+  const edges: AppEdge[] = []
+
+  // Track service nodes we've created to avoid duplicates
+  const serviceNodes: Record<string, ServiceNode> = {}
+
+  // Process each flow from the config
+  importedConfig.forEach((flowConfig, index) => {
+    // Create a new flow at the appropriate vertical position
+    const flow = CreateFlowPrefab(
+      datalayer.container,
+      index.toString(),
+      24,
+      calculateNextFlowY(index),
+    )
+
+    flows.push(flow)
+
+    // Add flow nodes to the nodes array
+    nodes.push(flow.container, flow.modelize, flow.egress)
+
+    // Extract source and destination names from the flow name if available
+    let sourceName = flowConfig.source.configuration.identifier
+    let destName = flowConfig.destination.configuration.identifier
+
+    // If the flow name contains "->" then split it to get custom source and destination names
+    if (flowConfig.name && flowConfig.name.includes('->')) {
+      const nameParts = flowConfig.name.split('->').map(part => part.trim())
+      if (nameParts.length >= 2) {
+        sourceName = nameParts[0] || sourceName
+        destName = nameParts[1] || destName
+      }
+    }
+
+    // Create or reuse source service node
+    const sourceId = `${slugify(flowConfig.source.type)}-source-${flowConfig.source.configuration.identifier}`
+    let sourceNode = serviceNodes[sourceId]
+
+    if (!sourceNode) {
+      sourceNode = {
+        id: sourceId,
+        type: 'service',
+        position: { x: -312, y: -48 + index * 96 },
+        data: {
+          status: Status.Success,
+          interval: flowConfig.interval || 15,
+          configuration: {
+            type: flowConfig.source.type as ServiceType || ServiceType.GenericDatabase,
+            identifier: sourceName,
+            parameters: flowConfig.source.configuration.parameters || {},
+          },
+        },
+      }
+
+      serviceNodes[sourceId] = sourceNode
+      nodes.push(sourceNode)
+    }
+
+    // Create or reuse destination service node
+    const destId = `${slugify(flowConfig.destination.type)}-destination-${flowConfig.destination.configuration.identifier}`
+    let destNode = serviceNodes[destId]
+
+    if (!destNode) {
+      destNode = {
+        id: destId,
+        type: 'service',
+        position: { x: 296, y: -48 + index * 96 },
+        data: {
+          status: Status.Success,
+          interval: 15,
+          configuration: {
+            type: flowConfig.destination.type as ServiceType || ServiceType.CommonSalesforce,
+            identifier: destName,
+            parameters: flowConfig.destination.configuration.parameters || {},
+          },
+        },
+      }
+
+      serviceNodes[destId] = destNode
+      nodes.push(destNode)
+    }
+
+    // Create edges to connect the flow
+    const sourceToModelizeEdge: AppEdge = {
+      id: `source-modelize-${index}-${getTimedId('')}`,
+      source: sourceNode.id,
+      target: flow.modelize.id,
+      type: 'data',
+      data: {
+        initialStatus: Status.Success,
+        shape: 'circle',
+      },
+      zIndex: 1,
+    }
+
+    const modelizeToEgressEdge: AppEdge = {
+      id: `modelize-egress-${index}-${getTimedId('')}`,
+      source: flow.modelize.id,
+      target: flow.egress.id,
+      type: 'data',
+      data: {
+        initialStatus: Status.Success,
+        shape: 'square',
+      },
+      zIndex: 1,
+    }
+
+    const egressToDestEdge: AppEdge = {
+      id: `egress-dest-${index}-${getTimedId('')}`,
+      source: flow.egress.id,
+      target: destNode.id,
+      type: 'data',
+      data: {
+        initialStatus: Status.Success,
+        shape: 'circle',
+      },
+      zIndex: 1,
+    }
+
+    edges.push(sourceToModelizeEdge, modelizeToEgressEdge, egressToDestEdge)
+
+    // If warehouse is enabled, add edge to warehouse
+    if (flowConfig.warehouse) {
+      const warehouseEdge: AppEdge = {
+        id: `warehouse-${index}-${getTimedId('')}`,
+        source: flow.modelize.id,
+        target: datalayer.warehouse.id,
+        type: 'data',
+        data: {
+          initialStatus: Status.Success,
+          shape: 'square',
+        },
+        zIndex: 1,
+      }
+
+      edges.push(warehouseEdge)
+    }
+  })
+
+  return {
+    datalayer,
+    flows,
+    nodes,
+    edges,
+  }
 }

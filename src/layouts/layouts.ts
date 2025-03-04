@@ -6,6 +6,7 @@ import type { DatalayerPrefab } from '../prefabs/datalayer'
 import type { FlowPrefab } from '../prefabs/flow'
 
 import { DefaultDefinition } from './default'
+import { EmptyDefinition } from './empty'
 
 export interface LayoutDefinition {
   name: string
@@ -21,4 +22,5 @@ export interface Layout {
 
 export const layouts = {
   default: DefaultDefinition,
+  empty: EmptyDefinition,
 }

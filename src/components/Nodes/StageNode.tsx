@@ -1,12 +1,13 @@
 import type { Node, NodeProps } from '@xyflow/react'
 import type { ServiceNode } from './ServiceNode'
 
+import { useTi18n } from '@/components/Core/Ti18nProvider'
+
 import { Stage } from '@/types/stage'
 import { Status } from '@/types/status'
-import { Handle, Position, useNodeConnections, useNodesData, useReactFlow } from '@xyflow/react'
 
+import { Handle, Position, useNodeConnections, useNodesData, useReactFlow } from '@xyflow/react'
 import { useEffect, useMemo } from 'react'
-import { useTi18n } from '../Core/Ti18nProvider'
 
 export type StageNode = Node<
   {

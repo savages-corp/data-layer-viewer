@@ -39,6 +39,17 @@
     "modal-config-json": "JSON",
     "modal-config-yaml": "YAML",
 
+    "button-import": "Importieren",
+    "import-format": "Format:",
+    "import-paste-clipboard": "Aus Zwischenablage einfügen",
+    "import-empty-error": "Bitte geben Sie eine Konfiguration ein",
+    "import-invalid-error": "Ungültiges Konfigurationsformat",
+    "import-missing-flows-error": "Ungültige Konfiguration: Flows fehlen",
+    "import-parse-error": "Fehler beim Parsen der Konfiguration",
+    "import-clipboard-error": "Fehler beim Lesen aus der Zwischenablage",
+    "modal-import-title": "Konfiguration importieren",
+    "modal-import-description": "Fügen Sie eine Konfiguration zum Importieren ein. Das Format sollte dem Exportformat entsprechen.",
+
     "select-layout-placeholder": "Konfiguration wählen",
     "select-service-placeholder": "Diest hinzufügen",
     "select-service-category-hypervisor": "Cloud-Dienste",

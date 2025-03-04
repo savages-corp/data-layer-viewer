@@ -1,9 +1,10 @@
+import type { AnnotationNode } from '@/components/Nodes/AnnotationNode'
+import type { ServiceNode } from '@/components/Nodes/ServiceNode'
+
 import type { AppEdge, AppNode } from '@/src/App'
+
 import type { TranslationKey } from '@/types/i18n'
 import type { Ti18n } from '@zealsprince/ti18n'
-
-import type { AnnotationNode } from '../components/Nodes/AnnotationNode'
-import type { ServiceNode } from '../components/Nodes/ServiceNode'
 
 import type { Layout, LayoutDefinition } from './layouts'
 

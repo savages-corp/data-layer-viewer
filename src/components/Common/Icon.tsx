@@ -4,7 +4,7 @@ import React from 'react'
 
 import { BiNetworkChart } from 'react-icons/bi'
 import { DiGoogleCloudPlatform, DiMongodb } from 'react-icons/di'
-import { FaArrowTurnUp, FaAws, FaClipboard, FaDatabase, FaFileExport, FaGear, FaHubspot, FaJira, FaMailchimp, FaSalesforce, FaSlack, FaStripe, FaTrashCan, FaWarehouse } from 'react-icons/fa6'
+import { FaArrowTurnUp, FaAws, FaClipboard, FaDatabase, FaFileExport, FaFileImport, FaGear, FaHubspot, FaJira, FaMailchimp, FaSalesforce, FaScrewdriverWrench, FaSlack, FaStripe, FaTrashCan, FaWarehouse } from 'react-icons/fa6'
 import { PiArrowArcLeftBold } from 'react-icons/pi'
 import { SiCircleci, SiClickup, SiDocker, SiIntercom, SiJenkins, SiMiro, SiNotion, SiOkta, SiPaypal, SiTrello, SiZendesk } from 'react-icons/si'
 import { TbApi, TbBrandAsana, TbBrandAuth0, TbBrandGithub, TbBrandGitlab, TbBrandGraphql, TbBrandTwilio, TbBrandVercel, TbBrandZapier } from 'react-icons/tb'
@@ -18,11 +18,14 @@ interface IconProps extends React.SVGProps<SVGElement> {
 
 // If you're wondering about the limited selection of icons: due to this being an embedded component, we're trying to keep the bundle size down.
 const iconMap: Record<string, IconType> = {
+  custom: FaScrewdriverWrench,
+
   // General icons
   trash: FaTrashCan,
   gear: FaGear,
   arrowCurved: PiArrowArcLeftBold,
   arrowUp: FaArrowTurnUp,
+  import: FaFileImport,
   export: FaFileExport,
   clipboard: FaClipboard,
 
@@ -141,7 +144,7 @@ export const Icon: React.FC<IconProps> = ({ color = '', icon = 'database', size 
     return key || icon
   })()
 
-  const SpecificIcon = iconMap[serviceKey] || FaSalesforce
+  const SpecificIcon = iconMap[serviceKey] || FaScrewdriverWrench
 
   return (
     <div className="icon">

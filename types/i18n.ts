@@ -39,12 +39,23 @@ export const TRANSLATION_KEYS = [
   'modal-config-json',
   'modal-config-yaml',
 
+  'modal-import-title',
+  'modal-import-description',
+  'import-format',
+  'import-paste-clipboard',
+  'import-empty-error',
+  'import-invalid-error',
+  'import-missing-flows-error',
+  'import-parse-error',
+  'import-clipboard-error',
+
   'select-layout-placeholder',
   'select-service-placeholder',
 
   'button-add-flow',
   'button-remove-flow',
   'button-config',
+  'button-import',
 
   'tutorial-layout',
   'tutorial-service',

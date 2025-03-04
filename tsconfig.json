@@ -13,6 +13,9 @@
     /* Bundler mode */
     "moduleResolution": "bundler",
     "paths": {
+      "@/components/*": [
+        "src/components/*"
+      ],
       "@/resources/*": [
         "resources/*"
       ],

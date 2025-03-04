@@ -1,9 +1,9 @@
+import { Button, ButtonType } from '@/components/Common/Button'
+import { useTi18n } from '@/components/Core/Ti18nProvider'
+
 import React from 'react'
+
 import ReactModal from 'react-modal'
-
-import { useTi18n } from '../Core/Ti18nProvider'
-
-import { Button } from './Button'
 
 export function Modal(
   {
@@ -46,7 +46,7 @@ export function Modal(
         </div>
         <div className="modal-actions">
           {buttons}
-          <Button onClick={() => setIsOpen(false)}>{ti18n.translate(ti18n.keys.genericClose)}</Button>
+          <Button type={ButtonType.Secondary} onClick={() => setIsOpen(false)}>{ti18n.translate(ti18n.keys.genericClose)}</Button>
         </div>
       </div>
       <div className="modal-content">

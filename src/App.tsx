@@ -1,18 +1,36 @@
-import type { ServiceConfiguration } from '@/types/service'
+import type { DataEdge } from '@/components/Edges/DataEdge'
+import type { AnnotationNode } from '@/components/Nodes/AnnotationNode'
+import type { ContainerNode } from '@/components/Nodes/ContainerNode'
+import type { ServiceNode } from '@/components/Nodes/ServiceNode'
+import type { StageNode } from '@/components/Nodes/StageNode'
+import type { WarehouseNode } from '@/components/Nodes/WarehouseNode'
+import type { ServiceOption as ServiceOptionType } from '@/types/option'
 import type { BuiltInEdge, BuiltInNode, Connection, EdgeChange, EdgeTypes, FitViewOptions, NodeChange, NodeTypes, ReactFlowInstance } from '@xyflow/react'
-import type { GroupBase } from 'react-select'
-import type { DataEdge } from './components/Edges/DataEdge'
-import type { AnnotationNode } from './components/Nodes/AnnotationNode'
-import type { ContainerNode } from './components/Nodes/ContainerNode'
 
-import type { ServiceNode } from './components/Nodes/ServiceNode'
-import type { StageNode } from './components/Nodes/StageNode'
-import type { WarehouseNode } from './components/Nodes/WarehouseNode'
+import type { GroupBase } from 'react-select'
 
 import type { Layout } from './layouts/layouts'
-import { ServiceType } from '@/types/service'
-import { Stage } from '@/types/stage'
 
+import { ImportModal } from '@/components/App/ImportModal'
+import { ServiceOption } from '@/components/App/ServiceOption'
+
+import { Button } from '@/components/Common/Button'
+import { Icon } from '@/components/Common/Icon'
+import { Modal } from '@/components/Common/Modal'
+
+import { useTi18n } from '@/components/Core/Ti18nProvider'
+
+import { DataEdgeComponent } from '@/components/Edges/DataEdge'
+
+import { AnnotationNodeComponent } from '@/components/Nodes/AnnotationNode'
+
+import { ContainerNodeComponent } from '@/components/Nodes/ContainerNode'
+import { ServiceNodeComponent } from '@/components/Nodes/ServiceNode'
+import { StageNodeComponent } from '@/components/Nodes/StageNode'
+import { WarehouseNodeComponent } from '@/components/Nodes/WarehouseNode'
+import { getServiceOptionsData } from '@/src/data/serviceOptions'
+
+import { Stage } from '@/types/stage'
 import { Status } from '@/types/status'
 
 import {
@@ -28,26 +46,14 @@ import {
   ReactFlowProvider,
   reconnectEdge,
 } from '@xyflow/react'
+
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Select from 'react-select'
+
 import { stringify as YAMLStringify } from 'yaml'
 
-import { Button } from './components/Common/Button'
-
-import { Icon } from './components/Common/Icon'
-import { Modal } from './components/Common/Modal'
-import { useTi18n } from './components/Core/Ti18nProvider'
-
-import { DataEdgeComponent } from './components/Edges/DataEdge'
-import { AnnotationNodeComponent } from './components/Nodes/AnnotationNode'
-import { ContainerNodeComponent } from './components/Nodes/ContainerNode'
-import { ServiceNodeComponent } from './components/Nodes/ServiceNode'
-import { StageNodeComponent } from './components/Nodes/StageNode'
-
-import { WarehouseNodeComponent } from './components/Nodes/WarehouseNode'
-import { translateToConfig } from './helpers/config'
+import { translateFromConfig, translateToConfig } from './helpers/config'
 import { calculateDataLayerHeight, calculateDataLayerY, calculateNextFlowY, calculateWarehouseY } from './helpers/positioning'
-
 import { slugify } from './helpers/string'
 
 import { useWindowDimensions } from './hooks/useWindowDimensions'
@@ -55,7 +61,9 @@ import { useWindowDimensions } from './hooks/useWindowDimensions'
 import { layouts } from './layouts/layouts'
 
 import { CreateFlowPrefab } from './prefabs/flow'
+
 import '@xyflow/react/dist/style.css'
+
 import './App.css'
 
 /* Set up various types of nodes and edges for the graph. */
@@ -79,39 +87,6 @@ interface LayoutOption {
   label: string
   value: string
   layout: Layout
-}
-
-interface ServiceOption {
-  label: string
-  status?: Status
-  configuration: ServiceConfiguration
-}
-
-interface GroupedOption {
-  label: string
-  options: ServiceOption[]
-}
-
-// Custom component to render the service option with an icon
-function ServiceOptionComponent({ innerProps, data }: any) {
-  return (
-    <div
-      {...innerProps}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        padding: '8px 12px',
-        cursor: 'pointer',
-        userSelect: 'none',
-        transition: 'background-color 0.2s ease',
-        backgroundColor: innerProps.isFocused ? 'rgba(0, 0, 0, 0.05)' : 'transparent',
-      }}
-      className="service-option"
-    >
-      <Icon icon={data.configuration.type} size={18} style={{ marginRight: '10px' }} />
-      {data.label}
-    </div>
-  )
 }
 
 interface AppProps {
@@ -139,7 +114,7 @@ export default function App({
   const [showTutorialLayout, setShowTutorialLayout] = useState(tutorial)
   const [showTutorialService, setShowTutorialService] = useState(tutorial)
   const [isModalOpen, setIsModalOpen] = useState(false)
-
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false)
   const [layoutFlag, setLayoutFlag] = useState(false)
   const [layout, setLayout] = useState<Layout>(defaultLayout)
   const [datalayer, setDatalayer] = useState(defaultLayout.datalayer)
@@ -171,283 +146,8 @@ export default function App({
     })),
   ] as LayoutOption[], [ti18n])
 
-  // The options for the select input.
-  const groupedServiceOptions = useMemo(() => [
-    {
-      label: ti18n.translate(ti18n.keys.selectServiceCategoryHypervisor),
-      options: [
-        {
-          label: 'Amazon Web Services (AWS)',
-          configuration: {
-            identifier: 'AWS',
-            type: ServiceType.GenericHypervisorAws,
-          },
-        },
-        {
-          label: 'Google Cloud Platform (GCP)',
-          configuration: {
-            identifier: 'GCP',
-            type: ServiceType.GenericHypervisorGcp,
-          },
-        },
-        {
-          label: 'Microsoft Azure',
-          configuration: {
-            identifier: 'Azure',
-            type: ServiceType.GenericHypervisorAzure,
-          },
-        },
-      ],
-    },
-    {
-      label: ti18n.translate(ti18n.keys.selectServiceCategoryGeneric),
-      options: [
-        {
-          label: 'GraphQL API',
-          configuration: {
-            identifier: 'Generic GraphQL Service',
-            type: ServiceType.GenericGraphQL,
-          },
-        },
-        {
-          label: 'HTTP/S',
-          configuration: {
-            identifier: 'Generic HTTP/S Service',
-            type: ServiceType.GenericHttp,
-            parameters: {
-              clientId: '',
-              clientSecret: '',
-              hostAddress: 'localhost',
-              hostPort: 443,
-              hostSecure: true,
-              strict: true,
-            },
-          },
-        },
-        {
-          label: 'Message Queue',
-          configuration: {
-            identifier: 'Generic Queue Service',
-            type: ServiceType.GenericQueue,
-          },
-        },
-        {
-          label: 'NoSQL Database',
-          configuration: {
-            identifier: 'Generic NoSQL Service',
-            type: ServiceType.GenericNoSql,
-          },
-        },
-        {
-          label: 'SQL Database',
-          configuration: {
-            identifier: 'Generic SQL Service',
-            type: ServiceType.GenericDatabase,
-          },
-        },
-        {
-          label: 'Data Warehouse',
-          configuration: {
-            identifier: 'Data Warehouse',
-            type: ServiceType.GenericWarehouse,
-          },
-        },
-      ],
-    },
-    {
-      label: ti18n.translate(ti18n.keys.selectServiceCategorySaasCrm),
-      options: [
-        {
-          label: 'Hubspot',
-          configuration: {
-            identifier: 'Hubspot',
-            type: ServiceType.CommonHubspot,
-          },
-        },
-        {
-          label: 'Mailchimp',
-          configuration: {
-            identifier: 'Mailchimp',
-            type: ServiceType.CommonMailchimp,
-          },
-        },
-        {
-          label: 'Salesforce',
-          configuration: {
-            identifier: 'Salesforce',
-            type: ServiceType.CommonSalesforce,
-          },
-        },
-        {
-          label: 'Intercom',
-          configuration: {
-            identifier: 'Intercom',
-            type: ServiceType.CommonIntercom,
-          },
-        },
-      ],
-    },
-    {
-      label: ti18n.translate(ti18n.keys.selectServiceCategorySaasPm),
-      options: [
-        {
-          label: 'Asana',
-          configuration: {
-            identifier: 'Asana',
-            type: ServiceType.CommonAsana,
-          },
-        },
-        {
-          label: 'Jira',
-          configuration: {
-            identifier: 'Jira',
-            type: ServiceType.CommonJira,
-          },
-        },
-        {
-          label: 'Slack',
-          configuration: {
-            identifier: 'Slack',
-            type: ServiceType.CommonSlack,
-          },
-        },
-        {
-          label: 'Zendesk',
-          configuration: {
-            identifier: 'Zendesk',
-            type: ServiceType.CommonZendesk,
-          },
-        },
-        {
-          label: 'Trello',
-          configuration: {
-            identifier: 'Trello',
-            type: ServiceType.CommonTrello,
-          },
-        },
-        {
-          label: 'ClickUp',
-          configuration: {
-            identifier: 'ClickUp',
-            type: ServiceType.CommonClickup,
-          },
-        },
-        {
-          label: 'Notion',
-          configuration: {
-            identifier: 'Notion',
-            type: ServiceType.CommonNotion,
-          },
-        },
-        {
-          label: 'Miro',
-          configuration: {
-            identifier: 'Miro',
-            type: ServiceType.CommonMiro,
-          },
-        },
-      ],
-    },
-    {
-      label: ti18n.translate(ti18n.keys.selectServiceCategorySaasDev),
-      options: [
-        {
-          label: 'GitHub',
-          configuration: {
-            identifier: 'GitHub',
-            type: ServiceType.CommonGithub,
-          },
-        },
-        {
-          label: 'GitLab',
-          configuration: {
-            identifier: 'GitLab',
-            type: ServiceType.CommonGitlab,
-          },
-        },
-        {
-          label: 'Vercel',
-          configuration: {
-            identifier: 'Vercel',
-            type: ServiceType.CommonVercel,
-          },
-        },
-        {
-          label: 'Zapier',
-          configuration: {
-            identifier: 'Zapier',
-            type: ServiceType.CommonZapier,
-          },
-        },
-        {
-          label: 'CircleCI',
-          configuration: {
-            identifier: 'CircleCI',
-            type: ServiceType.CommonCircleci,
-          },
-        },
-        {
-          label: 'Jenkins',
-          configuration: {
-            identifier: 'Jenkins',
-            type: ServiceType.CommonJenkins,
-          },
-        },
-        {
-          label: 'Docker Hub',
-          configuration: {
-            identifier: 'Docker Hub',
-            type: ServiceType.CommonDocker,
-          },
-        },
-      ],
-    },
-    {
-      label: ti18n.translate(ti18n.keys.selectServiceCategorySaasAuth),
-      options: [
-        {
-          label: 'Auth0',
-          configuration: {
-            identifier: 'Auth0',
-            type: ServiceType.CommonAuth0,
-          },
-        },
-        {
-          label: 'Okta',
-          configuration: {
-            identifier: 'Okta',
-            type: ServiceType.CommonOkta,
-          },
-        },
-      ],
-    },
-    {
-      label: ti18n.translate(ti18n.keys.selectServiceCategorySaasPayment),
-      options: [
-        {
-          label: 'Stripe',
-          configuration: {
-            identifier: 'Stripe',
-            type: ServiceType.CommonStripe,
-          },
-        },
-        {
-          label: 'Twilio',
-          configuration: {
-            identifier: 'Twilio',
-            type: ServiceType.CommonTwilio,
-          },
-        },
-        {
-          label: 'PayPal',
-          configuration: {
-            identifier: 'PayPal',
-            type: ServiceType.CommonPaypal,
-          },
-        },
-      ],
-    },
-  ] as GroupedOption[], [ti18n])
+  // The options for the service select input, now using our extracted function
+  const groupedServiceOptions = useMemo(() => getServiceOptionsData(ti18n), [ti18n])
 
   // New effect that runs after nodes update.
   useEffect(() => {
@@ -633,15 +333,29 @@ export default function App({
     [reactFlowInstance],
   )
 
-  // If the viewport is resized, make sure to re-fit the view.
+  // After the graph is initialized, we want to fit the view to all nodes. We do so with a delay to allow the layout to settle.
   useEffect(() => {
     if (reactFlowInstance) {
       // Delay fitView to allow the layout to settle.
       setTimeout(() => {
         reactFlowInstance.fitView(fitViewOptions)
-      }, 100) // Adjust the delay time if necessary.
+      }, 200) // Adjust the delay time if necessary.
     }
-  }, [reactFlowInstance, reactFlowWrapper, width, height, pendingEdges, layoutFlag])
+  }, [reactFlowInstance, reactFlowWrapper])
+
+  // Resize the view when the window is resized while we're also locked.
+  useEffect(() => {
+    if (reactFlowInstance && locked) {
+      reactFlowInstance.fitView(fitViewOptions)
+    }
+  }, [reactFlowInstance, reactFlowWrapper, width, height])
+
+  // Instantly resize the view when the layout has changed.
+  useEffect(() => {
+    if (reactFlowInstance) {
+      reactFlowInstance.fitView(fitViewOptions)
+    }
+  }, [reactFlowInstance, pendingEdges, layoutFlag])
 
   // Resize the Data Layer container based on the amount of child nodes.
   // Recommended defaults for the Data Layer container:
@@ -727,7 +441,7 @@ export default function App({
     setLayout(option.layout)
   }
 
-  const selectService = (option: ServiceOption | null) => {
+  const selectService = (option: ServiceOptionType | null) => {
     if (!option)
       return
 
@@ -741,6 +455,31 @@ export default function App({
         configuration: option.configuration,
       },
     })
+  }
+
+  // Import configuration handler
+  const handleImportConfig = (importedConfig: any[]) => {
+    try {
+      if (reactFlowInstance) {
+        // Convert the imported configuration into a layout structure
+        const importedLayout = translateFromConfig(importedConfig)
+
+        // Update the state with the imported layout
+        setDatalayer(importedLayout.datalayer)
+        setFlows(importedLayout.flows)
+        setNodes(importedLayout.nodes)
+        setEdges(importedLayout.edges)
+
+        // Fit the view after import
+        setTimeout(() => {
+          if (reactFlowInstance)
+            reactFlowInstance.fitView(fitViewOptions)
+        }, 100)
+      }
+    }
+    catch (error) {
+      console.error('Error importing configuration:', error)
+    }
   }
 
   return (
@@ -781,6 +520,13 @@ export default function App({
           </div>
         </div>
       </Modal>
+
+      <ImportModal
+        isOpen={isImportModalOpen}
+        setIsOpen={setIsImportModalOpen}
+        onImport={handleImportConfig}
+      />
+
       <ReactFlowProvider>
         <div ref={reactFlowWrapper} className="reactflow-wrapper" style={{ width: '100%', height: '100%' }}>
           <ReactFlow
@@ -822,14 +568,14 @@ export default function App({
               )}
             </Panel>
             <Panel position="top-right" style={{ width: '320px' }}>
-              <Select<ServiceOption, false, GroupBase<ServiceOption>>
+              <Select<ServiceOptionType, false, GroupBase<ServiceOptionType>>
                 placeholder={ti18n.translate(ti18n.keys.selectServicePlaceholder)}
                 options={groupedServiceOptions}
                 value={null}
                 onChange={option => selectService(option)}
                 onMenuOpen={() => setShowTutorialService(false)}
                 components={{
-                  Option: ServiceOptionComponent,
+                  Option: ServiceOption,
                 }}
                 styles={{
                   option: baseStyles => ({
@@ -854,6 +600,14 @@ export default function App({
                   {ti18n.translate(ti18n.keys.buttonRemoveFlow)}
                 </Button>
               </div>
+              <Button
+                className="reactflow-panel-button"
+                onClick={() => setIsImportModalOpen(true)}
+                style={{ marginRight: '8px' }}
+              >
+                <Icon icon="import" size={16} />
+                {ti18n.translate(ti18n.keys.buttonImport) || 'Import'}
+              </Button>
               <Button className="reactflow-panel-button" onClick={() => setIsModalOpen(true)}>
                 <Icon icon="export" size={16} />
                 {ti18n.translate(ti18n.keys.buttonConfig)}

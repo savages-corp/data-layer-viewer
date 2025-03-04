@@ -1,6 +1,6 @@
 import React from 'react'
 
-enum ButtonType {
+export enum ButtonType {
   Primary = 'primary',
   Secondary = 'secondary',
   Destructive = 'destructive',

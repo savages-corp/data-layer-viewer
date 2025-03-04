@@ -1,8 +1,6 @@
 import path from 'path'
 import react from '@vitejs/plugin-react'
-
 import { defineConfig } from 'vite'
-
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
 
 export default defineConfig({
@@ -19,7 +17,10 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, '.'),
+      '@/components': path.resolve(__dirname, './src/components'),
+      '@/resources': path.resolve(__dirname, './resources'),
+      '@/src': path.resolve(__dirname, './src'),
+      '@/types': path.resolve(__dirname, './types'),
     },
   },
 })

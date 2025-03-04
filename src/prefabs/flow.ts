@@ -1,6 +1,7 @@
+import type { ContainerNode } from '@/components/Nodes/ContainerNode'
+import type { StageNode } from '@/components/Nodes/StageNode'
+
 import type { AppNode } from '@/src/App'
-import type { StageNode } from '@/src/components/Nodes/StageNode'
-import type { ContainerNode } from '../components/Nodes/ContainerNode'
 
 import { getTimedId } from '@/src/helpers/nodes'
 import { Stage } from '@/types/stage'

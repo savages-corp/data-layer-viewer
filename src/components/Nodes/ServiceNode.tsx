@@ -2,18 +2,18 @@ import type { ServiceConfiguration } from '@/types/service'
 import type { Node, NodeProps } from '@xyflow/react'
 import type { StageNode } from './StageNode'
 
+import { createStatusOptions, getStatusColor, StatusOptionComponent } from '@/components/App/StatusUtility'
+import { Button } from '@/components/Common/Button'
+import { Icon } from '@/components/Common/Icon'
+
+import { Modal } from '@/components/Common/Modal'
+
+import { useTi18n } from '@/components/Core/Ti18nProvider'
 import { Status } from '@/types/status'
 
 import { Handle, Position, useNodeConnections, useNodesData, useReactFlow } from '@xyflow/react'
-
 import { useEffect, useState } from 'react'
-
 import Select from 'react-select'
-
-import { Button } from '../Common/Button'
-import { Icon } from '../Common/Icon'
-import { Modal } from '../Common/Modal'
-import { useTi18n } from '../Core/Ti18nProvider'
 
 /*
   ServiceNode displays various services that can be connected to other nodes.
@@ -36,52 +36,6 @@ export type ServiceNode = Node<
   'service'
 >
 
-interface StatusOption {
-  value: Status
-  label: string
-}
-
-// Function to get status color based on status value
-function getStatusColor(status: Status): string {
-  if (status === Status.Unknown)
-    return '#aaa' // Gray for unknown/inactive
-  if (status.startsWith('SUCCESS'))
-    return '#31c787' // Green for success states
-  if (status.startsWith('ERROR'))
-    return '#ff7090' // Red for error states
-  return '#aaa' // Default gray
-}
-
-// Custom component to render status options with colored status indicators
-function StatusOptionComponent({ innerProps, data }: any) {
-  return (
-    <div
-      {...innerProps}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        padding: '8px 12px',
-        cursor: 'pointer',
-        userSelect: 'none',
-        transition: 'background-color 0.2s ease',
-        backgroundColor: innerProps.isFocused ? 'rgba(0, 0, 0, 0.05)' : 'transparent',
-      }}
-      className="service-option"
-    >
-      <div
-        style={{
-          width: 12,
-          height: 12,
-          borderRadius: '50%',
-          backgroundColor: getStatusColor(data.value),
-          marginRight: 10,
-        }}
-      />
-      {data.label}
-    </div>
-  )
-}
-
 export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
   const ti18n = useTi18n() // Get the translation function.
 
@@ -94,15 +48,8 @@ export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
     data.interval = 15
   }
 
-  const statusOptions: StatusOption[] = [
-    { value: Status.Success, label: ti18n.translate(ti18n.keys.statusSuccess) },
-    { value: Status.SuccessNothingNew, label: ti18n.translate(ti18n.keys.statusSuccessNothingNew) },
-    { value: Status.ErrorServicePull, label: ti18n.translate(ti18n.keys.statusErrorServicePull) },
-    { value: Status.ErrorDataEgress, label: ti18n.translate(ti18n.keys.statusErrorDataEgress) },
-    { value: Status.ErrorDataModelize, label: ti18n.translate(ti18n.keys.statusErrorDataModelize) },
-    { value: Status.ErrorServicePush, label: ti18n.translate(ti18n.keys.statusErrorServicePush) },
-    { value: Status.Unknown, label: ti18n.translate(ti18n.keys.statusInactive) },
-  ]
+  // Get status options from the utility
+  const statusOptions = createStatusOptions(ti18n)
 
   if (data.status === undefined) {
     data.status = Status.Unknown

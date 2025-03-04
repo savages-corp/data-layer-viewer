@@ -1,5 +1,5 @@
-import type { ContainerNode } from '../components/Nodes/ContainerNode'
-import type { WarehouseNode } from '../components/Nodes/WarehouseNode'
+import type { ContainerNode } from '@/components/Nodes/ContainerNode'
+import type { WarehouseNode } from '@/components/Nodes/WarehouseNode'
 import { getTimedId } from '@/src/helpers/nodes'
 
 import { calculateDataLayerHeight, calculateDataLayerY, calculateWarehouseY } from '@/src/helpers/positioning'

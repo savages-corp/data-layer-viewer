@@ -34,6 +34,17 @@
     "modal-config-json": "JSON",
     "modal-config-yaml": "YAML",
 
+    "button-import": "Import",
+    "import-format": "Format:",
+    "import-paste-clipboard": "Paste from Clipboard",
+    "import-empty-error": "Please enter a configuration",
+    "import-invalid-error": "Invalid configuration format",
+    "import-missing-flows-error": "Invalid configuration: missing flows",
+    "import-parse-error": "Failed to parse configuration",
+    "import-clipboard-error": "Failed to read from clipboard",
+    "modal-import-title": "Import Configuration",
+    "modal-import-description": "Paste in a configuration to import. The format should match the export format.",
+
     "select-layout-placeholder": "Select a layout",
     "select-service-placeholder": "Add a service",
     "select-service-category-hypervisor": "Cloud Services",

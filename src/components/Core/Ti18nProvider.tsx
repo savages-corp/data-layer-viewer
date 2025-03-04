@@ -1,5 +1,3 @@
-'use client'
-
 import type { TranslationKey } from '@/types/i18n'
 
 import de from '@/resources/i18n/de.json'
