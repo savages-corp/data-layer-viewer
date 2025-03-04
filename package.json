@@ -15,6 +15,7 @@
     }
   ],
   "license": "MIT",
+  "homepage": "https://data-layer.com",
   "repository": {
     "type": "git",
     "url": "git+github.com:savagescorp/data-layer-viewer.git"
