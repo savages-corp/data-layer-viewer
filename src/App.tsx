@@ -149,6 +149,8 @@ export default function App({
   // The options for the service select input, now using our extracted function
   const groupedServiceOptions = useMemo(() => getServiceOptionsData(ti18n), [ti18n])
 
+  const isMobile = useMemo(() => width < 640, [width])
+
   // New effect that runs after nodes update.
   useEffect(() => {
     if (pendingEdges) {
@@ -552,52 +554,56 @@ export default function App({
             zoomOnPinch={!locked}
             zoomOnDoubleClick={!locked}
           >
-            <Panel position="top-left" style={{ width: '320px' }}>
-              <Select
-                placeholder={ti18n.translate(ti18n.keys.selectLayoutPlaceholder)}
-                options={layoutOptions}
-                value={null}
-                onChange={option => selectLayout(option)}
-                onMenuOpen={() => setShowTutorialLayout(false)}
-              />
-              {showTutorialLayout && (
-                <div className="tutorial-overlay tutorial-layout">
-                  <Icon icon="arrowUp" size={10} style={{ transform: 'scaleX(-1)' }} />
-                  {ti18n.translate(ti18n.keys.tutorialLayout)}
-                </div>
-              )}
+            <Panel position="top-center" className="reactflow-panel-top">
+              <div className="reactflow-panel-select-container">
+                <Select
+                  placeholder={ti18n.translate(ti18n.keys.selectLayoutPlaceholder)}
+                  options={layoutOptions}
+                  value={null}
+                  onChange={option => selectLayout(option)}
+                  onMenuOpen={() => setShowTutorialLayout(false)}
+                />
+                {showTutorialLayout && (
+                  <div className="tutorial-overlay tutorial-layout">
+                    <Icon icon="arrowUp" size={10} style={{ transform: 'scaleX(-1)' }} />
+                    {ti18n.translate(ti18n.keys.tutorialLayout)}
+                  </div>
+                )}
+              </div>
+              <div className="reactflow-panel-select-container">
+                <Select<ServiceOptionType, false, GroupBase<ServiceOptionType>>
+                  placeholder={ti18n.translate(ti18n.keys.selectServicePlaceholder)}
+                  options={groupedServiceOptions}
+                  value={null}
+                  onChange={option => selectService(option)}
+                  onMenuOpen={() => setShowTutorialService(false)}
+                  components={{
+                    Option: ServiceOption,
+                  }}
+                  styles={{
+                    option: baseStyles => ({
+                      ...baseStyles,
+                      padding: 0,
+                    }),
+                  }}
+                />
+                {showTutorialService && (
+                  <div className="tutorial-overlay tutorial-service">
+                    {ti18n.translate(ti18n.keys.tutorialService)}
+                    <Icon icon="arrowUp" size={10} />
+                  </div>
+                )}
+              </div>
             </Panel>
-            <Panel position="top-right" style={{ width: '320px' }}>
-              <Select<ServiceOptionType, false, GroupBase<ServiceOptionType>>
-                placeholder={ti18n.translate(ti18n.keys.selectServicePlaceholder)}
-                options={groupedServiceOptions}
-                value={null}
-                onChange={option => selectService(option)}
-                onMenuOpen={() => setShowTutorialService(false)}
-                components={{
-                  Option: ServiceOption,
-                }}
-                styles={{
-                  option: baseStyles => ({
-                    ...baseStyles,
-                    padding: 0,
-                  }),
-                }}
-              />
-              {showTutorialService && (
-                <div className="tutorial-overlay tutorial-service">
-                  {ti18n.translate(ti18n.keys.tutorialService)}
-                  <Icon icon="arrowUp" size={10} />
-                </div>
-              )}
-            </Panel>
-            <Panel position="bottom-center" style={{ display: 'flex', gap: '8px' }}>
+            <Panel position="bottom-center" className="reactflow-panel-bottom">
               <div className="reactflow-panel-group">
                 <Button className="reactflow-panel-group-left" onClick={addFlow}>
-                  {ti18n.translate(ti18n.keys.buttonAddFlow)}
+                  <Icon icon="plus" size={16} style={{ transform: 'scaleX(-1)' }} />
+                  {isMobile ? '' : ti18n.translate(ti18n.keys.buttonAddFlow)}
                 </Button>
                 <Button className="reactflow-panel-group-right" onClick={removeFlow}>
-                  {ti18n.translate(ti18n.keys.buttonRemoveFlow)}
+                  <Icon icon="minus" size={16} style={{ transform: 'scaleX(-1)' }} />
+                  {isMobile ? '' : ti18n.translate(ti18n.keys.buttonRemoveFlow)}
                 </Button>
               </div>
               <Button
@@ -606,11 +612,11 @@ export default function App({
                 style={{ marginRight: '8px' }}
               >
                 <Icon icon="import" size={16} />
-                {ti18n.translate(ti18n.keys.buttonImport) || 'Import'}
+                {isMobile ? '' : ti18n.translate(ti18n.keys.buttonImport) || 'Import'}
               </Button>
               <Button className="reactflow-panel-button" onClick={() => setIsModalOpen(true)}>
                 <Icon icon="export" size={16} />
-                {ti18n.translate(ti18n.keys.buttonConfig)}
+                {isMobile ? '' : ti18n.translate(ti18n.keys.buttonConfig)}
               </Button>
             </Panel>
             <Panel position="bottom-right">

@@ -184,7 +184,7 @@ export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
     <>
       {/* Edit Modal */}
       <Modal
-        title={`${ti18n.translate(ti18n.keys.genericEdit)} ${data.configuration.identifier}`}
+        title={`${ti18n.translate(ti18n.keys.genericEditService)}`}
         subtitle={(
           <div className="react-flow__node-service-form-row">
             <Icon icon={data.configuration.type} size={16} />
@@ -206,7 +206,7 @@ export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
         onClose={() => setIsModalOpen(false)}
       >
         <div className="react-flow__node-service-form">
-          <div className="react-flow__node-service-form-grid">
+          <div className="react-flow__node-service-form-common">
             <div className="react-flow__node-service-form-field">
               <h3>{ti18n.translate(ti18n.keys.genericIdentifier)}</h3>
               <input

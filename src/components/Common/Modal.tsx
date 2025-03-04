@@ -49,8 +49,10 @@ export function Modal(
           <Button type={ButtonType.Secondary} onClick={() => setIsOpen(false)}>{ti18n.translate(ti18n.keys.genericClose)}</Button>
         </div>
       </div>
-      <div className="modal-content">
-        {children}
+      <div className="modal-body">
+        <div className="modal-content">
+          {children}
+        </div>
       </div>
     </ReactModal>
   )

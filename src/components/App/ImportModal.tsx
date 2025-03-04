@@ -115,7 +115,7 @@ export function ImportModal({ isOpen, setIsOpen, onImport }: ImportModalProps) {
             placeholder={format === 'json'
               ? '{ "flows": [...] }'
               : 'flows:\n  - name: "Flow 1"\n    warehouse: true\n    ...'}
-            rows={12}
+            rows={32}
           />
 
           <Button

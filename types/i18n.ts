@@ -1,6 +1,5 @@
 export const TRANSLATION_KEYS = [
   'generic-close',
-  'generic-edit',
   'generic-delete',
   'generic-identifier',
   'generic-type',
@@ -10,6 +9,7 @@ export const TRANSLATION_KEYS = [
   'generic-enabled',
   'generic-disabled',
   'generic-parameters',
+  'generic-edit-service',
 
   'stage-modelize',
   'stage-egress',

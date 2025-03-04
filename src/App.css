@@ -5,7 +5,7 @@
   --viewer-background: #fff;
   --viewer-secondary: #f8f8f8;
   --viewer-muted: #aaa;
-  --viewer-border: 1px solid #aaa;
+  --viewer-border: 1px solid #ccc;
   --viewer-border-radius: 4px;
 
   --viewer-icon-primary: #000;
@@ -24,6 +24,11 @@ pre {
   padding: 16px;
   background-color: var(--viewer-secondary);
   border-radius: var(--viewer-border-radius);
+  white-space: pre;
+  overflow-x: auto;
+  overflow-y: visible;
+  max-width: 100%;
+  word-wrap: normal;
 }
 
 pre .icon {
@@ -42,6 +47,12 @@ pre .icon:hover {
 
 pre .icon:active {
   transform: translateY(1px);
+}
+
+input {
+  padding: 8px;
+  border-radius: var(--viewer-border-radius);
+  border: var(--viewer-border);
 }
 
 .button {
@@ -94,11 +105,6 @@ pre .icon:active {
   justify-content: center;
 }
 
-/* Selected node styling */
-.selected {
-  box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.08);
-}
-
 .modal {
   position: absolute;
   top: 5%;
@@ -112,6 +118,7 @@ pre .icon:active {
   border-radius: var(--viewer-border-radius);
   border: var(--viewer-border);
   padding: 32px;
+  overflow-y: scroll;
 }
 
 .modal-shrink {
@@ -155,8 +162,6 @@ pre .icon:active {
   margin-top: 0;
   margin-bottom: 0;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 /* Modal subtitle styles */
@@ -176,6 +181,8 @@ pre .icon:active {
 .modal-content {
   border-radius: var(--viewer-border-radius);
   overflow-y: scroll;
+  overflow-x: hidden;
+  /* Prevent horizontal scrolling */
   max-height: calc(100% - 64px);
 }
 
@@ -198,13 +205,16 @@ pre .icon:active {
 
 .modal-content .modal-split .modal-split-container {
   flex-grow: 1;
+  overflow-x: hidden;
+  /* Prevent horizontal scrolling at container level */
+  width: 100%;
+  /* Ensure the container takes full width */
 }
 
 .tutorial-overlay {
-  width: 95%;
+  margin-top: 8px;
   display: flex;
   gap: 4px;
-  position: absolute;
   background: rgba(0, 0, 0, 0.6);
   color: #fff;
   padding: 4px 8px;
@@ -242,7 +252,7 @@ pre .icon:active {
   --xy-attribution-background-color-default: rgba(255, 255, 255, 0.5);
   --xy-minimap-background-color-default: var(--viewer-background);
   --xy-background-pattern-dots-color-default: #a2ccb5;
-  --xy-background-pattern-line-color-default: #eee;
+  --xy-background-pattern-line-color-default: var(--viewer-border);
   --xy-background-pattern-cross-color-default: #e2e2e2;
   --xy-node-color-default: inherit;
   --xy-node-border-default: var(--viewer-border);
@@ -258,7 +268,7 @@ pre .icon:active {
   --xy-controls-button-background-color-hover-default: var(--viewer-secondary);
   --xy-controls-button-color-default: inherit;
   --xy-controls-button-color-hover-default: inherit;
-  --xy-controls-button-border-color-default: #eee;
+  --xy-controls-button-border-color-default: var(--viewer-border);
   --xy-controls-box-shadow-default: 0 0 2px 1px rgba(0, 0, 0, 0.08);
   --xy-resize-background-color-default: #3367d9;
 
@@ -267,6 +277,15 @@ pre .icon:active {
   --xy-custom-edge-stroke-error: #ff7090;
   --xy-custom-edge-stroke-inactive: #aaa;
   --xy-custom-border-radius-default: var(--viewer-border-radius);
+}
+
+.react-flow__panel.top.left,
+.react-flow__panel.top.right {
+  position: relative;
+}
+
+.react-flow__panel.top.right {
+  margin-left: auto;
 }
 
 /* Custom Button Styles */
@@ -280,8 +299,30 @@ pre .icon:active {
 }
 
 .reactflow-panel-button {
-  border: 1px solid #eee;
+  border: var(--viewer-border);
   border-radius: var(--xy-custom-border-radius-default);
+}
+
+.reactflow-panel-top {
+  margin: 0;
+  width: 100%;
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+}
+
+.reactflow-panel-bottom {
+  width: 100%;
+  display: flex;
+  gap: 8px;
+}
+
+.reactflow-panel-select-container {
+  flex-basis: 100%;
+  margin: 15px;
+  max-width: 400px;
+  flex-grow: 1;
+  position: relative;
 }
 
 .reactflow-panel-group {
@@ -293,8 +334,8 @@ pre .icon:active {
 .reactflow-panel-group-middle,
 .reactflow-panel-group-right {
   border-radius: 0;
-  border-top: 1px solid #eee;
-  border-bottom: 1px solid #eee;
+  border-top: var(--viewer-border);
+  border-bottom: var(--viewer-border);
 }
 
 .reactflow-panel-group-left:hover,
@@ -304,10 +345,10 @@ pre .icon:active {
 }
 
 .reactflow-panel-group-left {
-  border-left: 1px solid #eee;
+  border-left: var(--viewer-border);
   border-top-left-radius: var(--xy-custom-border-radius-default);
   border-bottom-left-radius: var(--xy-custom-border-radius-default);
-  border-right: 1px solid #eee;
+  border-right: var(--viewer-border);
 }
 
 .reactflow-panel-group-middle {
@@ -315,11 +356,11 @@ pre .icon:active {
   border-bottom-left-radius: 0;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
-  border-right: 1px solid #eee;
+  border-right: var(--viewer-border);
 }
 
 .reactflow-panel-group-right {
-  border-right: 1px solid #eee;
+  border-right: var(--viewer-border);
   border-radius: 0;
   border-top-right-radius: var(--xy-custom-border-radius-default);
   border-bottom-right-radius: var(--xy-custom-border-radius-default);
@@ -335,11 +376,6 @@ pre .icon:active {
   box-shadow: 1px 1px 4px 0px rgba(0, 0, 0, 0.15);
 }
 
-.react-flow__node .react-flow__node-service .selected {
-  box-shadow: var(--xy-node-boxshadow-selected-default);
-  outline: 1px solid var(--xy-custom-edge-stroke-inactive);
-}
-
 .react-flow__node-default.draggable:hover,
 .react-flow__node-container.draggable:hover,
 .react-flow__node-container.draggable:hover,
@@ -347,15 +383,6 @@ pre .icon:active {
 .react-flow__node-stage.draggable:hover,
 .react-flow__node-warehouse.draggable:hover {
   box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.05);
-  outline: 1px solid var(--xy-custom-edge-stroke-inactive);
-}
-
-.react-flow__node-default.selected,
-.react-flow__node-container.selected,
-.react-flow__node-service.selected,
-.react-flow__node-stage.selected,
-.react-flow__node-warehouse.selected {
-  box-shadow: var(--xy-node-boxshadow-selected-default);
   outline: 1px solid var(--xy-custom-edge-stroke-inactive);
 }
 
@@ -374,7 +401,7 @@ pre .icon:active {
   height: 100%;
   border-radius: var(--xy-custom-border-radius-default);
   backdrop-filter: blur(4px);
-  background: linear-gradient(48deg, #eee, var(--viewer-background));
+  background: linear-gradient(48deg, var(--viewer-border), var(--viewer-background));
   outline: 1px dotted var(--xy-custom-edge-stroke-inactive);
   display: flex;
   flex-direction: column;
@@ -387,7 +414,7 @@ pre .icon:active {
 
 .viewer {
   background: white;
-  border: 1px solid #eee;
+  border: var(--viewer-border);
 }
 
 /* Node handle styling */
@@ -416,6 +443,14 @@ pre .icon:active {
 
 .react-flow__handle-plugged {
   background-color: var(--xy-edge-stroke-default);
+}
+
+/* Selected styling */
+.selected,
+.selected:focus,
+.react-flow__node.selectable:focus {
+  box-shadow: var(--xy-node-boxshadow-selected-default);
+  outline: 1px solid var(--xy-custom-edge-stroke-inactive);
 }
 
 /* Service node */
@@ -505,10 +540,27 @@ pre .icon:active {
   gap: 32px;
 }
 
+.react-flow__node-service-form-common {
+  width: 100%;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.react-flow__node-service-form-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .react-flow__node-service-form-field {
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.react-flow__node-service-form-common .react-flow__node-service-form-field {
+  flex-grow: 1;
 }
 
 .react-flow__node-service-form-field h1,
@@ -637,19 +689,6 @@ pre .icon:active {
 
 .react-flow__node-service-action-button:hover .react-flow__node-service-action-button-gear {
   transform: rotate(180deg);
-}
-
-/* Service Form Layout */
-.react-flow__node-service-form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-.react-flow__node-service-form-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
 }
 
 /* Data Layer node */
@@ -811,10 +850,15 @@ pre .icon:active {
   box-sizing: border-box;
   padding: 16px;
   min-height: 240px;
+  background-color: var(--viewer-secondary);
   border-radius: var(--viewer-border-radius);
-  border: var(--viewer-border);
+  border: none;
   font-family: monospace;
   resize: vertical;
+}
+
+.import-modal-textarea:focus {
+  outline: none;
 }
 
 .import-clipboard-button {

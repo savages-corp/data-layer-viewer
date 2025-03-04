@@ -5,7 +5,6 @@
   },
   "dictionary": {
     "generic-close": "Schließen",
-    "generic-edit": "Bearbeiten",
     "generic-delete": "Löschen",
     "generic-identifier": "Name",
     "generic-type": "Typ",
@@ -15,6 +14,7 @@
     "generic-enabled": "Aktiviert",
     "generic-disabled": "Deaktiviert",
     "generic-parameters": "Parameter",
+    "generic-edit-service": "Dienst Bearbeiten",
 
     "service-label-source": "Quelle",
     "service-label-destination": "Ziel",
