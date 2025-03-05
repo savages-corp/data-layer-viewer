@@ -816,7 +816,7 @@ input {
 }
 
 .react-flow__node-annotation-arrow-bottom-right {
-  transform: scaleX(-1) scaleY(-1) rotate(-30deg);
+  transform: scaleX(-1) rotate(-90deg);
   right: -12px;
   bottom: 0px;
 }

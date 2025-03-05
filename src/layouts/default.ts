@@ -18,12 +18,12 @@ import { CreateDatalayerPrefab } from '../prefabs/datalayer'
 import { CreateFlowPrefab } from '../prefabs/flow'
 
 function builder({ ti18n, mobile = false }: { ti18n: Ti18n<TranslationKey>, mobile?: boolean }) : (Layout) {
-  const datalayer = CreateDatalayerPrefab(2)
+  const datalayer = CreateDatalayerPrefab(mobile ? 1 : 2)
 
-  const source1: ServiceNode = {
+  const presetSource: ServiceNode = {
     id: getTimedId('service-source-1'),
     type: 'service',
-    position: mobile ? { x: 0, y: 0 } : { x: -312, y: 48 },
+    position: mobile ? { x: 0, y: -256 } : { x: -312, y: -64 },
     data: {
       status: Status.Success,
       configuration: {
@@ -33,23 +33,10 @@ function builder({ ti18n, mobile = false }: { ti18n: Ti18n<TranslationKey>, mobi
     },
   }
 
-  const source2: ServiceNode = {
-    id: getTimedId('service-source-2'),
-    type: 'service',
-    position: { x: -312, y: -48 },
-    data: {
-      status: Status.Success,
-      configuration: {
-        type: ServiceType.CommonHubspot,
-        identifier: 'Hubspot',
-      },
-    },
-  }
-
-  const destination1: ServiceNode = {
+  const presetDestination: ServiceNode = {
     id: getTimedId('service-destination-1'),
     type: 'service',
-    position: { x: 296, y: 48 },
+    position: mobile ? { x: 0, y: 256 } : { x: 296, y: -64 },
     data: {
       status: Status.Success,
       configuration: {
@@ -59,21 +46,51 @@ function builder({ ti18n, mobile = false }: { ti18n: Ti18n<TranslationKey>, mobi
     },
   }
 
-  const destination2: ServiceNode = {
-    id: getTimedId('service-destination-2'),
-    type: 'service',
-    position: { x: 296, y: -48 },
-    data: {
-      status: Status.Success,
-      configuration: {
-        type: ServiceType.CommonSlack,
-        identifier: 'Slack',
+  const presetFlow = CreateFlowPrefab(datalayer.container, '1', 24, calculateNextFlowY(0))
+
+  const extraFlow = CreateFlowPrefab(datalayer.container, '2', 24, calculateNextFlowY(1))
+  const desktopNodes: AppNode[] = [
+    {
+      id: getTimedId('service-source-2'),
+      type: 'service',
+      position: mobile ? { x: 0, y: -256 } : { x: -312, y: 96 },
+      data: {
+        status: Status.Success,
+        configuration: {
+          type: ServiceType.CommonHubspot,
+          identifier: 'Hubspot',
+        },
       },
     },
-  }
+    {
+      id: getTimedId('service-destination-2'),
+      type: 'service',
+      position: mobile ? { x: 0, y: 100 } : { x: 296, y: 96 },
+      data: {
+        status: Status.Success,
+        configuration: {
+          type: ServiceType.CommonSlack,
+          identifier: 'Slack',
+        },
+      },
+    },
 
-  const flow1 = CreateFlowPrefab(datalayer.container, '2', 24, calculateNextFlowY(0))
-  const flow2 = CreateFlowPrefab(datalayer.container, '1', 24, calculateNextFlowY(1))
+    ...Object.values(extraFlow),
+
+    {
+
+      id: getTimedId('annotation-flow'),
+      type: 'annotation',
+      position: { x: -22, y: -32 },
+      width: 300,
+      data: {
+        text: ti18n.translate(ti18n.keys.annotationFlowConnect),
+        textAlignment: 'center',
+      },
+      parentId: extraFlow.container.id,
+      draggable: false,
+    },
+  ]
 
   const annotation1: AnnotationNode = {
     id: getTimedId('annotation-1'),
@@ -86,7 +103,7 @@ function builder({ ti18n, mobile = false }: { ti18n: Ti18n<TranslationKey>, mobi
       showArrow: true,
       arrowPosition: 'top-right',
     },
-    parentId: source1.id,
+    parentId: presetSource.id,
     draggable: false,
   }
 
@@ -101,60 +118,45 @@ function builder({ ti18n, mobile = false }: { ti18n: Ti18n<TranslationKey>, mobi
       showArrow: true,
       arrowPosition: 'bottom-left',
     },
-    parentId: flow2.modelize.id,
+    parentId: presetFlow.modelize.id,
     draggable: false,
   }
 
   const annotation3: AnnotationNode = {
     id: getTimedId('annotation-3'),
     type: 'annotation',
-    position: { x: -8, y: 56 },
+    position: mobile ? { x: -86, y: -42 } : { x: -8, y: 56 },
     width: 300,
     data: {
       text: ti18n.translate(ti18n.keys.annotationDestination),
-      textAlignment: 'left',
+      textAlignment: mobile ? 'right' : 'left',
       showArrow: true,
-      arrowPosition: 'top-left',
+      arrowPosition: mobile ? 'bottom-right' : 'top-left',
     },
-    parentId: destination1.id,
-    draggable: false,
-  }
-
-  const annotationFlow: AnnotationNode = {
-    id: getTimedId('annotation-flow'),
-    type: 'annotation',
-    position: { x: -22, y: -32 },
-    width: 300,
-    data: {
-      text: ti18n.translate(ti18n.keys.annotationFlowConnect),
-      textAlignment: 'center',
-    },
-    parentId: flow1.container.id,
+    parentId: presetDestination.id,
     draggable: false,
   }
 
   const nodes: AppNode[] = [
     ...Object.values(datalayer),
-    source1,
-    source2,
-    destination1,
-    destination2,
-    ...Object.values(flow1),
-    ...Object.values(flow2),
+    presetSource,
+    presetDestination,
+    ...Object.values(presetFlow),
+
+    ...(mobile ? [] : desktopNodes),
 
     annotation1,
     annotation2,
     annotation3,
-    annotationFlow,
     // Data Layer container sub-flow
   ] satisfies AppNode[]
 
   // The initial state of the graph.
   const edges: AppEdge[] = [
-    { id: 'pull-modelize-1', source: source1.id, target: flow2.modelize.id, type: 'data', data: { initialStatus: Status.Success, shape: 'circle' }, zIndex: 1 },
-    { id: 'modelize-egress-1', source: flow2.modelize.id, target: flow2.egress.id, type: 'data', data: { initialStatus: Status.Success, shape: 'square' }, zIndex: 1 },
-    { id: 'egress-push-1', source: flow2.egress.id, target: destination1.id, type: 'data', data: { initialStatus: Status.Success, shape: 'circle' }, zIndex: 1 },
-    { id: 'warehouse-1', source: flow2.modelize.id, target: datalayer.warehouse.id, type: 'data', data: { initialStatus: Status.Success, shape: 'square' }, zIndex: 1 },
+    { id: 'pull-modelize-1', source: presetSource.id, target: presetFlow.modelize.id, type: 'data', data: { initialStatus: Status.Success, shape: 'circle' }, zIndex: 1 },
+    { id: 'modelize-egress-1', source: presetFlow.modelize.id, target: presetFlow.egress.id, type: 'data', data: { initialStatus: Status.Success, shape: 'square' }, zIndex: 1 },
+    { id: 'egress-push-1', source: presetFlow.egress.id, target: presetDestination.id, type: 'data', data: { initialStatus: Status.Success, shape: 'circle' }, zIndex: 1 },
+    { id: 'warehouse-1', source: presetFlow.modelize.id, target: datalayer.warehouse.id, type: 'data', data: { initialStatus: Status.Success, shape: 'square' }, zIndex: 1 },
 
   ] satisfies AppEdge[]
 
@@ -162,7 +164,7 @@ function builder({ ti18n, mobile = false }: { ti18n: Ti18n<TranslationKey>, mobi
     datalayer,
     nodes,
     edges,
-    flows: [flow1, flow2],
+    flows: [presetFlow, presetFlow],
   } satisfies Layout
 
   return layout

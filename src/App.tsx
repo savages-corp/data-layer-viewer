@@ -90,16 +90,18 @@ interface LayoutOption {
 }
 
 interface AppProps {
-  locked?: boolean
   hideMinimap?: boolean
   hideControls?: boolean
+  locked?: boolean
+  mobile?: boolean
   tutorial?: boolean
 }
 
 export default function App({
-  locked,
   hideMinimap,
   hideControls,
+  locked,
+  mobile,
   tutorial,
 }: AppProps) {
   const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance<AppNode, AppEdge>>()
@@ -109,7 +111,7 @@ export default function App({
   const edgeReconnectSuccessful = useRef(true)
   const ti18n = useTi18n() // Get the translation instance.
 
-  const defaultLayout = layouts.default.builder({ ti18n }) // Build the default layout.
+  const defaultLayout = layouts.default.builder({ ti18n, mobile }) // Build the default layout.
 
   const [showTutorialLayout, setShowTutorialLayout] = useState(tutorial)
   const [showTutorialService, setShowTutorialService] = useState(tutorial)

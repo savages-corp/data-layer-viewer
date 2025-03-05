@@ -25,9 +25,19 @@ To create a bundle for embedding in a web page:
 npm run build
 ```
 
-This will emit a `bundle.js` file in the `dist/` directory which can be included on any site.
+This will emit a `main.js` file in the `dist/` directory which can be included on any site.
 
 Make sure to name any div you want to render the Data Layer Viewer in with the class `data-layer-viewer`.
+
+## Preview ##
+
+If you want to preview the build application locally including all sub-pages, run:
+
+```bash
+npm run preview
+```
+
+This will start a local server on port 4173 that directly serves the `dist/` directory.
 
 ## Embedding Props ##
 

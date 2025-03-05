@@ -1,7 +1,7 @@
 {
   "name": "data-layer-viewer",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "An embeddable React widget to visualize Data Layer configurations",
   "author": {
@@ -24,7 +24,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite build && vite preview"
   },
   "dependencies": {
     "@xyflow/react": "^12.4.2",
