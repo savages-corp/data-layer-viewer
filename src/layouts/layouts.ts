@@ -21,7 +21,7 @@ export interface Layout {
   flows: FlowPrefab[]
 }
 
-export const layouts = {
+export const layouts: Record<string, LayoutDefinition> = {
   default: DefaultDefinition,
   empty: EmptyDefinition,
 } satisfies Record<string, LayoutDefinition>

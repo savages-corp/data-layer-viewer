@@ -95,6 +95,7 @@ interface AppProps {
   locked?: boolean
   mobile?: boolean
   tutorial?: boolean
+  initialLayout?: string
 }
 
 export default function App({
@@ -103,6 +104,7 @@ export default function App({
   locked,
   mobile,
   tutorial,
+  initialLayout,
 }: AppProps) {
   const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance<AppNode, AppEdge>>()
   const reactFlowWrapper = useRef<HTMLDivElement>(null)
@@ -111,7 +113,13 @@ export default function App({
   const edgeReconnectSuccessful = useRef(true)
   const ti18n = useTi18n() // Get the translation instance.
 
-  const defaultLayout = layouts.default.builder({ ti18n, mobile }) // Build the default layout.
+  // Build the initial layout based on the initialLayout prop or default
+  const defaultLayout = useMemo(() => {
+    if (initialLayout && layouts[initialLayout]) {
+      return layouts[initialLayout].builder({ ti18n, mobile })
+    }
+    return layouts.default.builder({ ti18n, mobile })
+  }, [ti18n, mobile, initialLayout])
 
   const [showTutorialLayout, setShowTutorialLayout] = useState(tutorial)
   const [showTutorialService, setShowTutorialService] = useState(tutorial)

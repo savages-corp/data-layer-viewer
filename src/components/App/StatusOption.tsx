@@ -1,6 +1,6 @@
 import { Status } from '@/types/status'
 
-export interface StatusOption {
+export interface StatusOptionProps {
   value: Status
   label: string
 }
@@ -25,7 +25,7 @@ export function getStatusColor(status: Status): string {
  * @param ti18n Translation function
  * @returns Array of status options
  */
-export function createStatusOptions(ti18n: any): StatusOption[] {
+export function createStatusOptions(ti18n: any): StatusOptionProps[] {
   return [
     { value: Status.Success, label: ti18n.translate(ti18n.keys.statusSuccess) },
     { value: Status.SuccessNothingNew, label: ti18n.translate(ti18n.keys.statusSuccessNothingNew) },
@@ -40,7 +40,7 @@ export function createStatusOptions(ti18n: any): StatusOption[] {
 /**
  * Custom component to render status options with colored status indicators
  */
-export function StatusOptionComponent({ innerProps, data }: any) {
+export function StatusOption({ innerProps, data }: any) {
   return (
     <div
       {...innerProps}

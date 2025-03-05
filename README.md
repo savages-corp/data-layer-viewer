@@ -43,13 +43,16 @@ This will start a local server on port 4173 that directly serves the `dist/` dir
 
 The following props are available for embedding the Data Layer Viewer:
 
-| Prop | Description |
-| --- | --- |
-| `data-hide-controls` | Hides the controls (also hidden when locked) |
-| `data-hide-minimap` | Hides the minimap (also hidden when locked) |
-| `data-locale` | Sets the locale for the viewer (en, de) |
-| `data-locked` | Locks the viewport in place |
-| `data-tutorial` | Enables hints within the visualization |
+| Prop | Type | Description |
+| --- | --- | --- |
+| `data-hide-controls` | Boolean | Hides the controls (also hidden when locked) |
+| `data-hide-minimap` | Boolean | Hides the minimap (also hidden when locked) |
+| `data-initial-layout` | String | Sets the initial layout (default, empty) |
+| `data-locale` | String | Sets the locale for the viewer (en, de) |
+| `data-locked` | Boolean | Locks the viewport in place |
+| `data-tutorial` | Boolean | Enables hints within the visualization |
+
+Note, boolean props are set to `true` when present, and `false` when absent or can be explicitly set to `true`.
 
 ## Why no Tailwind / Shadcn? ##
 

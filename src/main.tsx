@@ -15,6 +15,7 @@ viewers.forEach((viewer) => {
   const locked = viewer.getAttribute('data-locked') === '' || viewer.getAttribute('data-locked') === 'true'
   const mobile = viewer.getAttribute('data-mobile') === '' || viewer.getAttribute('data-mobile') === 'true'
   const tutorial = viewer.getAttribute('data-tutorial') === '' || viewer.getAttribute('data-tutorial') === 'true'
+  const initialLayout = viewer.getAttribute('data-initial-layout') || undefined
 
   createRoot(viewer).render(
     <StrictMode>
@@ -25,6 +26,7 @@ viewers.forEach((viewer) => {
           locked={locked}
           mobile={mobile}
           tutorial={tutorial}
+          initialLayout={initialLayout}
         />
       </LocaleProvider>
     </StrictMode>,
