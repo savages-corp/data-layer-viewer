@@ -453,6 +453,13 @@ input {
   outline: 1px solid var(--xy-custom-edge-stroke-inactive);
 }
 
+.react-flow__node-annotation.selected,
+.react-flow__node-annotation.selected:focus,
+.react-flow__node-annotation.selectable:focus {
+  box-shadow: none;
+  outline: none
+}
+
 /* Service node */
 .react-flow__node-service-contents {
   background: var(--xy-custom-node-background);

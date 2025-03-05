@@ -144,9 +144,9 @@ export default function App({
     ...Object.entries(layouts).map(([key, value]) => ({
       label: value.name,
       value: key,
-      layout: value.builder({ ti18n }),
+      layout: value.builder({ ti18n, mobile }),
     })),
-  ] as LayoutOption[], [ti18n])
+  ] as LayoutOption[], [ti18n, mobile])
 
   // The options for the service select input, now using our extracted function
   const groupedServiceOptions = useMemo(() => getServiceOptionsData(ti18n), [ti18n])
