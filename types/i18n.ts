@@ -69,6 +69,9 @@ export const TRANSLATION_KEYS = [
   'service-label-destination',
   'service-label-pull',
   'service-label-push',
+
+  'layout-default',
+  'layout-empty',
 ] as const
 
 export type TranslationKey = typeof TRANSLATION_KEYS[number]

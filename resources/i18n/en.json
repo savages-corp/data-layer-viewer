@@ -29,7 +29,7 @@
 
     "service-generic-database": "Generic Database Service",
 
-    "modal-config-title": "Data Layer Flow Configurations",
+    "modal-config-title": "Data Layer Flows",
     "modal-config-description": "This is your current Data Layer configuration based on the connected flows. This configuration can be directly used during deployment of your Data Layer instance.",
     "modal-config-json": "JSON",
     "modal-config-yaml": "YAML",
@@ -70,6 +70,9 @@
     "service-label-source": "Source",
     "service-label-destination": "Destination",
     "service-label-pull": "Pull",
-    "service-label-push": "Push"
+    "service-label-push": "Push",
+
+    "layout-default": "(Default)",
+    "layout-empty": "(Empty)"
   }
 }

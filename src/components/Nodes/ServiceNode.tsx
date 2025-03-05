@@ -316,7 +316,7 @@ export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
           isConnectable={!isDestination}
           className={isDestination ? 'react-flow__handle-plugged' : ''}
         >
-          <div style={{ fontSize: 8, marginLeft: 12, lineHeight: 0.5 }}>{ti18n.translate(ti18n.keys.serviceLabelPush)}</div>
+          <div className="react-flow__node-service-handle-annotation-push">{ti18n.translate(ti18n.keys.serviceLabelPush)}</div>
         </Handle>
         <Handle
           type="source"
@@ -326,7 +326,7 @@ export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
           isConnectable={!isSource}
           className={isSource ? 'react-flow__handle-plugged' : ''}
         >
-          <div style={{ fontSize: 8, marginLeft: -30, lineHeight: 0.5 }}>{ti18n.translate(ti18n.keys.serviceLabelPull)}</div>
+          <div className="react-flow__node-service-handle-annotation-pull">{ti18n.translate(ti18n.keys.serviceLabelPull)}</div>
         </Handle>
       </div>
     </>

@@ -18,23 +18,23 @@
 
     "service-label-source": "Quelle",
     "service-label-destination": "Ziel",
-    "service-label-pull": "Pull",
-    "service-label-push": "Push",
+    "service-label-pull": "Abfrage",
+    "service-label-push": "Eingabe",
 
     "stage-modelize": "Modellierung",
     "stage-egress": "Ausgabe",
 
     "status-success": "Erfolgreich",
     "status-success-nothing-new": "Erfolgreich - Keine Änderungen",
-    "status-error-service-pull": "Fehler beim Service-Abruf",
+    "status-error-service-pull": "Fehler bei der Dienst-Abfrage",
     "status-error-data-egress": "Fehler bei der Datenausgabe",
     "status-error-data-modelize": "Fehler bei der Datenmodellierung",
-    "status-error-service-push": "Fehler beim Service-Push",
+    "status-error-service-push": "Fehler bei der Dienst-Eingabe",
     "status-inactive": "Inaktiv",
 
-    "service-generic-database": "Generischer Datenbankdienst",
+    "service-generic-database": "Datenbank",
 
-    "modal-config-title": "Data Layer Flow Konfigurationen",
+    "modal-config-title": "Data Layer Flows",
     "modal-config-description": "Dies ist Ihre aktuelle Data Layer Konfiguration, welche sich auf den verbundenen Flows basiert. Diese Konfiguration kann direkt bei der Bereitstellung Ihrer Data Layer-Instanz verwendet werden.",
     "modal-config-json": "JSON",
     "modal-config-yaml": "YAML",
@@ -51,7 +51,7 @@
     "modal-import-description": "Fügen Sie eine Konfiguration zum Importieren ein. Das Format sollte dem Exportformat entsprechen.",
 
     "select-layout-placeholder": "Konfiguration wählen",
-    "select-service-placeholder": "Diest hinzufügen",
+    "select-service-placeholder": "Dienst hinzufügen",
     "select-service-category-hypervisor": "Cloud-Dienste",
     "select-service-category-generic": "Generische Dienste",
     "select-service-category-saas-crm": "SaaS (CRM & Marketing)",
@@ -70,6 +70,9 @@
     "annotation-source": "Quellen übermitteln Daten zu einem Ziel\n(Nur ein Ziel möglich)",
     "annotation-modelize": "Daten werden validiert, standardisiert und optional gespeichert",
     "annotation-destination": "Daten werden an ein Ziel gesendet und vervollständigen einen Flow",
-    "annotation-flow-connect": "Verbinden Sie selbst einen Flow!"
+    "annotation-flow-connect": "Verbinden Sie selbst einen Flow!",
+
+    "layout-default": "(Standard)",
+    "layout-empty": "(Leeres Layout)"
   }
 }

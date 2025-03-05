@@ -21,7 +21,7 @@ function builder() : (Layout) {
 }
 
 export const EmptyDefinition: LayoutDefinition = {
-  name: '(Empty)',
+  name: ({ ti18n }) => ti18n.translate(ti18n.keys.layoutEmpty) as string,
   builder,
 
 } satisfies LayoutDefinition

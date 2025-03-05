@@ -48,50 +48,6 @@ function builder({ ti18n, mobile = false }: { ti18n: Ti18n<TranslationKey>, mobi
 
   const presetFlow = CreateFlowPrefab(datalayer.container, '1', 24, calculateNextFlowY(0))
 
-  const extraFlow = CreateFlowPrefab(datalayer.container, '2', 24, calculateNextFlowY(1))
-  const desktopNodes: AppNode[] = [
-    {
-      id: getTimedId('service-source-2'),
-      type: 'service',
-      position: mobile ? { x: 0, y: -256 } : { x: -312, y: 96 },
-      data: {
-        status: Status.Success,
-        configuration: {
-          type: ServiceType.CommonHubspot,
-          identifier: 'Hubspot',
-        },
-      },
-    },
-    {
-      id: getTimedId('service-destination-2'),
-      type: 'service',
-      position: mobile ? { x: 0, y: 100 } : { x: 296, y: 96 },
-      data: {
-        status: Status.Success,
-        configuration: {
-          type: ServiceType.CommonSlack,
-          identifier: 'Slack',
-        },
-      },
-    },
-
-    ...Object.values(extraFlow),
-
-    {
-
-      id: getTimedId('annotation-flow'),
-      type: 'annotation',
-      position: { x: -22, y: -32 },
-      width: 300,
-      data: {
-        text: ti18n.translate(ti18n.keys.annotationFlowConnect),
-        textAlignment: 'center',
-      },
-      parentId: extraFlow.container.id,
-      draggable: false,
-    },
-  ]
-
   const annotation1: AnnotationNode = {
     id: getTimedId('annotation-1'),
     type: 'annotation',
@@ -105,6 +61,7 @@ function builder({ ti18n, mobile = false }: { ti18n: Ti18n<TranslationKey>, mobi
     },
     parentId: presetSource.id,
     draggable: false,
+    selectable: false,
   }
 
   const annotation2: AnnotationNode = {
@@ -120,6 +77,7 @@ function builder({ ti18n, mobile = false }: { ti18n: Ti18n<TranslationKey>, mobi
     },
     parentId: presetFlow.modelize.id,
     draggable: false,
+    selectable: false,
   }
 
   const annotation3: AnnotationNode = {
@@ -135,6 +93,7 @@ function builder({ ti18n, mobile = false }: { ti18n: Ti18n<TranslationKey>, mobi
     },
     parentId: presetDestination.id,
     draggable: false,
+    selectable: false,
   }
 
   const nodes: AppNode[] = [
@@ -142,8 +101,6 @@ function builder({ ti18n, mobile = false }: { ti18n: Ti18n<TranslationKey>, mobi
     presetSource,
     presetDestination,
     ...Object.values(presetFlow),
-
-    ...(mobile ? [] : desktopNodes),
 
     annotation1,
     annotation2,
@@ -160,18 +117,71 @@ function builder({ ti18n, mobile = false }: { ti18n: Ti18n<TranslationKey>, mobi
 
   ] satisfies AppEdge[]
 
+  const flows = [presetFlow]
+
+  // If we're not on mobile, add a second flow and some extra nodes.
+  if (!mobile) {
+    const extraFlow = CreateFlowPrefab(datalayer.container, '2', 24, calculateNextFlowY(1))
+    const desktopNodes: AppNode[] = [
+      {
+        id: getTimedId('service-source-2'),
+        type: 'service',
+        position: mobile ? { x: 0, y: -256 } : { x: -312, y: 96 },
+        data: {
+          status: Status.Success,
+          configuration: {
+            type: ServiceType.CommonHubspot,
+            identifier: 'Hubspot',
+          },
+        },
+      },
+      {
+        id: getTimedId('service-destination-2'),
+        type: 'service',
+        position: mobile ? { x: 0, y: 100 } : { x: 296, y: 96 },
+        data: {
+          status: Status.Success,
+          configuration: {
+            type: ServiceType.CommonSlack,
+            identifier: 'Slack',
+          },
+        },
+      },
+
+      ...Object.values(extraFlow),
+
+      {
+        id: getTimedId('annotation-flow'),
+        type: 'annotation',
+        position: { x: -22, y: -32 },
+        width: 300,
+        data: {
+          text: ti18n.translate(ti18n.keys.annotationFlowConnect),
+          textAlignment: 'center',
+        },
+        parentId: extraFlow.container.id,
+        draggable: false,
+        selectable: false,
+      },
+    ]
+
+    nodes.push(...desktopNodes)
+    flows.push(extraFlow)
+  }
+
   const layout: Layout = {
     datalayer,
     nodes,
     edges,
-    flows: [presetFlow, presetFlow],
+    flows,
+
   } satisfies Layout
 
   return layout
 }
 
 export const DefaultDefinition: LayoutDefinition = {
-  name: '(Default)',
+  name: ({ ti18n }) => ti18n.translate(ti18n.keys.layoutDefault) as string,
   builder,
 
 } satisfies LayoutDefinition

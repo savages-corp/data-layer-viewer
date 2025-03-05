@@ -1,16 +1,17 @@
+import type { TranslationKey } from '@/types/i18n'
+
 import type { Ti18n } from '@zealsprince/ti18n'
 
 import type { AppEdge, AppNode } from '../App'
-
 import type { DatalayerPrefab } from '../prefabs/datalayer'
-import type { FlowPrefab } from '../prefabs/flow'
 
+import type { FlowPrefab } from '../prefabs/flow'
 import { DefaultDefinition } from './default'
 import { EmptyDefinition } from './empty'
 
 export interface LayoutDefinition {
-  name: string
-  builder: ({ ti18n, mobile }: { ti18n: Ti18n, mobile?: boolean }) => Layout
+  name: ({ ti18n }: { ti18n: Ti18n<TranslationKey> }) => string
+  builder: ({ ti18n, mobile }: { ti18n: Ti18n<TranslationKey>, mobile?: boolean }) => Layout
 }
 
 export interface Layout {
@@ -23,4 +24,4 @@ export interface Layout {
 export const layouts = {
   default: DefaultDefinition,
   empty: EmptyDefinition,
-}
+} satisfies Record<string, LayoutDefinition>

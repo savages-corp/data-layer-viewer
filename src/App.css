@@ -29,6 +29,7 @@ pre {
   overflow-y: visible;
   max-width: 100%;
   word-wrap: normal;
+  flex-grow: 1;
 }
 
 pre .icon {
@@ -118,7 +119,7 @@ input {
   border-radius: var(--viewer-border-radius);
   border: var(--viewer-border);
   padding: 32px;
-  overflow-y: scroll;
+  overflow: scroll;
 }
 
 .modal-shrink {
@@ -178,6 +179,10 @@ input {
   cursor: pointer;
 }
 
+/* .modal-body {
+  height: 90%;
+} */
+
 .modal-content {
   border-radius: var(--viewer-border-radius);
   overflow-y: scroll;
@@ -197,18 +202,27 @@ input {
 
 .modal-content .modal-split {
   display: flex;
-  align-items: baseline;
+  align-items: stretch;
   justify-content: space-between;
-  flex-wrap: wrap;
   gap: 16px;
+  flex-wrap: wrap;
+  overflow: hidden;
+  height: 88%;
 }
 
-.modal-content .modal-split .modal-split-container {
+.modal-split-container {
+  display: flex;
+  flex-direction: column;
   flex-grow: 1;
+  flex-basis: 300px;
   overflow-x: hidden;
   /* Prevent horizontal scrolling at container level */
   width: 100%;
   /* Ensure the container takes full width */
+}
+
+.modal-split-header {
+  margin-bottom: 0;
 }
 
 .tutorial-overlay {
@@ -443,6 +457,25 @@ input {
 
 .react-flow__handle-plugged {
   background-color: var(--xy-edge-stroke-default);
+}
+
+/* Styling for the service node handle annotations */
+.react-flow__node-service-handle-annotation-pull,
+.react-flow__node-service-handle-annotation-push {
+  font-size: 0.5em;
+  text-align: left;
+  position: absolute;
+  line-height: .75em;
+}
+
+.react-flow__node-service-handle-annotation-pull {
+  right: 0px;
+  margin-right: 12px;
+}
+
+.react-flow__node-service-handle-annotation-push {
+  left: 0px;
+  margin-left: 12px;
 }
 
 /* Selected styling */

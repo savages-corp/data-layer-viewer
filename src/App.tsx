@@ -142,7 +142,7 @@ export default function App({
   // The options for the layout select input.
   const layoutOptions = useMemo(() => [
     ...Object.entries(layouts).map(([key, value]) => ({
-      label: value.name,
+      label: value.name({ ti18n }),
       value: key,
       layout: value.builder({ ti18n, mobile }),
     })),
@@ -499,7 +499,7 @@ export default function App({
         </p>
         <div className="modal-split">
           <div className="modal-split-container">
-            <h2>{ti18n.translate(ti18n.keys.modalConfigJson)}</h2>
+            <h2 className="modal-split-header">{ti18n.translate(ti18n.keys.modalConfigJson)}</h2>
             <pre>
               <Icon
                 icon="clipboard"
@@ -511,7 +511,7 @@ export default function App({
             </pre>
           </div>
           <div className="modal-split-container">
-            <h2>{ti18n.translate(ti18n.keys.modalConfigYaml)}</h2>
+            <h2 className="modal-split-header">{ti18n.translate(ti18n.keys.modalConfigYaml)}</h2>
             <pre>
               <Icon
                 icon="clipboard"
