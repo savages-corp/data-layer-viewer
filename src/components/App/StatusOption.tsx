@@ -1,3 +1,6 @@
+import type { TranslationKey } from '@/types/i18n'
+
+import type { Ti18n } from '@zealsprince/ti18n'
 import { Status } from '@/types/status'
 
 export interface StatusOptionProps {
@@ -11,13 +14,23 @@ export interface StatusOptionProps {
  * @returns Color code for the status
  */
 export function getStatusColor(status: Status): string {
-  if (status === Status.Unknown)
-    return '#aaa' // Gray for unknown/inactive
-  if (status.startsWith('SUCCESS'))
-    return '#31c787' // Green for success states
-  if (status.startsWith('ERROR'))
-    return '#ff7090' // Red for error states
-  return '#aaa' // Default gray
+  switch (status) {
+    case Status.Success:
+    case Status.SuccessNothingNew:
+    case Status.SuccessWithWarehouse:
+      return '#4BBB60' // Green
+    case Status.ErrorServicePull:
+    case Status.ErrorDataEgress:
+    case Status.ErrorDataModelize:
+    case Status.ErrorServicePush:
+      return '#FF6B6B' // Red
+    case Status.ErrorInternalUnknown:
+      return '#000' // Black
+    case Status.Unset:
+      return '#9E9E9E' // Grey
+    default:
+      return '#9E9E9E' // Grey
+  }
 }
 
 /**
@@ -25,15 +38,17 @@ export function getStatusColor(status: Status): string {
  * @param ti18n Translation function
  * @returns Array of status options
  */
-export function createStatusOptions(ti18n: any): StatusOptionProps[] {
+export function createStatusOptions(ti18n: Ti18n<TranslationKey>): StatusOptionProps[] {
   return [
     { value: Status.Success, label: ti18n.translate(ti18n.keys.statusSuccess) },
+    { value: Status.SuccessWithWarehouse, label: ti18n.translate(ti18n.keys.statusSuccessWithWarehouse) },
     { value: Status.SuccessNothingNew, label: ti18n.translate(ti18n.keys.statusSuccessNothingNew) },
     { value: Status.ErrorServicePull, label: ti18n.translate(ti18n.keys.statusErrorServicePull) },
     { value: Status.ErrorDataEgress, label: ti18n.translate(ti18n.keys.statusErrorDataEgress) },
     { value: Status.ErrorDataModelize, label: ti18n.translate(ti18n.keys.statusErrorDataModelize) },
     { value: Status.ErrorServicePush, label: ti18n.translate(ti18n.keys.statusErrorServicePush) },
-    { value: Status.Unknown, label: ti18n.translate(ti18n.keys.statusInactive) },
+    { value: Status.ErrorInternalUnknown, label: ti18n.translate(ti18n.keys.statusErrorInternalUnknown) },
+    { value: Status.Unset, label: ti18n.translate(ti18n.keys.statusInactive) },
   ]
 }
 

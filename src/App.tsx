@@ -4,13 +4,19 @@ import type { ContainerNode } from '@/components/Nodes/ContainerNode'
 import type { ServiceNode } from '@/components/Nodes/ServiceNode'
 import type { StageNode } from '@/components/Nodes/StageNode'
 import type { WarehouseNode } from '@/components/Nodes/WarehouseNode'
+
 import type { ServiceOption as ServiceOptionType } from '@/types/option'
+
 import type { BuiltInEdge, BuiltInNode, Connection, EdgeChange, EdgeTypes, FitViewOptions, NodeChange, NodeTypes, ReactFlowInstance } from '@xyflow/react'
 
 import type { GroupBase } from 'react-select'
 
 import type { Layout } from './layouts/layouts'
 
+import type { DatalayerPrefab } from './prefabs/datalayer'
+import type { FlowPrefab } from './prefabs/flow'
+
+import { ConnectionModal } from '@/components/App/ConnectionModal'
 import { ImportModal } from '@/components/App/ImportModal'
 import { ServiceOption } from '@/components/App/ServiceOption'
 
@@ -21,16 +27,15 @@ import { Modal } from '@/components/Common/Modal'
 import { useTi18n } from '@/components/Core/Ti18nProvider'
 
 import { DataEdgeComponent } from '@/components/Edges/DataEdge'
-
 import { AnnotationNodeComponent } from '@/components/Nodes/AnnotationNode'
-
 import { ContainerNodeComponent } from '@/components/Nodes/ContainerNode'
 import { ServiceNodeComponent } from '@/components/Nodes/ServiceNode'
 import { StageNodeComponent } from '@/components/Nodes/StageNode'
 import { WarehouseNodeComponent } from '@/components/Nodes/WarehouseNode'
-import { getServiceOptionsData } from '@/src/data/serviceOptions'
 
+import { getServiceOptionsData } from '@/src/data/serviceOptions'
 import { Stage } from '@/types/stage'
+
 import { Status } from '@/types/status'
 
 import {
@@ -46,20 +51,19 @@ import {
   ReactFlowProvider,
   reconnectEdge,
 } from '@xyflow/react'
-
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+
 import Select from 'react-select'
 
 import { stringify as YAMLStringify } from 'yaml'
-
 import { translateFromConfig, translateToConfig } from './helpers/config'
 import { calculateDataLayerHeight, calculateDataLayerY, calculateNextFlowY, calculateWarehouseY } from './helpers/positioning'
+
 import { slugify } from './helpers/string'
 
 import { useWindowDimensions } from './hooks/useWindowDimensions'
 
 import { layouts } from './layouts/layouts'
-
 import { CreateFlowPrefab } from './prefabs/flow'
 
 import '@xyflow/react/dist/style.css'
@@ -125,6 +129,7 @@ export default function App({
   const [showTutorialService, setShowTutorialService] = useState(tutorial)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isImportModalOpen, setIsImportModalOpen] = useState(false)
+  const [isConnectionModalOpen, setIsConnectionModalOpen] = useState(false)
   const [layoutFlag, setLayoutFlag] = useState(false)
   const [layout, setLayout] = useState<Layout>(defaultLayout)
   const [datalayer, setDatalayer] = useState(defaultLayout.datalayer)
@@ -159,7 +164,7 @@ export default function App({
   // The options for the service select input, now using our extracted function
   const groupedServiceOptions = useMemo(() => getServiceOptionsData(ti18n), [ti18n])
 
-  const isMobile = useMemo(() => width < 640, [width])
+  const isCompact = useMemo(() => width < 1140, [width])
 
   // New effect that runs after nodes update.
   useEffect(() => {
@@ -494,6 +499,21 @@ export default function App({
     }
   }
 
+  const handleVisualize = (datalayer: DatalayerPrefab, nodes: AppNode[], edges: AppEdge[], flows: FlowPrefab[]) => {
+    // Clear existing layout
+    setDatalayer(datalayer)
+    setFlows(flows)
+    setNodes(nodes)
+    setEdges(edges)
+
+    // Fit view after a short delay to allow the layout to settle
+    setTimeout(() => {
+      if (reactFlowInstance) {
+        reactFlowInstance.fitView(fitViewOptions)
+      }
+    }, 100)
+  }
+
   return (
     <>
       <Modal
@@ -537,6 +557,12 @@ export default function App({
         isOpen={isImportModalOpen}
         setIsOpen={setIsImportModalOpen}
         onImport={handleImportConfig}
+      />
+
+      <ConnectionModal
+        isOpen={isConnectionModalOpen}
+        setIsOpen={setIsConnectionModalOpen}
+        onVisualize={handleVisualize}
       />
 
       <ReactFlowProvider>
@@ -609,11 +635,11 @@ export default function App({
               <div className="reactflow-panel-group">
                 <Button className="reactflow-panel-group-left" onClick={addFlow}>
                   <Icon icon="plus" size={16} style={{ transform: 'scaleX(-1)' }} />
-                  {isMobile ? '' : ti18n.translate(ti18n.keys.buttonAddFlow)}
+                  {isCompact ? '' : ti18n.translate(ti18n.keys.buttonAddFlow)}
                 </Button>
                 <Button className="reactflow-panel-group-right" onClick={removeFlow}>
                   <Icon icon="minus" size={16} style={{ transform: 'scaleX(-1)' }} />
-                  {isMobile ? '' : ti18n.translate(ti18n.keys.buttonRemoveFlow)}
+                  {isCompact ? '' : ti18n.translate(ti18n.keys.buttonRemoveFlow)}
                 </Button>
               </div>
               <Button
@@ -622,11 +648,22 @@ export default function App({
                 style={{ marginRight: '8px' }}
               >
                 <Icon icon="import" size={16} />
-                {isMobile ? '' : ti18n.translate(ti18n.keys.buttonImport) || 'Import'}
+                {isCompact ? '' : ti18n.translate(ti18n.keys.buttonImport) || 'Import'}
               </Button>
-              <Button className="reactflow-panel-button" onClick={() => setIsModalOpen(true)}>
+              <Button
+                className="reactflow-panel-button"
+                onClick={() => setIsModalOpen(true)}
+                style={{ marginRight: '8px' }}
+              >
                 <Icon icon="export" size={16} />
-                {isMobile ? '' : ti18n.translate(ti18n.keys.buttonConfig)}
+                {isCompact ? '' : ti18n.translate(ti18n.keys.buttonConfig)}
+              </Button>
+              <Button
+                className="reactflow-panel-button"
+                onClick={() => setIsConnectionModalOpen(true)}
+              >
+                <Icon icon="plug" size={16} />
+                {isCompact ? '' : ti18n.translate(ti18n.keys.buttonConnect)}
               </Button>
             </Panel>
             <Panel position="bottom-right">
@@ -636,7 +673,7 @@ export default function App({
             <Background
               variant={BackgroundVariant.Dots}
             />
-            {!hideMinimap && !locked && <MiniMap />}
+            {!hideMinimap && !locked && !isCompact && <MiniMap />}
             {!hideControls && !locked && <Controls />}
           </ReactFlow>
         </div>

@@ -31,7 +31,7 @@ export function DataEdgeComponent({
   targetPosition,
   data,
 }: EdgeProps<DataEdge>) {
-  const [status, setStatus] = useState<Status>(data!.initialStatus || Status.Unknown) // Keep track of the status of the edge.
+  const [status, setStatus] = useState<Status>(data!.initialStatus || Status.Unset) // Keep track of the status of the edge.
   const sourceNode = useNodesData(source) // Get the data of the source node for the edge.
 
   useEffect(() => { // Receive status from source node.
@@ -39,7 +39,7 @@ export function DataEdgeComponent({
       const serviceNode = sourceNode as ServiceNode
 
       if (serviceNode.data.status)
-        setStatus(serviceNode.data.status ?? Status.Unknown)
+        setStatus(serviceNode.data.status ?? Status.Unset)
     }
   }, [sourceNode])
 
@@ -66,7 +66,7 @@ export function DataEdgeComponent({
   const size = 6 // Size of the gizmo.
   const dashes = isActive ? '5' : '0' // Dashed line for active edges.
   const style = {
-    animation: `dashdraw 0.25s linear infinite ${(!isActive && status !== Status.Unknown) ? ', blink-opacity 1s infinite' : ''}`,
+    animation: `dashdraw 0.25s linear infinite ${(!isActive && status !== Status.Unset) ? ', blink-opacity 1s infinite' : ''}`,
     stroke: color,
   } satisfies React.CSSProperties
 

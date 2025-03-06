@@ -117,7 +117,7 @@ export function ServiceEditModal({ id, data, isSource, isOpen, setIsOpen, onDele
       onClose={() => setIsOpen(false)}
     >
       <div className="react-flow__node-service-form">
-        <div className="react-flow__node-service-form-common">
+        <div className="react-flow__node-service-form-group">
           <div className="react-flow__node-service-form-field">
             <h3>{ti18n.translate(ti18n.keys.genericIdentifier)}</h3>
             <input
@@ -136,7 +136,7 @@ export function ServiceEditModal({ id, data, isSource, isOpen, setIsOpen, onDele
                     width: 12,
                     height: 12,
                     borderRadius: '50%',
-                    backgroundColor: getStatusColor(data.status || Status.Unknown),
+                    backgroundColor: getStatusColor(data.status || Status.Unset),
                     display: 'inline-block',
                   }}
                 />

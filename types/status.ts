@@ -1,5 +1,5 @@
 export enum Status {
-  Unknown = 'UNKNOWN',
+  Unset = 'UNSET',
   SuccessWithWarehouse = 'SUCCESS_WITH_WAREHOUSE',
   SuccessNothingNew = 'SUCCESS_NOTHING_NEW',
   Success = 'SUCCESS',

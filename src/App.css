@@ -184,6 +184,7 @@ input {
 } */
 
 .modal-content {
+  min-height: 640px;
   border-radius: var(--viewer-border-radius);
   overflow-y: scroll;
   overflow-x: hidden;
@@ -574,13 +575,12 @@ input {
 
 /* Service node modal form styles */
 .react-flow__node-service-form {
-  height: 1080px;
   display: flex;
   flex-direction: column;
   gap: 32px;
 }
 
-.react-flow__node-service-form-common {
+.react-flow__node-service-form-group {
   width: 100%;
   display: flex;
   gap: 20px;
@@ -599,7 +599,7 @@ input {
   gap: 4px;
 }
 
-.react-flow__node-service-form-common .react-flow__node-service-form-field {
+.react-flow__node-service-form-group .react-flow__node-service-form-field {
   flex-grow: 1;
 }
 
@@ -661,24 +661,47 @@ input {
   animation: blink-outline 1s infinite;
 }
 
-.react-flow__node-service-contents--error-service-pull .react-flow__handle,
-.react-flow__node-service-contents-source-error-service-pull .react-flow__handle,
-.react-flow__node-service-contents-destination-error-service-push .react-flow__handle {
+.service-node-status-error-service-pull .react-flow__handle,
+.stage-node-status-error-service-pull .react-flow__handle,
+.service-node-status-error-data-modelize .react-flow__handle,
+.stage-node-status-error-data-modelize .react-flow__handle,
+.service-node-status-error-data-egress .react-flow__handle,
+.stage-node-status-error-data-egress .react-flow__handle,
+.service-node-status-error-service-push .react-flow__handle,
+.stage-node-status-error-service-push .react-flow__handle {
   border-color: var(--xy-custom-edge-stroke-error);
 }
 
-.react-flow__node-service-contents--error-service-pull .react-flow__handle:hover,
-.react-flow__node-service-contents-source-error-service-pull .react-flow__handle:hover,
-.react-flow__node-service-contents-destination-error-service-push .react-flow__handle:hover {
+.service-node-status-error-service-pull .react-flow__handle:hover,
+.service-node-status-error-service-pull .react-flow__handle-plugged,
+.stage-node-status-error-service-pull .react-flow__handle:hover,
+.stage-node-status-error-service-pull .react-flow__handle-plugged,
+.service-node-status-error-data-modelize .react-flow__handle:hover,
+.service-node-status-error-data-modelize .react-flow__handle-plugged,
+.stage-node-status-error-data-modelize .react-flow__handle:hover,
+.stage-node-status-error-data-modelize .react-flow__handle-plugged,
+.service-node-status-error-data-egress .react-flow__handle:hover,
+.service-node-status-error-data-egress .react-flow__handle-plugged,
+.stage-node-status-error-data-egress .react-flow__handle:hover,
+.stage-node-status-error-data-egress .react-flow__handle-plugged,
+.service-node-status-error-service-push .react-flow__handle:hover,
+.service-node-status-error-service-push .react-flow__handle-plugged,
+.stage-node-status-error-service-push .react-flow__handle:hover,
+.stage-node-status-error-service-push .react-flow__handle-plugged {
   background-color: var(--xy-custom-edge-stroke-error);
 }
 
-.react-flow__node-service-contents--error-service-pull .react-flow__handle-plugged,
-.react-flow__node-service-contents-source-error-service-pull .react-flow__handle-plugged,
-.react-flow__node-service-contents-destination-error-service-push .react-flow__handle-plugged {
-  background-color: var(--xy-custom-edge-stroke-error);
+.service-node-status-unset .react-flow__handle,
+.stage-node-status-unset .react-flow__handle {
+  border-color: var(--xy-custom-edge-stroke-inactive);
 }
 
+.service-node-status-unset .react-flow__handle:hover,
+.service-node-status-unset .react-flow__handle-plugged,
+.stage-node-status-unset .react-flow__handle:hover,
+.stage-node-status-unset .react-flow__handle-plugged {
+  background-color: var(--xy-custom-edge-stroke-inactive);
+}
 
 .react-flow__node-service .react-flow__node-service-icon,
 .react-flow__node-service .react-flow__node-service-icon-delete {
@@ -748,21 +771,6 @@ input {
 .react-flow__node-stage-contents-egress-error-data-egress {
   outline: 2px solid var(--xy-custom-edge-stroke-error);
   animation: blink-outline 1s infinite;
-}
-
-.react-flow__node-stage-contents-modelize-error-data-modelize .react-flow__handle,
-.react-flow__node-stage-contents-egress-error-data-egress .react-flow__handle {
-  border-color: var(--xy-custom-edge-stroke-error);
-}
-
-.react-flow__node-stage-contents-modelize-error-data-modelize .react-flow__handle:hover,
-.react-flow__node-stage-contents-egress-error-data-egress .react-flow__handle:hover {
-  background-color: var(--xy-custom-edge-stroke-error);
-}
-
-.react-flow__node-stage-contents-modelize-error-data-modelize .react-flow__handle-plugged,
-.react-flow__node-stage-contents-egress-error-data-egress .react-flow__handle-plugged {
-  background-color: var(--xy-custom-edge-stroke-error);
 }
 
 /* Warehouse node */

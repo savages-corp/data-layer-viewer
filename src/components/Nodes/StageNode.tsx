@@ -38,6 +38,12 @@ export function StageNodeComponent({ id, data }: NodeProps<StageNode>) {
   // Get the data of the connected node.
   const targetConnectionsData = useNodesData(targetConnections[0]?.source) as ServiceNode | StageNode | undefined
 
+  const statusSlug = useMemo(() => {
+    if (data.status) {
+      return String(data.status).toLowerCase().replace(/_/g, '-')
+    }
+  }, [data])
+
   // Update the status of the node based on the connected node.
   useEffect(() => {
     if (targetConnections.length > 0) {
@@ -47,7 +53,7 @@ export function StageNodeComponent({ id, data }: NodeProps<StageNode>) {
       }
     }
 
-    updateNodeData(id, { status: Status.Unknown })
+    updateNodeData(id, { status: Status.Unset })
   }, [targetConnectionsData])
 
   const label = useMemo(() => {
@@ -61,7 +67,7 @@ export function StageNodeComponent({ id, data }: NodeProps<StageNode>) {
   }, [data.stage])
 
   return (
-    <div className={`react-flow__node-stage-contents react-flow__node-stage-contents-${data.stage.toLowerCase()}-${data.status && String(data.status).toLowerCase().replace(/_/g, '-')}`}>
+    <div className={`react-flow__node-stage-contents react-flow__node-stage-contents-${data.stage.toLowerCase()}-${statusSlug} stage-node-status-${statusSlug}`}>
       <div>{label}</div>
       {/* Depending on whether the stage is modelize or egress, either the target or source is square */}
       <Handle

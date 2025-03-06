@@ -8,7 +8,7 @@ import { useTi18n } from '@/components/Core/Ti18nProvider'
 import { Status } from '@/types/status'
 
 import { Handle, Position, useNodeConnections, useNodesData, useReactFlow } from '@xyflow/react'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 export type ServiceNode = Node<
   {
@@ -31,7 +31,7 @@ export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
   }
 
   if (data.status === undefined) {
-    data.status = Status.Unknown
+    data.status = Status.Unset
   }
 
   const targetConnections = useNodeConnections({
@@ -46,6 +46,12 @@ export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
 
   const [isSource, setIsSource] = useState(false)
   const [isDestination, setIsDestination] = useState(false)
+
+  const statusSlug = useMemo(() => {
+    if (data.status) {
+      return String(data.status).toLowerCase().replace(/_/g, '-')
+    }
+  }, [data])
 
   useEffect(() => {
     if (targetConnections.length > 0) {
@@ -76,7 +82,7 @@ export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
     setEdges(edges => edges.filter(edge => edge.source !== id && edge.target !== id))
 
     if (isSource && targetConnectionsData) {
-      updateNodeData(targetConnectionsData.id, { status: Status.Unknown })
+      updateNodeData(targetConnectionsData.id, { status: Status.Unset })
     }
 
     setIsModalOpen(false)
@@ -98,7 +104,7 @@ export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
       />
 
       {/* Node UI */}
-      <div className={`react-flow__node-service-contents react-flow__node-service-contents-${isSource ? 'source' : ''}${isDestination ? 'destination' : ''}-${data.status && String(data.status).toLowerCase().replace(/_/g, '-')}`}>
+      <div className={`react-flow__node-service-contents react-flow__node-service-contents-${isSource ? 'source' : ''}${isDestination ? 'destination' : ''}-${statusSlug} service-node-status-${statusSlug}`}>
         <div className="react-flow__node-service-icon">
           <Icon size={16} icon={data.configuration?.type} />
         </div>
