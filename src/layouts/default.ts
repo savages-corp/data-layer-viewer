@@ -23,7 +23,7 @@ function builder({ ti18n, mobile = false }: { ti18n: Ti18n<TranslationKey>, mobi
   const presetSource: ServiceNode = {
     id: getTimedId('service-source-1'),
     type: 'service',
-    position: mobile ? { x: 0, y: -256 } : { x: -312, y: -64 },
+    position: mobile ? { x: -48, y: -164 } : { x: -312, y: -64 },
     data: {
       status: Status.Success,
       configuration: {
@@ -36,7 +36,7 @@ function builder({ ti18n, mobile = false }: { ti18n: Ti18n<TranslationKey>, mobi
   const presetDestination: ServiceNode = {
     id: getTimedId('service-destination-1'),
     type: 'service',
-    position: mobile ? { x: 0, y: 256 } : { x: 296, y: -64 },
+    position: mobile ? { x: 32, y: 182 } : { x: 296, y: -64 },
     data: {
       status: Status.Success,
       configuration: {
@@ -126,7 +126,7 @@ function builder({ ti18n, mobile = false }: { ti18n: Ti18n<TranslationKey>, mobi
       {
         id: getTimedId('service-source-2'),
         type: 'service',
-        position: mobile ? { x: 0, y: -256 } : { x: -312, y: 96 },
+        position: { x: -312, y: 96 },
         data: {
           status: Status.Success,
           configuration: {
@@ -138,7 +138,7 @@ function builder({ ti18n, mobile = false }: { ti18n: Ti18n<TranslationKey>, mobi
       {
         id: getTimedId('service-destination-2'),
         type: 'service',
-        position: mobile ? { x: 0, y: 100 } : { x: 296, y: 96 },
+        position: { x: 296, y: 96 },
         data: {
           status: Status.Success,
           configuration: {
