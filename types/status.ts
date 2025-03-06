@@ -1,11 +1,11 @@
 export enum Status {
   Unset = 'UNSET',
-  SuccessWithWarehouse = 'SUCCESS_WITH_WAREHOUSE',
-  SuccessNothingNew = 'SUCCESS_NOTHING_NEW',
+  SuccessWithWarehouse = 'SUCCESS-WITH-WAREHOUSE',
+  SuccessNothingNew = 'SUCCESS-NOTHING-NEW',
   Success = 'SUCCESS',
-  ErrorServicePull = 'ERROR_SERVICE_PULL',
-  ErrorServicePush = 'ERROR_SERVICE_PUSH',
-  ErrorDataModelize = 'ERROR_DATA_MODELIZE',
-  ErrorDataEgress = 'ERROR_DATA_EGRESS',
-  ErrorInternalUnknown = 'ERROR_INTERNAL_UNKNOWN',
+  ErrorServicePull = 'ERROR-SERVICE-PULL',
+  ErrorServicePush = 'ERROR-SERVICE-PUSH',
+  ErrorDataModelize = 'ERROR-DATA-MODELIZE',
+  ErrorDataEgress = 'ERROR-DATA-EGRESS',
+  ErrorInternalUnknown = 'ERROR-INTERNAL-UNKNOWN',
 }

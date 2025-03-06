@@ -41,7 +41,7 @@ export function DataEdgeComponent({
       if (serviceNode.data.status)
         setStatus(serviceNode.data.status ?? Status.Unset)
     }
-  }, [sourceNode])
+  }, [sourceNode, sourceNode?.data.status])
 
   // Get the color of the edge based on the status. We'll wrap this in a useCallback to prevent unnecessary re-renders.
   const color = useMemo(() => {

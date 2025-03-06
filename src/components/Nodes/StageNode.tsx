@@ -42,7 +42,7 @@ export function StageNodeComponent({ id, data }: NodeProps<StageNode>) {
     if (data.status) {
       return String(data.status).toLowerCase().replace(/_/g, '-')
     }
-  }, [data])
+  }, [data, data.status])
 
   // Update the status of the node based on the connected node.
   useEffect(() => {
@@ -54,7 +54,7 @@ export function StageNodeComponent({ id, data }: NodeProps<StageNode>) {
     }
 
     updateNodeData(id, { status: Status.Unset })
-  }, [targetConnectionsData])
+  }, [targetConnectionsData, targetConnectionsData?.data.status])
 
   const label = useMemo(() => {
     switch (data.stage) {

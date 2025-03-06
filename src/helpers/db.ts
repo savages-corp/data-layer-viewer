@@ -29,21 +29,22 @@ function convertAuditStatus(auditStatus: string, timestamp: string): Status {
     return Status.Unset
   }
 
-  switch (auditStatus) {
-    case 'SUCCESS':
-    case 'SUCCESS-NOTHING-NEW':
-      return Status.Success
-    case 'SUCCESS-WITH-WAREHOUSE':
-      return Status.SuccessWithWarehouse
-    case 'ERROR-SERVICE-PULL':
-      return Status.ErrorServicePull
-    case 'ERROR-SERVICE-PUSH':
-      return Status.ErrorServicePush
-    case 'UNSET':
-      return Status.Unset
-    default:
-      return Status.ErrorInternalUnknown
-  }
+  return auditStatus as Status
+}
+
+function getNodeId(isSource: boolean, sourceType: string, sourceIdentifier: string, destinationType: string, destinationIdentifier: string): string {
+  return isSource
+    ? `source-${slugify(sourceType)}-${sourceIdentifier}-to-destination-${slugify(destinationType)}-${destinationIdentifier}`
+    : `destination-${slugify(destinationType)}-${destinationIdentifier}-from-source-${slugify(sourceType)}-${sourceIdentifier}`
+}
+
+export function calculateExpectedDataEdges(auditData: AuditDBPush[]): number {
+  const expectedEdges = auditData.length * 3
+
+  // For every flow that reports with warehouse usage, we add an additional edge
+  const warehouseEdges = auditData.filter(flow => convertAuditStatus(flow.latest_status, flow.latest_timestamp) === Status.SuccessWithWarehouse).length
+
+  return expectedEdges + warehouseEdges
 }
 
 // Convert audit data into a layout structure
@@ -79,7 +80,7 @@ export function translateFromAuditData(auditData: AuditDBPush[]): {
     nodes.push(flow.container, flow.modelize, flow.egress)
 
     // Create source service node
-    const sourceId = `flow-${index}-source-${slugify(flowData.source_type)}-${flowData.source_identifier}`
+    const sourceId = getNodeId(true, flowData.source_type, flowData.source_identifier, flowData.destination_type, flowData.destination_identifier)
     let sourceNode = serviceNodes[sourceId]
 
     if (!sourceNode) {
@@ -103,12 +104,12 @@ export function translateFromAuditData(auditData: AuditDBPush[]): {
     }
 
     // Create destination service node
-    const destId = `flow-${index}-destination-${slugify(flowData.destination_type)}-${flowData.destination_identifier}`
-    let destNode = serviceNodes[destId]
+    const destinationId = getNodeId(false, flowData.source_type, flowData.source_identifier, flowData.destination_type, flowData.destination_identifier)
+    let destinationNode = serviceNodes[destinationId]
 
-    if (!destNode) {
-      destNode = {
-        id: destId,
+    if (!destinationNode) {
+      destinationNode = {
+        id: destinationId,
         type: 'service',
         position: { x: 296, y: -96 + index * 72 },
         data: {
@@ -122,8 +123,8 @@ export function translateFromAuditData(auditData: AuditDBPush[]): {
           },
         },
       }
-      serviceNodes[destId] = destNode
-      nodes.push(destNode)
+      serviceNodes[destinationId] = destinationNode
+      nodes.push(destinationNode)
     }
 
     // Create edges to connect the flow
@@ -150,9 +151,9 @@ export function translateFromAuditData(auditData: AuditDBPush[]): {
     }
 
     const egressToDestEdge: AppEdge = {
-      id: `${flow.egress.id}-to-dest-${destId}`,
+      id: `${flow.egress.id}-to-dest-${destinationId}`,
       source: flow.egress.id,
-      target: destNode.id,
+      target: destinationNode.id,
       type: 'data',
       data: {
         shape: 'circle',
@@ -184,4 +185,38 @@ export function translateFromAuditData(auditData: AuditDBPush[]): {
     nodes,
     edges,
   }
+}
+
+// Update existing nodes with new audit data
+export function updateFromAuditData(
+  auditData: AuditDBPush[],
+  existingNodes: AppNode[],
+  existingEdges: AppEdge[],
+): { nodes: AppNode[], edges: AppEdge[] } {
+  const updatedNodes = [...existingNodes]
+  const updatedEdges = [...existingEdges]
+
+  auditData.forEach((flowData) => {
+    const sourceId = getNodeId(true, flowData.source_type, flowData.source_identifier, flowData.destination_type, flowData.destination_identifier)
+    const destinationId = getNodeId(false, flowData.source_type, flowData.source_identifier, flowData.destination_type, flowData.destination_identifier)
+
+    const sourceNodeIndex = updatedNodes.findIndex(node => node.id === sourceId)
+    const destinationNodeIndex = updatedNodes.findIndex(node => node.id === destinationId)
+
+    if (sourceNodeIndex !== -1) {
+      const sourceNode = updatedNodes[sourceNodeIndex] as ServiceNode
+      sourceNode.data.status = convertAuditStatus(flowData.latest_status, flowData.latest_timestamp)
+
+      updatedNodes[sourceNodeIndex] = sourceNode
+    }
+
+    if (destinationNodeIndex !== -1) {
+      const destinationNode = updatedNodes[destinationNodeIndex] as ServiceNode
+      destinationNode.data.status = Status.Success // Destinations don't show status
+
+      updatedNodes[destinationNodeIndex] = destinationNode
+    }
+  })
+
+  return { nodes: updatedNodes, edges: updatedEdges }
 }

@@ -2,15 +2,17 @@ import type { AppEdge, AppNode } from '@/src/App'
 import type { DatalayerPrefab } from '@/src/prefabs/datalayer'
 import type { FlowPrefab } from '@/src/prefabs/flow'
 import type { AuditDBPush } from '@/types/auditdb'
+import type { WebClickHouseClient } from '@clickhouse/client-web/dist/client'
 
 import { Button } from '@/components/Common/Button'
 import { Icon } from '@/components/Common/Icon'
 import { Modal } from '@/components/Common/Modal'
-import { useTi18n } from '@/components/Core/Ti18nProvider'
 
+import { useTi18n } from '@/components/Core/Ti18nProvider'
 import { createClient } from '@clickhouse/client-web'
-import { useState } from 'react'
-import { translateFromAuditData } from '../../helpers/db'
+import { useReactFlow } from '@xyflow/react'
+import { useCallback, useEffect, useState } from 'react'
+import { calculateExpectedDataEdges, translateFromAuditData, updateFromAuditData } from '../../helpers/db'
 
 interface ConnectionModalProps {
   isOpen: boolean
@@ -20,44 +22,25 @@ interface ConnectionModalProps {
 
 export function ConnectionModal({ isOpen, setIsOpen, onVisualize }: ConnectionModalProps) {
   const ti18n = useTi18n()
+
+  const { getNodes, getEdges, setNodes, setEdges } = useReactFlow()
+
+  const [client, setClient] = useState<WebClickHouseClient | null>(null)
+
   const [host, setHost] = useState('')
   const [port, setPort] = useState('8123')
   const [secure, setSecure] = useState(false)
   const [username, setUsername] = useState('default')
   const [password, setPassword] = useState('')
   const [connecting, setConnecting] = useState(false)
+  const [autoRefresh, setAutoRefresh] = useState(false)
+  const [refreshInterval, setRefreshInterval] = useState(30)
+
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
 
-  const handleHostChange = (value: string) => {
-    // Strip any protocol from the input if present
-    const cleanHost = value.replace(/^https?:\/\//, '')
-    setHost(cleanHost)
-  }
-
-  const getFullHost = () => {
-    // Add protocol based on secure setting
-    const protocol = secure ? 'https://' : 'http://'
-    return `${protocol}${host}`
-  }
-
-  const handleConnection = async () => {
-    setConnecting(true)
-    setError(null)
-    setSuccess(false)
+  const fetchAuditData = useCallback(async (client: WebClickHouseClient, isInitialFetch = false) => {
     try {
-      const client = createClient({
-        url: `${getFullHost()}:${port}`,
-        database: 'efdl_audit_db',
-        username,
-        password,
-      })
-
-      // First test basic connectivity
-      await client.query({ query: 'SELECT 1' })
-      setSuccess(true)
-
-      // Then try to get some actual data
       const result = await client.query({
         query: `
           SELECT
@@ -84,14 +67,94 @@ export function ConnectionModal({ isOpen, setIsOpen, onVisualize }: ConnectionMo
 
       const data = await result.json() as AuditDBPush[]
 
-      // Convert the audit data into a layout
-      const { datalayer, nodes, edges, flows } = translateFromAuditData(data)
+      const existingNodes = getNodes()
+      const existingEdges = getEdges()
 
-      // Pass the layout up to be visualized with all components
-      onVisualize(datalayer, nodes, edges, flows)
+      // Create new visualization if it's the first fetch or if the number of nodes has changed and doesn't match the data.
+      // We should also check that every node is
+      const serviceNodes = existingNodes.filter(node => node.type === 'service')
+      const dataEdges = existingEdges.filter(edge => edge.type === 'data')
 
-      // Close the modal after successful visualization
-      setIsOpen(false)
+      // We should also check that the number of edges matches the expected number of edges.
+      const expectedEdges = calculateExpectedDataEdges(data)
+
+      if (isInitialFetch || serviceNodes.length / 2 !== data.length || dataEdges.length !== expectedEdges) {
+        const { datalayer, nodes, edges, flows } = translateFromAuditData(data)
+        onVisualize(datalayer, nodes, edges, flows)
+      }
+      else {
+        // Update existing nodes
+        const { nodes: updatedNodes, edges: updatedEdges } = updateFromAuditData(data, existingNodes as AppNode[], existingEdges as AppEdge[])
+        setNodes(updatedNodes)
+        setEdges(updatedEdges)
+      }
+    }
+    catch (error) {
+      console.error('Failed to fetch audit data:', error)
+      setError(`Refresh failed: ${(error as Error).message}`)
+    }
+  }, [getNodes, getEdges, setNodes, setEdges, onVisualize, setIsOpen])
+
+  // Cleanup interval on unmount
+  useEffect(() => {
+    return () => {
+      if (client) {
+        client.close()
+      }
+    }
+  }, [client])
+
+  // Handle auto-refresh
+  useEffect(() => {
+    let intervalId: ReturnType<typeof setTimeout> | null = null
+
+    if (autoRefresh && client) {
+      intervalId = setInterval(() => {
+        fetchAuditData(client)
+      }, refreshInterval * 1000)
+    }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId)
+      }
+    }
+  }, [autoRefresh, client, refreshInterval, fetchAuditData])
+
+  const handleHostChange = (value: string) => {
+    // Strip any protocol from the input if present
+    const cleanHost = value.replace(/^https?:\/\//, '')
+    setHost(cleanHost)
+  }
+
+  const getFullHost = () => {
+    // Add protocol based on secure setting
+    const protocol = secure ? 'https://' : 'http://'
+    return `${protocol}${host}`
+  }
+
+  const handleConnection = async () => {
+    setConnecting(true)
+    setError(null)
+    setSuccess(false)
+
+    try {
+      const newClient = createClient({
+        url: `${getFullHost()}:${port}`,
+        database: 'efdl_audit_db',
+        username,
+        password,
+      })
+
+      // First test basic connectivity
+      await newClient.query({ query: 'SELECT 1' })
+      setSuccess(true)
+
+      // Set the client for later use
+      setClient(newClient)
+
+      // Initial data fetch with flag to indicate it's the first fetch
+      await fetchAuditData(newClient, true)
 
       // Reset the form
       setSuccess(false)
@@ -106,6 +169,14 @@ export function ConnectionModal({ isOpen, setIsOpen, onVisualize }: ConnectionMo
     }
   }
 
+  const handleDisconnect = () => {
+    if (client) {
+      client.close()
+      setClient(null)
+      setAutoRefresh(false)
+    }
+  }
+
   return (
     <Modal
       title={ti18n.translate(ti18n.keys.modalConnectionTitle)}
@@ -116,15 +187,29 @@ export function ConnectionModal({ isOpen, setIsOpen, onVisualize }: ConnectionMo
         </div>
       )}
       buttons={(
-        <Button
-          onClick={handleConnection}
-          style={{ width: 'fit-content', opacity: connecting ? 0.5 : 1 }}
-        >
-          <Icon icon="plug" size={16} />
-          {connecting
-            ? ti18n.translate(ti18n.keys.modalConnectionConnecting)
-            : ti18n.translate(ti18n.keys.modalConnectionButton)}
-        </Button>
+        <>
+          {client
+            ? (
+                <Button
+                  onClick={handleDisconnect}
+                  style={{ width: 'fit-content', opacity: connecting ? 0.5 : 1 }}
+                >
+                  <Icon icon="plug" size={16} />
+                  Disconnect
+                </Button>
+              )
+            : (
+                <Button
+                  onClick={handleConnection}
+                  style={{ width: 'fit-content', opacity: connecting ? 0.5 : 1 }}
+                >
+                  <Icon icon="plug" size={16} />
+                  {connecting
+                    ? ti18n.translate(ti18n.keys.modalConnectionConnecting)
+                    : ti18n.translate(ti18n.keys.modalConnectionButton)}
+                </Button>
+              )}
+        </>
       )}
       isOpen={isOpen}
       setIsOpen={setIsOpen}
@@ -166,7 +251,6 @@ export function ConnectionModal({ isOpen, setIsOpen, onVisualize }: ConnectionMo
               <label htmlFor="secure-connection">HTTPS</label>
             </div>
           </div>
-
         </div>
 
         <div className="react-flow__node-service-form-group">
@@ -186,6 +270,33 @@ export function ConnectionModal({ isOpen, setIsOpen, onVisualize }: ConnectionMo
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="react-flow__node-service-form-group">
+          <div className="react-flow__node-service-form-field" style={{ width: '49%' }}>
+            <h3>Auto Refresh</h3>
+            <div className="react-flow__node-service-form-row" style={{ height: '34px' }}>
+              <input
+                type="checkbox"
+                checked={autoRefresh}
+                onChange={e => setAutoRefresh(e.target.checked)}
+                disabled={!client}
+              />
+              <label style={{ opacity: client ? 1 : 0.5 }}>Enable auto refresh</label>
+            </div>
+          </div>
+
+          <div className="react-flow__node-service-form-field" style={{ width: '49%' }}>
+            <h3>Refresh Interval (seconds)</h3>
+            <input
+              type="number"
+              min="5"
+              value={refreshInterval}
+              onChange={e => setRefreshInterval(Math.max(10, Number.parseInt(e.target.value)))}
+              style={{ width: '80px' }}
+              disabled={!client || !autoRefresh}
             />
           </div>
         </div>

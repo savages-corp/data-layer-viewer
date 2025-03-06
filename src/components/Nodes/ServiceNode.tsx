@@ -52,7 +52,7 @@ export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
     if (data.status) {
       return String(data.status).toLowerCase().replace(/_/g, '-')
     }
-  }, [data])
+  }, [data, data.status])
 
   useEffect(() => {
     if (targetConnections.length > 0) {

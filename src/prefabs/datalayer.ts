@@ -9,6 +9,17 @@ export interface DatalayerPrefab {
   warehouse: WarehouseNode
 }
 
+export function AdjustDatalayerPrefab(datalayer: DatalayerPrefab, flowCount: number): DatalayerPrefab {
+  const datalayerHeight = calculateDataLayerHeight(flowCount)
+
+  if (datalayer.container.style)
+    datalayer.container.style.height = datalayerHeight
+
+  datalayer.container.position = { x: -48, y: calculateDataLayerY(flowCount) }
+  datalayer.warehouse.position = { x: 4, y: calculateWarehouseY(datalayerHeight) }
+  return datalayer
+}
+
 export function CreateDatalayerPrefab(flowCount: number) : (DatalayerPrefab) {
   const datalayerHeight = calculateDataLayerHeight(flowCount)
   const container: ContainerNode = {

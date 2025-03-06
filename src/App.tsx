@@ -511,61 +511,61 @@ export default function App({
       if (reactFlowInstance) {
         reactFlowInstance.fitView(fitViewOptions)
       }
-    }, 100)
+    }, 1000)
   }
 
   return (
     <>
-      <Modal
-        title={ti18n.translate(ti18n.keys.modalConfigTitle)}
-        isOpen={isModalOpen}
-        setIsOpen={setIsModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      >
-        <p>
-          {ti18n.translate(ti18n.keys.modalConfigDescription)}
-        </p>
-        <div className="modal-split">
-          <div className="modal-split-container">
-            <h2 className="modal-split-header">{ti18n.translate(ti18n.keys.modalConfigJson)}</h2>
-            <pre>
-              <Icon
-                icon="clipboard"
-                onClick={() => {
-                  navigator.clipboard.writeText(configJSON)
-                }}
-              />
-              {configJSON}
-            </pre>
-          </div>
-          <div className="modal-split-container">
-            <h2 className="modal-split-header">{ti18n.translate(ti18n.keys.modalConfigYaml)}</h2>
-            <pre>
-              <Icon
-                icon="clipboard"
-                onClick={() => {
-                  navigator.clipboard.writeText(configYAML)
-                }}
-              />
-              {configYAML}
-            </pre>
-          </div>
-        </div>
-      </Modal>
-
-      <ImportModal
-        isOpen={isImportModalOpen}
-        setIsOpen={setIsImportModalOpen}
-        onImport={handleImportConfig}
-      />
-
-      <ConnectionModal
-        isOpen={isConnectionModalOpen}
-        setIsOpen={setIsConnectionModalOpen}
-        onVisualize={handleVisualize}
-      />
-
       <ReactFlowProvider>
+        <Modal
+          title={ti18n.translate(ti18n.keys.modalConfigTitle)}
+          isOpen={isModalOpen}
+          setIsOpen={setIsModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        >
+          <p>
+            {ti18n.translate(ti18n.keys.modalConfigDescription)}
+          </p>
+          <div className="modal-split">
+            <div className="modal-split-container">
+              <h2 className="modal-split-header">{ti18n.translate(ti18n.keys.modalConfigJson)}</h2>
+              <pre>
+                <Icon
+                  icon="clipboard"
+                  onClick={() => {
+                    navigator.clipboard.writeText(configJSON)
+                  }}
+                />
+                {configJSON}
+              </pre>
+            </div>
+            <div className="modal-split-container">
+              <h2 className="modal-split-header">{ti18n.translate(ti18n.keys.modalConfigYaml)}</h2>
+              <pre>
+                <Icon
+                  icon="clipboard"
+                  onClick={() => {
+                    navigator.clipboard.writeText(configYAML)
+                  }}
+                />
+                {configYAML}
+              </pre>
+            </div>
+          </div>
+        </Modal>
+
+        <ImportModal
+          isOpen={isImportModalOpen}
+          setIsOpen={setIsImportModalOpen}
+          onImport={handleImportConfig}
+        />
+
+        <ConnectionModal
+          isOpen={isConnectionModalOpen}
+          setIsOpen={setIsConnectionModalOpen}
+          onVisualize={handleVisualize}
+        />
+
         <div ref={reactFlowWrapper} className="reactflow-wrapper" style={{ width: '100%', height: '100%' }}>
           <ReactFlow
             onInit={instance => setReactFlowInstance(instance)}
