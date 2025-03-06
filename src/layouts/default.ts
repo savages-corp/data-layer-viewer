@@ -29,6 +29,14 @@ function builder({ ti18n, mobile = false }: { ti18n: Ti18n<TranslationKey>, mobi
       configuration: {
         identifier: ti18n.translate(ti18n.keys.serviceGenericDatabase),
         type: ServiceType.GenericDatabase,
+        parameters: {
+          host: 'db.example.com',
+          port: 5432,
+          database: 'production',
+          username: '',
+          password: '',
+          ssl: true,
+        },
       },
     },
   }
@@ -42,6 +50,11 @@ function builder({ ti18n, mobile = false }: { ti18n: Ti18n<TranslationKey>, mobi
       configuration: {
         type: ServiceType.CommonSalesforce,
         identifier: 'Salesforce',
+        parameters: {
+          instanceUrl: 'example.sandbox.my.salesforce.com',
+          consumerId: '',
+          consumerSecret: '',
+        },
       },
     },
   }
@@ -132,6 +145,11 @@ function builder({ ti18n, mobile = false }: { ti18n: Ti18n<TranslationKey>, mobi
           configuration: {
             type: ServiceType.CommonHubspot,
             identifier: 'Hubspot',
+            parameters: {
+              apiKey: '',
+              portalId: 'demo123',
+              oauthToken: '',
+            },
           },
         },
       },
@@ -144,6 +162,11 @@ function builder({ ti18n, mobile = false }: { ti18n: Ti18n<TranslationKey>, mobi
           configuration: {
             type: ServiceType.CommonSlack,
             identifier: 'Slack',
+            parameters: {
+              botToken: '',
+              signingSecret: '',
+              appId: 'A12BCDE3FG',
+            },
           },
         },
       },

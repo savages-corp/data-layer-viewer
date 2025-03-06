@@ -90,6 +90,7 @@ export function translateFromAuditData(auditData: AuditDBPush[]): {
         data: {
           status: convertAuditStatus(flowData.latest_status, flowData.latest_timestamp),
           interval: 15, // Default interval
+          imported: true,
           configuration: {
             type: flowData.source_type as ServiceType,
             identifier: flowData.source_identifier,
@@ -113,6 +114,7 @@ export function translateFromAuditData(auditData: AuditDBPush[]): {
         data: {
           status: Status.Success, // Destinations don't show status
           interval: 15,
+          imported: true,
           configuration: {
             type: flowData.destination_type as ServiceType,
             identifier: flowData.destination_identifier,

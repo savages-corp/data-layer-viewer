@@ -47,7 +47,7 @@ export function ConnectionModal({ isOpen, setIsOpen, onVisualize }: ConnectionMo
     setSuccess(false)
     try {
       const client = createClient({
-        host: `${getFullHost()}:${port}`,
+        url: `${getFullHost()}:${port}`,
         database: 'efdl_audit_db',
         username,
         password,

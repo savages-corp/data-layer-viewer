@@ -57,6 +57,7 @@ input {
 }
 
 .button {
+  pointer-events: all;
   display: flex;
   gap: 8px;
   font-family: 'Poppins', sans-serif;
@@ -319,6 +320,7 @@ input {
 }
 
 .reactflow-panel-top {
+  pointer-events: none !important;
   margin: 0;
   width: 100%;
   display: flex;
@@ -327,12 +329,14 @@ input {
 }
 
 .reactflow-panel-bottom {
+  pointer-events: none !important;
   width: 100%;
   display: flex;
   gap: 8px;
 }
 
 .reactflow-panel-select-container {
+  pointer-events: all;
   flex-basis: 100%;
   margin: 15px;
   max-width: 400px;

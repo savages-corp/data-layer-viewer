@@ -61,6 +61,7 @@ export const TRANSLATION_KEYS = [
   'service-label-pull',
   'service-label-push',
   'service-label-source',
+  'service-imported-message',
   'stage-egress',
   'stage-modelize',
   'status-error-data-egress',

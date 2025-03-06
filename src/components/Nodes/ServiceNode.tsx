@@ -15,6 +15,7 @@ export type ServiceNode = Node<
     status?: Status
     interval?: number
     warehouse?: string
+    imported?: boolean
     configuration: ServiceConfiguration
   },
   'service'

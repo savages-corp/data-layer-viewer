@@ -16,6 +16,11 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'AWS',
             type: ServiceType.GenericHypervisorAws,
+            parameters: {
+              accessKeyId: '',
+              secretAccessKey: '',
+              region: 'us-east-1',
+            },
           },
         },
         {
@@ -23,6 +28,11 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'GCP',
             type: ServiceType.GenericHypervisorGcp,
+            parameters: {
+              projectId: '',
+              serviceAccountKey: '',
+              zone: 'us-central1-a',
+            },
           },
         },
         {
@@ -30,6 +40,12 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'Azure',
             type: ServiceType.GenericHypervisorAzure,
+            parameters: {
+              tenantId: '',
+              clientId: '',
+              clientSecret: '',
+              subscriptionId: '',
+            },
           },
         },
       ],
@@ -42,6 +58,11 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'Generic GraphQL Service',
             type: ServiceType.GenericGraphQL,
+            parameters: {
+              endpoint: 'https://api.example.com/graphql',
+              authToken: '',
+              headers: '',
+            },
           },
         },
         {
@@ -64,6 +85,13 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'Generic Queue Service',
             type: ServiceType.GenericQueue,
+            parameters: {
+              host: 'localhost',
+              port: 5672,
+              username: '',
+              password: '',
+              vhost: '/',
+            },
           },
         },
         {
@@ -71,6 +99,12 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'Generic NoSQL Service',
             type: ServiceType.GenericNoSql,
+            parameters: {
+              connectionString: 'mongodb://localhost:27017',
+              database: '',
+              username: '',
+              password: '',
+            },
           },
         },
         {
@@ -78,6 +112,14 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'Generic SQL Service',
             type: ServiceType.GenericDatabase,
+            parameters: {
+              host: 'localhost',
+              port: 5432,
+              database: '',
+              username: '',
+              password: '',
+              ssl: true,
+            },
           },
         },
         {
@@ -85,6 +127,12 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'Data Warehouse',
             type: ServiceType.GenericWarehouse,
+            parameters: {
+              warehouseUrl: '',
+              accessKey: '',
+              secretKey: '',
+              region: 'us-east-1',
+            },
           },
         },
       ],
@@ -97,6 +145,11 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'Hubspot',
             type: ServiceType.CommonHubspot,
+            parameters: {
+              apiKey: '',
+              portalId: '',
+              oauthToken: '',
+            },
           },
         },
         {
@@ -104,6 +157,11 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'Mailchimp',
             type: ServiceType.CommonMailchimp,
+            parameters: {
+              apiKey: '',
+              serverPrefix: 'us1',
+              listId: '',
+            },
           },
         },
         {
@@ -111,6 +169,11 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'Salesforce',
             type: ServiceType.CommonSalesforce,
+            parameters: {
+              instanceUrl: '',
+              consumerId: '',
+              consumerSecret: '',
+            },
           },
         },
         {
@@ -118,6 +181,11 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'Intercom',
             type: ServiceType.CommonIntercom,
+            parameters: {
+              accessToken: '',
+              appId: '',
+              apiVersion: '2.5',
+            },
           },
         },
       ],
@@ -130,6 +198,11 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'Asana',
             type: ServiceType.CommonAsana,
+            parameters: {
+              personalAccessToken: '',
+              workspaceId: '',
+              defaultProjectId: '',
+            },
           },
         },
         {
@@ -137,6 +210,12 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'Jira',
             type: ServiceType.CommonJira,
+            parameters: {
+              host: '',
+              username: '',
+              apiToken: '',
+              projectKey: '',
+            },
           },
         },
         {
@@ -144,6 +223,11 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'Slack',
             type: ServiceType.CommonSlack,
+            parameters: {
+              botToken: '',
+              signingSecret: '',
+              appId: '',
+            },
           },
         },
         {
@@ -151,6 +235,12 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'Zendesk',
             type: ServiceType.CommonZendesk,
+            parameters: {
+              subdomain: '',
+              email: '',
+              apiToken: '',
+              oauthToken: '',
+            },
           },
         },
         {
@@ -158,6 +248,12 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'Trello',
             type: ServiceType.CommonTrello,
+            parameters: {
+              apiKey: '',
+              token: '',
+              boardId: '',
+              organizationId: '',
+            },
           },
         },
         {
@@ -165,6 +261,12 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'ClickUp',
             type: ServiceType.CommonClickup,
+            parameters: {
+              apiToken: '',
+              teamId: '',
+              spaceId: '',
+              listId: '',
+            },
           },
         },
         {
@@ -172,6 +274,12 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'Notion',
             type: ServiceType.CommonNotion,
+            parameters: {
+              apiKey: '',
+              databaseId: '',
+              pageId: '',
+              version: '2022-06-28',
+            },
           },
         },
         {
@@ -179,6 +287,12 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'Miro',
             type: ServiceType.CommonMiro,
+            parameters: {
+              accessToken: '',
+              teamId: '',
+              boardId: '',
+              clientId: '',
+            },
           },
         },
       ],
@@ -191,6 +305,12 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'GitHub',
             type: ServiceType.CommonGithub,
+            parameters: {
+              accessToken: '',
+              owner: '',
+              repo: '',
+              baseUrl: 'https://api.github.com',
+            },
           },
         },
         {
@@ -198,6 +318,12 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'GitLab',
             type: ServiceType.CommonGitlab,
+            parameters: {
+              privateToken: '',
+              projectId: '',
+              baseUrl: 'https://gitlab.com',
+              apiVersion: 'v4',
+            },
           },
         },
         {
@@ -205,6 +331,12 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'Vercel',
             type: ServiceType.CommonVercel,
+            parameters: {
+              token: '',
+              teamId: '',
+              projectId: '',
+              deploymentUrl: '',
+            },
           },
         },
         {
@@ -212,6 +344,11 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'Zapier',
             type: ServiceType.CommonZapier,
+            parameters: {
+              apiKey: '',
+              webhookUrl: '',
+              zapId: '',
+            },
           },
         },
         {
@@ -219,6 +356,12 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'CircleCI',
             type: ServiceType.CommonCircleci,
+            parameters: {
+              token: '',
+              projectSlug: '',
+              orgName: '',
+              vcsType: 'github',
+            },
           },
         },
         {
@@ -226,6 +369,12 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'Jenkins',
             type: ServiceType.CommonJenkins,
+            parameters: {
+              baseUrl: '',
+              username: '',
+              apiToken: '',
+              jobName: '',
+            },
           },
         },
         {
@@ -233,6 +382,12 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'Docker Hub',
             type: ServiceType.CommonDocker,
+            parameters: {
+              username: '',
+              password: '',
+              repository: '',
+              registryUrl: 'https://index.docker.io/v1/',
+            },
           },
         },
       ],
@@ -245,6 +400,12 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'Auth0',
             type: ServiceType.CommonAuth0,
+            parameters: {
+              domain: '',
+              clientId: '',
+              clientSecret: '',
+              audience: '',
+            },
           },
         },
         {
@@ -252,6 +413,12 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'Okta',
             type: ServiceType.CommonOkta,
+            parameters: {
+              orgUrl: '',
+              token: '',
+              clientId: '',
+              clientSecret: '',
+            },
           },
         },
       ],
@@ -264,6 +431,11 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'Stripe',
             type: ServiceType.CommonStripe,
+            parameters: {
+              secretKey: '',
+              publishableKey: '',
+              webhookSecret: '',
+            },
           },
         },
         {
@@ -271,6 +443,11 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'Twilio',
             type: ServiceType.CommonTwilio,
+            parameters: {
+              accountSid: '',
+              authToken: '',
+              phoneNumber: '',
+            },
           },
         },
         {
@@ -278,6 +455,11 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           configuration: {
             identifier: 'PayPal',
             type: ServiceType.CommonPaypal,
+            parameters: {
+              clientId: '',
+              clientSecret: '',
+              environment: 'sandbox',
+            },
           },
         },
       ],

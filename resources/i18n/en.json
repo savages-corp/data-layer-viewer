@@ -64,6 +64,7 @@
     "service-label-pull": "Pull",
     "service-label-push": "Push",
     "service-label-source": "Source",
+    "service-imported-message": "Since this service was inferred from an active Audit DB connection and not from an existing Data Layer configuration, we can't show its run parameters.",
     "stage-egress": "Egress",
     "stage-modelize": "Modelize",
     "status-error-data-egress": "Error Data Egress",

@@ -64,6 +64,7 @@
     "service-label-pull": "Abfrage",
     "service-label-push": "Eingabe",
     "service-label-source": "Quelle",
+    "service-imported-message": "Da dieser Dienst aus einer aktiven Audit-DB-Verbindung und nicht aus der Data Layer-Konfiguration abgeleitet wurde, können wir seine Ausführungsparameter nicht anzeigen.",
     "stage-egress": "Ausgabe",
     "stage-modelize": "Modellierung",
     "status-error-data-egress": "Fehler bei der Datenausgabe",
