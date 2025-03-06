@@ -92,6 +92,10 @@ export function ConnectionModal({ isOpen, setIsOpen, onVisualize }: ConnectionMo
 
       // Close the modal after successful visualization
       setIsOpen(false)
+
+      // Reset the form
+      setSuccess(false)
+      setPassword('')
     }
     catch (error) {
       console.error('Connection failed:', error)

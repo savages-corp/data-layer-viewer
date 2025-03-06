@@ -45,6 +45,10 @@ export enum ServiceType {
   GenericGraphQL = 'GENERIC-GRAPHQL',
   GenericQueue = 'GENERIC-QUEUE',
   GenericWarehouse = 'GENERIC-WAREHOUSE',
+
+  // Mock Services
+  MockKitchen = 'MOCK-KITCHEN',
+  MockSink = 'MOCK-SINK',
 }
 
 export interface ServiceConfiguration {

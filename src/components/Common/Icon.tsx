@@ -4,7 +4,7 @@ import React from 'react'
 
 import { BiNetworkChart } from 'react-icons/bi'
 import { DiGoogleCloudPlatform, DiMongodb } from 'react-icons/di'
-import { FaArrowTurnUp, FaAws, FaClipboard, FaDatabase, FaFileExport, FaFileImport, FaGear, FaHubspot, FaJira, FaMailchimp, FaMinus, FaPlug, FaPlus, FaSalesforce, FaScrewdriverWrench, FaSlack, FaStripe, FaTrashCan, FaWarehouse } from 'react-icons/fa6'
+import { FaArrowTurnUp, FaAws, FaClipboard, FaDatabase, FaFileExport, FaFileImport, FaGear, FaHubspot, FaJira, FaKitchenSet, FaMailchimp, FaMinus, FaPlug, FaPlus, FaSalesforce, FaScrewdriverWrench, FaSink, FaSlack, FaStripe, FaTrashCan, FaWarehouse } from 'react-icons/fa6'
 import { PiArrowArcLeftBold } from 'react-icons/pi'
 import { SiCircleci, SiClickup, SiDocker, SiIntercom, SiJenkins, SiMiro, SiNotion, SiOkta, SiPaypal, SiTrello, SiZendesk } from 'react-icons/si'
 import { TbApi, TbBrandAsana, TbBrandAuth0, TbBrandGithub, TbBrandGitlab, TbBrandGraphql, TbBrandTwilio, TbBrandVercel, TbBrandZapier } from 'react-icons/tb'
@@ -78,6 +78,10 @@ const iconMap: Record<string, IconType> = {
   GenericGraphQL: TbBrandGraphql,
   GenericQueue: BiNetworkChart,
   GenericWarehouse: FaWarehouse,
+
+  // Mock Services
+  MockKitchen: FaKitchenSet,
+  MockSink: FaSink,
 }
 
 const colorMap: Record<string, string> = {
@@ -136,6 +140,10 @@ const colorMap: Record<string, string> = {
   GenericRestApi: '#0d7acc',
   GenericQueue: '#61dafb',
   GenericWarehouse: '#333',
+
+  // Mock Services
+  MockKitchen: '#333',
+  MockSink: '#333',
 }
 
 export const Icon: React.FC<IconProps> = ({ color = '', icon = 'default', size = 16, ...svgProps }) => {
