@@ -49,6 +49,10 @@ export enum ServiceType {
   // Mock Services
   MockKitchen = 'MOCK-KITCHEN',
   MockSink = 'MOCK-SINK',
+
+  // Customer Services
+  FreeyouSalesforceApiV60 = 'FREEYOU-SALESFORCE-API-V60',
+  FreeyouMsgPiaApi = 'FREEYOU-MSG-PIA-API',
 }
 
 export interface ServiceConfiguration {
