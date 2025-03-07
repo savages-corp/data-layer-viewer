@@ -5,6 +5,7 @@ import type { AuditDBPush } from '@/types/auditdb'
 import type { WebClickHouseClient } from '@clickhouse/client-web/dist/client'
 
 import { Button } from '@/components/Common/Button'
+import { Callout } from '@/components/Common/Callout'
 import { Icon } from '@/components/Common/Icon'
 import { Modal } from '@/components/Common/Modal'
 
@@ -33,8 +34,11 @@ export function ConnectionModal({ isOpen, setIsOpen, onVisualize }: ConnectionMo
   const [username, setUsername] = useState('default')
   const [password, setPassword] = useState('')
   const [connecting, setConnecting] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
   const [autoRefresh, setAutoRefresh] = useState(false)
   const [refreshInterval, setRefreshInterval] = useState(30)
+  const [dataTimeRange, setDataTimeRange] = useState(90)
+  const [inactiveThreshold, setInactiveThreshold] = useState(2)
 
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
@@ -52,14 +56,14 @@ export function ConnectionModal({ isOpen, setIsOpen, onVisualize }: ConnectionMo
             argMax(timestamp, timestamp) as latest_timestamp,
             argMax(status, timestamp) as latest_status
           FROM efdl_audit_db.pushes
-          WHERE timestamp >= now() - INTERVAL 90 DAY
+          WHERE timestamp >= now() - INTERVAL ${dataTimeRange} DAY
           GROUP BY
             tenant_identifier,
             source_type,
             source_identifier,
             destination_type,
             destination_identifier
-          HAVING latest_timestamp >= now() - INTERVAL 90 DAY
+          HAVING latest_timestamp >= now() - INTERVAL ${dataTimeRange} DAY
           ORDER BY latest_timestamp DESC
         `,
         format: 'JSONEachRow',
@@ -79,12 +83,12 @@ export function ConnectionModal({ isOpen, setIsOpen, onVisualize }: ConnectionMo
       const expectedEdges = calculateExpectedDataEdges(data)
 
       if (isInitialFetch || serviceNodes.length / 2 !== data.length || dataEdges.length !== expectedEdges) {
-        const { datalayer, nodes, edges, flows } = translateFromAuditData(data)
+        const { datalayer, nodes, edges, flows } = translateFromAuditData(data, inactiveThreshold)
         onVisualize(datalayer, nodes, edges, flows)
       }
       else {
         // Update existing nodes
-        const { nodes: updatedNodes, edges: updatedEdges } = updateFromAuditData(data, existingNodes as AppNode[], existingEdges as AppEdge[])
+        const { nodes: updatedNodes, edges: updatedEdges } = updateFromAuditData(data, existingNodes as AppNode[], existingEdges as AppEdge[], inactiveThreshold)
         setNodes(updatedNodes)
         setEdges(updatedEdges)
       }
@@ -93,7 +97,7 @@ export function ConnectionModal({ isOpen, setIsOpen, onVisualize }: ConnectionMo
       console.error('Failed to fetch audit data:', error)
       setError(`Refresh failed: ${(error as Error).message}`)
     }
-  }, [getNodes, getEdges, setNodes, setEdges, onVisualize, setIsOpen])
+  }, [getNodes, getEdges, setNodes, setEdges, onVisualize, setIsOpen, dataTimeRange, inactiveThreshold])
 
   // Cleanup interval on unmount
   useEffect(() => {
@@ -114,6 +118,7 @@ export function ConnectionModal({ isOpen, setIsOpen, onVisualize }: ConnectionMo
       }, refreshInterval * 1000)
     }
 
+    // Cleanup interval on unmount or when auto-refresh is disabled
     return () => {
       if (intervalId) {
         clearInterval(intervalId)
@@ -158,7 +163,6 @@ export function ConnectionModal({ isOpen, setIsOpen, onVisualize }: ConnectionMo
 
       // Reset the form
       setSuccess(false)
-      setPassword('')
     }
     catch (error) {
       console.error('Connection failed:', error)
@@ -177,6 +181,25 @@ export function ConnectionModal({ isOpen, setIsOpen, onVisualize }: ConnectionMo
     }
   }
 
+  const handleManualRefresh = async () => {
+    if (!client)
+      return
+
+    setRefreshing(true)
+    setError(null)
+
+    try {
+      await fetchAuditData(client)
+    }
+    catch (error) {
+      console.error('Manual refresh failed:', error)
+      setError(`Manual refresh failed: ${(error as Error).message}`)
+    }
+    finally {
+      setRefreshing(false)
+    }
+  }
+
   return (
     <Modal
       title={ti18n.translate(ti18n.keys.modalConnectionTitle)}
@@ -190,13 +213,25 @@ export function ConnectionModal({ isOpen, setIsOpen, onVisualize }: ConnectionMo
         <>
           {client
             ? (
-                <Button
-                  onClick={handleDisconnect}
-                  style={{ width: 'fit-content', opacity: connecting ? 0.5 : 1 }}
-                >
-                  <Icon icon="plug" size={16} />
-                  Disconnect
-                </Button>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <Button
+                    onClick={handleManualRefresh}
+                    style={{ width: 'fit-content', opacity: refreshing ? 0.5 : 1 }}
+                    title="Refresh data"
+                  >
+                    <Icon icon="refresh" size={16} />
+                    {refreshing
+                      ? ti18n.translate(ti18n.keys.buttonRefreshing)
+                      : ti18n.translate(ti18n.keys.buttonRefresh)}
+                  </Button>
+                  <Button
+                    onClick={handleDisconnect}
+                    style={{ width: 'fit-content', opacity: connecting ? 0.5 : 1 }}
+                  >
+                    <Icon icon="plug" size={16} />
+                    Disconnect
+                  </Button>
+                </div>
               )
             : (
                 <Button
@@ -276,7 +311,7 @@ export function ConnectionModal({ isOpen, setIsOpen, onVisualize }: ConnectionMo
 
         <div className="react-flow__node-service-form-group">
           <div className="react-flow__node-service-form-field" style={{ width: '49%' }}>
-            <h3>Auto Refresh</h3>
+            <h3>{ti18n.translate(ti18n.keys.modalConnectionAutoRefresh)}</h3>
             <div className="react-flow__node-service-form-row" style={{ height: '34px' }}>
               <input
                 type="checkbox"
@@ -284,12 +319,12 @@ export function ConnectionModal({ isOpen, setIsOpen, onVisualize }: ConnectionMo
                 onChange={e => setAutoRefresh(e.target.checked)}
                 disabled={!client}
               />
-              <label style={{ opacity: client ? 1 : 0.5 }}>Enable auto refresh</label>
+              <label style={{ opacity: client ? 1 : 0.5 }}>{ti18n.translate(ti18n.keys.modalConnectionAutoRefresh)}</label>
             </div>
           </div>
 
           <div className="react-flow__node-service-form-field" style={{ width: '49%' }}>
-            <h3>Refresh Interval (seconds)</h3>
+            <h3>{ti18n.translate(ti18n.keys.modalConnectionRefreshInterval)}</h3>
             <input
               type="number"
               min="5"
@@ -301,16 +336,40 @@ export function ConnectionModal({ isOpen, setIsOpen, onVisualize }: ConnectionMo
           </div>
         </div>
 
-        {error && (
-          <div className="error-message" style={{ color: 'red', marginBottom: '1rem' }}>
-            {`${ti18n.translate(ti18n.keys.modalConnectionError)}: ${error}`}
+        <div className="react-flow__node-service-form-group">
+          <div className="react-flow__node-service-form-field" style={{ width: '49%' }}>
+            <h3>{ti18n.translate(ti18n.keys.modalConnectionDataTimeRange)}</h3>
+            <input
+              type="number"
+              min="1"
+              max="365"
+              value={dataTimeRange}
+              onChange={e => setDataTimeRange(Math.max(1, Math.min(365, Number.parseInt(e.target.value))))}
+              style={{ width: '80px' }}
+            />
+            <div className="react-flow__node-service-form-description">
+              {ti18n.translate(ti18n.keys.modalConnectionDataTimeRangeDescription)}
+            </div>
           </div>
-        )}
-        {success && (
-          <div className="success-message" style={{ color: 'green', marginBottom: '1rem' }}>
-            {ti18n.translate(ti18n.keys.modalConnectionSuccess)}
+
+          <div className="react-flow__node-service-form-field" style={{ width: '49%' }}>
+            <h3>{ti18n.translate(ti18n.keys.modalConnectionInactiveThreshold)}</h3>
+            <input
+              type="number"
+              min="1"
+              max="30"
+              value={inactiveThreshold}
+              onChange={e => setInactiveThreshold(Math.max(1, Math.min(30, Number.parseInt(e.target.value))))}
+              style={{ width: '80px' }}
+            />
+            <div className="react-flow__node-service-form-description">
+              {ti18n.translate(ti18n.keys.modalConnectionInactiveThresholdDescription)}
+            </div>
           </div>
-        )}
+        </div>
+
+        {error && <Callout type="error" message={`${ti18n.translate(ti18n.keys.modalConnectionError)}: ${error}`} />}
+        {success && <Callout type="success" message={ti18n.translate(ti18n.keys.modalConnectionSuccess)} />}
       </div>
     </Modal>
   )

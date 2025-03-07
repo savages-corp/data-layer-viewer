@@ -15,19 +15,14 @@ import { getTimedId } from './nodes'
 import { calculateNextFlowY } from './positioning'
 import { slugify } from './string'
 
-// Helper to check if a timestamp is more than 2 days old
-function isInactive(timestamp: string): boolean {
-  const date = new Date(timestamp)
-  const twoDaysAgo = new Date()
-  twoDaysAgo.setDate(twoDaysAgo.getDate() - 2)
-  return date < twoDaysAgo
-}
-
 // Helper to convert audit status to app Status enum
-function convertAuditStatus(auditStatus: string, timestamp: string): Status {
-  if (isInactive(timestamp)) {
+function convertAuditStatus(auditStatus: string, timestamp: string, inactiveDays: number = 2): Status {
+  const date = new Date(timestamp)
+  const cutoffDate = new Date()
+  cutoffDate.setDate(cutoffDate.getDate() - inactiveDays)
+
+  if (date < cutoffDate) // Consider flows older than the threshold as unset/inactive
     return Status.Unset
-  }
 
   return auditStatus as Status
 }
@@ -38,17 +33,17 @@ function getNodeId(isSource: boolean, sourceType: string, sourceIdentifier: stri
     : `destination-${slugify(destinationType)}-${destinationIdentifier}-from-source-${slugify(sourceType)}-${sourceIdentifier}`
 }
 
-export function calculateExpectedDataEdges(auditData: AuditDBPush[]): number {
+export function calculateExpectedDataEdges(auditData: AuditDBPush[], inactiveDays: number = 2): number {
   const expectedEdges = auditData.length * 3
 
   // For every flow that reports with warehouse usage, we add an additional edge
-  const warehouseEdges = auditData.filter(flow => convertAuditStatus(flow.latest_status, flow.latest_timestamp) === Status.SuccessWithWarehouse).length
+  const warehouseEdges = auditData.filter(flow => convertAuditStatus(flow.latest_status, flow.latest_timestamp, inactiveDays) === Status.SuccessWithWarehouse).length
 
   return expectedEdges + warehouseEdges
 }
 
 // Convert audit data into a layout structure
-export function translateFromAuditData(auditData: AuditDBPush[]): {
+export function translateFromAuditData(auditData: AuditDBPush[], inactiveDays: number = 2): {
   datalayer: DatalayerPrefab
   flows: FlowPrefab[]
   nodes: AppNode[]
@@ -89,7 +84,7 @@ export function translateFromAuditData(auditData: AuditDBPush[]): {
         type: 'service',
         position: { x: -312, y: -96 + index * 72 },
         data: {
-          status: convertAuditStatus(flowData.latest_status, flowData.latest_timestamp),
+          status: convertAuditStatus(flowData.latest_status, flowData.latest_timestamp, inactiveDays),
           interval: 15, // Default interval
           imported: true,
           configuration: {
@@ -164,7 +159,7 @@ export function translateFromAuditData(auditData: AuditDBPush[]): {
     edges.push(sourceToModelizeEdge, modelizeToEgressEdge, egressToDestEdge)
 
     // If the status indicates warehouse usage, add warehouse connection
-    if (convertAuditStatus(flowData.latest_status, flowData.latest_timestamp) === Status.SuccessWithWarehouse) {
+    if (convertAuditStatus(flowData.latest_status, flowData.latest_timestamp, inactiveDays) === Status.SuccessWithWarehouse) {
       const modelizeToWarehouseEdge: AppEdge = {
         id: `${flow.modelize.id}-to-warehouse-${datalayer.warehouse.id}`,
         source: flow.modelize.id,
@@ -192,6 +187,7 @@ export function updateFromAuditData(
   auditData: AuditDBPush[],
   existingNodes: AppNode[],
   existingEdges: AppEdge[],
+  inactiveDays: number = 2,
 ): { nodes: AppNode[], edges: AppEdge[] } {
   const updatedNodes = [...existingNodes]
   const updatedEdges = [...existingEdges]
@@ -205,7 +201,7 @@ export function updateFromAuditData(
 
     if (sourceNodeIndex !== -1) {
       const sourceNode = updatedNodes[sourceNodeIndex] as ServiceNode
-      sourceNode.data.status = convertAuditStatus(flowData.latest_status, flowData.latest_timestamp)
+      sourceNode.data.status = convertAuditStatus(flowData.latest_status, flowData.latest_timestamp, inactiveDays)
 
       updatedNodes[sourceNodeIndex] = sourceNode
     }

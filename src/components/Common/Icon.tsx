@@ -4,7 +4,7 @@ import React from 'react'
 
 import { BiNetworkChart } from 'react-icons/bi'
 import { DiGoogleCloudPlatform, DiMongodb } from 'react-icons/di'
-import { FaArrowTurnUp, FaAws, FaBuildingShield, FaClipboard, FaDatabase, FaFileExport, FaFileImport, FaGear, FaHubspot, FaJira, FaKitchenSet, FaMailchimp, FaMinus, FaPlug, FaPlus, FaSalesforce, FaScrewdriverWrench, FaSink, FaSlack, FaStripe, FaTrashCan, FaWarehouse } from 'react-icons/fa6'
+import { FaArrowTurnUp, FaAws, FaBuildingShield, FaClipboard, FaDatabase, FaFileExport, FaFileImport, FaGear, FaHubspot, FaJira, FaKitchenSet, FaMailchimp, FaMinus, FaPlug, FaPlus, FaRotate, FaSalesforce, FaScrewdriverWrench, FaSink, FaSlack, FaStripe, FaTrashCan, FaWarehouse } from 'react-icons/fa6'
 import { PiArrowArcLeftBold } from 'react-icons/pi'
 import { SiCircleci, SiClickup, SiDocker, SiIntercom, SiJenkins, SiMiro, SiNotion, SiOkta, SiPaypal, SiTrello, SiZendesk } from 'react-icons/si'
 import { TbApi, TbBrandAsana, TbBrandAuth0, TbBrandGithub, TbBrandGitlab, TbBrandGraphql, TbBrandTwilio, TbBrandVercel, TbBrandZapier } from 'react-icons/tb'
@@ -30,6 +30,7 @@ const iconMap: Record<string, IconType> = {
   minus: FaMinus,
   plug: FaPlug,
   plus: FaPlus,
+  refresh: FaRotate,
   trash: FaTrashCan,
 
   // Cloud platforms

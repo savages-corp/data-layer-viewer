@@ -1,4 +1,5 @@
 import { Button, ButtonType } from '@/components/Common/Button'
+import { Callout } from '@/components/Common/Callout'
 import { Icon } from '@/components/Common/Icon'
 import { Modal } from '@/components/Common/Modal'
 import { useTi18n } from '@/components/Core/Ti18nProvider'
@@ -129,10 +130,7 @@ export function ImportModal({ isOpen, setIsOpen, onImport }: ImportModalProps) {
         </div>
 
         {validationError && (
-          <div className="import-validation-error">
-            <Icon icon="exclamation" size={14} style={{ color: 'var(--viewer-button-destructive)' }} />
-            {validationError}
-          </div>
+          <Callout type="error" message={validationError} />
         )}
       </div>
     </Modal>

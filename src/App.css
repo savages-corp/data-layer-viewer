@@ -101,6 +101,36 @@ input {
   transform: translateY(1px);
 }
 
+/* Callout component styles */
+.callout {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: var(--viewer-border-radius);
+  margin-bottom: 1rem;
+}
+
+.callout-success {
+  background-color: rgba(75, 187, 96, 0.1);
+  border: 1px solid #4BBB60;
+  color: #2a6937;
+}
+
+.callout-error {
+  background-color: rgba(255, 112, 144, 0.1);
+  border: 1px solid #FF7090;
+  color: #a02a41;
+}
+
+.callout-icon {
+  flex-shrink: 0;
+}
+
+.callout-message {
+  flex-grow: 1;
+}
+
 .icon {
   display: flex;
   align-items: center;
