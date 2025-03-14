@@ -172,8 +172,12 @@ export default function App({
       setEdges(pendingEdges)
       setPendingEdges(null)
 
-      if (reactFlowInstance) // Fit the view to all nodes except annotations.
-        reactFlowInstance.fitView(fitViewOptions)
+      if (reactFlowInstance) {
+        // Fit the view to all nodes except annotations after they settle.
+        setTimeout(() => {
+          reactFlowInstance.fitView(fitViewOptions)
+        }, 100) // Adjust the delay time if necessary.
+      }
     }
   }, [pendingEdges])
 
@@ -380,6 +384,9 @@ export default function App({
   // style: { width: 300, height: 256 },
   useEffect(() => {
     if (!reactFlowInstance || !datalayer)
+      return
+
+    if (pendingEdges && pendingEdges.length > 0) // Don't resize the Data Layer if we're applying a layout change.
       return
 
     // Calculate the new height based on the number of flows.
