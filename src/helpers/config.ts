@@ -35,7 +35,7 @@ export interface ConfigFlow {
 
 // Assumes nodes and edges follow react-flow types with id, data, etc.
 export function translateToConfig(flows: FlowPrefab[], nodes: any[], edges: any[]): ConfigFlow[] {
-  const getServiceFromEdge = (stageNodeId: string, isSource: boolean): ServiceNode => {
+  const getServiceFromEdge = (stageNodeId: string, isSource: boolean): ServiceNode | null => {
     if (!isSource) {
       const edge = edges.find(e => e.target === stageNodeId)
       return edge ? nodes.find(n => n.id === edge.source) : null
