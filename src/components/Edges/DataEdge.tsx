@@ -86,25 +86,25 @@ export function DataEdgeComponent({
     <>
       <BaseEdge id={id} path={getPath()} strokeDasharray={dashes} style={style} />
       {(status === Status.Success || status === Status.SuccessWithWarehouse)
-      && (
-        <>
-          {data?.shape === 'circle' && (
-            <circle r={size / 2} fill={color} className="react-flow__edge-data__gizmo">
-              <animateMotion dur="2s" repeatCount="indefinite" path={getPath()} />
-            </circle>
-          )}
-          {data?.shape === 'square' && (
-            <rect width={size} height={size} x={-size / 2} y={-size / 2} fill={color} className="react-flow__edge-data__gizmo">
-              <animateMotion dur="2s" repeatCount="indefinite" path={getPath()} />
-            </rect>
-          )}
-          {data?.shape === 'triangle' && (
-            <polygon points={`0,${-size / 2} ${size / 2},${size / 2} ${-size / 2},${size / 2}`} fill={color} className="react-flow__edge-data__gizmo">
-              <animateMotion dur="2s" repeatCount="indefinite" path={getPath()} />
-            </polygon>
-          )}
-        </>
-      )}
+        && (
+          <>
+            {data?.shape === 'circle' && (
+              <circle r={size / 2} fill={color} className="react-flow__edge-data__gizmo">
+                <animateMotion dur="2s" repeatCount="indefinite" path={getPath()} />
+              </circle>
+            )}
+            {data?.shape === 'square' && (
+              <rect width={size} height={size} x={-size / 2} y={-size / 2} fill={color} className="react-flow__edge-data__gizmo">
+                <animateMotion dur="2s" repeatCount="indefinite" path={getPath()} />
+              </rect>
+            )}
+            {data?.shape === 'triangle' && (
+              <polygon points={`0,${-size / 2} ${size / 2},${size / 2} ${-size / 2},${size / 2}`} fill={color} className="react-flow__edge-data__gizmo">
+                <animateMotion dur="2s" repeatCount="indefinite" path={getPath()} />
+              </polygon>
+            )}
+          </>
+        )}
     </>
   )
 }

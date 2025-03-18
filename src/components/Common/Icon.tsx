@@ -6,7 +6,7 @@ import { BiNetworkChart } from 'react-icons/bi'
 import { DiGoogleCloudPlatform, DiMongodb } from 'react-icons/di'
 import { FaArrowTurnUp, FaAws, FaBuildingShield, FaClipboard, FaDatabase, FaFileExport, FaFileImport, FaGear, FaHubspot, FaJira, FaKitchenSet, FaMailchimp, FaMinus, FaPlug, FaPlus, FaRotate, FaSalesforce, FaScrewdriverWrench, FaSink, FaSlack, FaStripe, FaTrashCan, FaWarehouse } from 'react-icons/fa6'
 import { PiArrowArcLeftBold } from 'react-icons/pi'
-import { SiCircleci, SiClickup, SiDocker, SiIntercom, SiJenkins, SiMiro, SiNotion, SiOkta, SiPaypal, SiTrello, SiZendesk } from 'react-icons/si'
+import { SiCircleci, SiClickup, SiDocker, SiIntercom, SiJenkins, SiMiro, SiN8N, SiNotion, SiOkta, SiPaypal, SiTrello, SiZendesk } from 'react-icons/si'
 import { TbApi, TbBrandAsana, TbBrandAuth0, TbBrandGithub, TbBrandGitlab, TbBrandGraphql, TbBrandTwilio, TbBrandVercel, TbBrandZapier } from 'react-icons/tb'
 import { VscAzure } from 'react-icons/vsc'
 
@@ -62,6 +62,7 @@ const iconMap: Record<string, IconType> = {
   CommonCircleci: SiCircleci,
   CommonJenkins: SiJenkins,
   CommonDocker: SiDocker,
+  CommonN8n: SiN8N,
 
   // SaaS - Identity & Auth
   CommonAuth0: TbBrandAuth0,
@@ -123,6 +124,7 @@ const colorMap: Record<string, string> = {
   CommonCircleci: '#343434',
   CommonJenkins: '#d24939',
   CommonDocker: '#2496ed',
+  CommonN8n: '#e84b71',
 
   // SaaS - Identity & Auth
   CommonAuth0: '#eb5424',

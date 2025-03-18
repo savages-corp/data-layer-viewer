@@ -91,7 +91,7 @@ export function ImportModal({ isOpen, setIsOpen, onImport }: ImportModalProps) {
       <div className="import-modal-content">
         <p>
           {ti18n.translate(ti18n.keys.modalImportDescription)
-          || 'Paste in a configuration to import. The format should match the export format.'}
+            || 'Paste in a configuration to import. The format should match the export format.'}
         </p>
 
         <div className="import-modal-format-selector">

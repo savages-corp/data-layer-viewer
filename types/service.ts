@@ -28,6 +28,7 @@ export enum ServiceType {
   CommonCircleci = 'COMMON-CIRCLECI',
   CommonJenkins = 'COMMON-JENKINS',
   CommonDocker = 'COMMON-DOCKER',
+  CommonN8n = 'COMMON-N8N',
 
   // SaaS - Identity & Auth
   CommonAuth0 = 'COMMON-AUTH0',

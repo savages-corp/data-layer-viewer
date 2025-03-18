@@ -29,6 +29,7 @@ export const TRANSLATION_KEYS = [
   'import-parse-error',
   'import-paste-clipboard',
   'layout-aggregator',
+  'layout-automation',
   'layout-crm',
   'layout-default',
   'layout-empty',
@@ -69,6 +70,7 @@ export const TRANSLATION_KEYS = [
   'select-service-placeholder',
   'service-common-hubspot',
   'service-common-salesforce',
+  'service-common-n8n',
   'service-generic-database',
   'service-label-destination',
   'service-label-pull',
@@ -99,6 +101,9 @@ export const TRANSLATION_KEYS = [
   'annotation-crm-hubspot-sync',
   'annotation-crm-transform',
   'annotation-crm-warehouse',
+  'annotation-automation-warehouse-export',
+  'annotation-automation-n8n-process',
+  'annotation-automation-hubspot-sync',
 ] as const
 
 export type TranslationKey = typeof TRANSLATION_KEYS[number]

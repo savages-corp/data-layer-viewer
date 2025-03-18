@@ -352,6 +352,21 @@ export function getServiceOptionsData(ti18n: any): GroupedServiceOption[] {
           },
         },
         {
+          label: 'n8n',
+          configuration: {
+            identifier: 'n8n',
+            type: ServiceType.CommonN8n,
+            parameters: {
+              apiKey: '',
+              webhookUrl: '',
+              baseUrl: 'http://localhost:5678',
+              workflowId: '',
+              username: '',
+              password: '',
+            },
+          },
+        },
+        {
           label: 'CircleCI',
           configuration: {
             identifier: 'CircleCI',

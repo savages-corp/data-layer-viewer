@@ -5,6 +5,7 @@ import type { DatalayerPrefab } from '../prefabs/datalayer'
 import type { FlowPrefab } from '../prefabs/flow'
 
 import { AggregatorDefinition } from './aggregator'
+import { AutomationDefinition } from './automation'
 import { CrmDefinition } from './crm'
 import { DefaultDefinition } from './default'
 import { EmptyDefinition } from './empty'
@@ -31,5 +32,6 @@ export const layouts: Record<string, LayoutDefinition> = {
   finance: FinanceDefinition,
   portfolio: PortfolioDefinition,
   aggregator: AggregatorDefinition,
+  automation: AutomationDefinition,
   empty: EmptyDefinition,
 } satisfies Record<string, LayoutDefinition>

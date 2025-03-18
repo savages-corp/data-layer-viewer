@@ -84,7 +84,7 @@ export function StageNodeComponent({ id, data }: NodeProps<StageNode>) {
         position={Position.Right}
         id="pull"
         style={{ borderRadius: data.stage === Stage.Modelize ? '0' : '50%' }}
-        isConnectable={sourceConnections.length === 0 || data.stage === Stage.Modelize && sourceConnections.length <= 1}
+        isConnectable={sourceConnections.length === 0 || (data.stage === Stage.Modelize && sourceConnections.length <= 1)}
         className={(sourceConnections.length > 0 && data.stage === Stage.Egress) || sourceConnections.length > 1 ? 'react-flow__handle-plugged' : ''}
       >
       </Handle>
