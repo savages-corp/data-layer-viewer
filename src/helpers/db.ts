@@ -27,10 +27,12 @@ function convertAuditStatus(auditStatus: string, timestamp: string, inactiveDays
   return auditStatus as Status
 }
 
-function getNodeId(isSource: boolean, sourceType: string, sourceIdentifier: string, destinationType: string, destinationIdentifier: string): string {
-  return isSource
-    ? `source-${slugify(sourceType)}-${sourceIdentifier}-to-destination-${slugify(destinationType)}-${destinationIdentifier}`
-    : `destination-${slugify(destinationType)}-${destinationIdentifier}-from-source-${slugify(sourceType)}-${sourceIdentifier}`
+function getSourceNodeId(sourceType: string, sourceIdentifier: string, destinationType: string, destinationIdentifier: string): string {
+  return `source-${slugify(sourceType)}-${sourceIdentifier}-to-destination-${slugify(destinationType)}-${destinationIdentifier}`
+}
+
+function getDestinationNodeId(sourceType: string, sourceIdentifier: string, destinationType: string, destinationIdentifier: string): string {
+  return `destination-${slugify(destinationType)}-${destinationIdentifier}-from-source-${slugify(sourceType)}-${sourceIdentifier}`
 }
 
 export function calculateExpectedDataEdges(auditData: AuditDBPush[], inactiveDays: number = 2): number {
@@ -75,7 +77,7 @@ export function translateFromAuditData(auditData: AuditDBPush[], inactiveDays: n
     nodes.push(flow.container, flow.modelize, flow.egress)
 
     // Create source service node
-    const sourceId = getNodeId(true, flowData.source_type, flowData.source_identifier, flowData.destination_type, flowData.destination_identifier)
+    const sourceId = getSourceNodeId(flowData.source_type, flowData.source_identifier, flowData.destination_type, flowData.destination_identifier)
     let sourceNode = serviceNodes[sourceId]
 
     if (!sourceNode) {
@@ -99,7 +101,7 @@ export function translateFromAuditData(auditData: AuditDBPush[], inactiveDays: n
     }
 
     // Create destination service node
-    const destinationId = getNodeId(false, flowData.source_type, flowData.source_identifier, flowData.destination_type, flowData.destination_identifier)
+    const destinationId = getDestinationNodeId(flowData.source_type, flowData.source_identifier, flowData.destination_type, flowData.destination_identifier)
     let destinationNode = serviceNodes[destinationId]
 
     if (!destinationNode) {
@@ -193,8 +195,8 @@ export function updateFromAuditData(
   const updatedEdges = [...existingEdges]
 
   auditData.forEach((flowData) => {
-    const sourceId = getNodeId(true, flowData.source_type, flowData.source_identifier, flowData.destination_type, flowData.destination_identifier)
-    const destinationId = getNodeId(false, flowData.source_type, flowData.source_identifier, flowData.destination_type, flowData.destination_identifier)
+    const sourceId = getSourceNodeId(flowData.source_type, flowData.source_identifier, flowData.destination_type, flowData.destination_identifier)
+    const destinationId = getDestinationNodeId(flowData.source_type, flowData.source_identifier, flowData.destination_type, flowData.destination_identifier)
 
     const sourceNodeIndex = updatedNodes.findIndex(node => node.id === sourceId)
     const destinationNodeIndex = updatedNodes.findIndex(node => node.id === destinationId)

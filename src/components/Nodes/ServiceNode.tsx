@@ -1,6 +1,5 @@
 import type { ServiceConfiguration } from '@/types/service'
 import type { Node, NodeProps } from '@xyflow/react'
-import type { StageNode } from './StageNode'
 
 import { ServiceEditModal } from '@/components/App/ServiceEditModal'
 import { Icon } from '@/components/Common/Icon'
@@ -31,9 +30,7 @@ export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
     data.interval = 15
   }
 
-  if (data.status === undefined) {
-    data.status = Status.Unset
-  }
+  data.status ??= Status.Unset
 
   const targetConnections = useNodeConnections({
     handleType: 'target',
@@ -43,7 +40,7 @@ export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
     handleType: 'source',
   })
 
-  const targetConnectionsData = useNodesData(targetConnections[0]?.source) as ServiceNode | StageNode | undefined
+  const targetConnectionsData = useNodesData(targetConnections[0]?.source)
 
   const [isSource, setIsSource] = useState(false)
   const [isDestination, setIsDestination] = useState(false)

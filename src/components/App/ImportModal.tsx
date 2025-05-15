@@ -25,7 +25,7 @@ export function ImportModal(
 
   const handleImport = () => {
     if (!inputValue.trim()) {
-      setValidationError(ti18n.translate(ti18n.keys.importEmptyError) || 'Please enter a configuration')
+      setValidationError(ti18n.translate(ti18n.keys.importEmptyError) ?? 'Please enter a configuration')
       return
     }
 
@@ -36,7 +36,7 @@ export function ImportModal(
 
       // Basic validation to check if it has the expected structure
       if (!parsedConfig || typeof parsedConfig !== 'object') {
-        setValidationError(ti18n.translate(ti18n.keys.importInvalidError) || 'Invalid configuration format')
+        setValidationError(ti18n.translate(ti18n.keys.importInvalidError) ?? 'Invalid configuration format')
         return
       }
 
@@ -49,7 +49,7 @@ export function ImportModal(
         onImport(parsedConfig)
       }
       else {
-        setValidationError(ti18n.translate(ti18n.keys.importMissingFlowsError) || 'Invalid configuration: missing flows')
+        setValidationError(ti18n.translate(ti18n.keys.importMissingFlowsError) ?? 'Invalid configuration: missing flows')
         return
       }
 
@@ -60,7 +60,7 @@ export function ImportModal(
     }
     catch (error) {
       setValidationError(
-        `${ti18n.translate(ti18n.keys.importParseError) || 'Failed to parse configuration'}: ${(error as Error).message}`,
+        `${ti18n.translate(ti18n.keys.importParseError) ?? 'Failed to parse configuration'}: ${(error as Error).message}`,
       )
     }
   }
@@ -73,7 +73,7 @@ export function ImportModal(
     catch (error) {
       console.error('Failed to read from clipboard:', error)
       setValidationError(
-        ti18n.translate(ti18n.keys.importClipboardError) || 'Failed to read from clipboard',
+        ti18n.translate(ti18n.keys.importClipboardError) ?? 'Failed to read from clipboard',
       )
     }
   }
@@ -83,22 +83,22 @@ export function ImportModal(
       isOpen={isOpen}
       setIsOpen={setIsOpen}
       onClose={() => setIsOpen(false)}
-      title={ti18n.translate(ti18n.keys.modalImportTitle) || 'Import Configuration'}
+      title={ti18n.translate(ti18n.keys.modalImportTitle) ?? 'Import Configuration'}
       buttons={(
         <Button onClick={handleImport} type={ButtonType.Primary}>
-          {ti18n.translate(ti18n.keys.buttonImport) || 'Import'}
+          {ti18n.translate(ti18n.keys.buttonImport) ?? 'Import'}
         </Button>
       )}
     >
       <div className="import-modal-content">
         <p>
           {ti18n.translate(ti18n.keys.modalImportDescription)
-            || 'Paste in a configuration to import. The format should match the export format.'}
+            ?? 'Paste in a configuration to import. The format should match the export format.'}
         </p>
 
         <div className="import-modal-format-selector">
           <label>
-            {ti18n.translate(ti18n.keys.importFormat) || 'Format:'}
+            {ti18n.translate(ti18n.keys.importFormat) ?? 'Format:'}
           </label>
           <select
             value={format}
@@ -127,7 +127,7 @@ export function ImportModal(
             type={ButtonType.Secondary}
           >
             <Icon icon="clipboard" size={14} />
-            {ti18n.translate(ti18n.keys.importPasteClipboard) || 'Paste from Clipboard'}
+            {ti18n.translate(ti18n.keys.importPasteClipboard) ?? 'Paste from Clipboard'}
           </Button>
         </div>
 

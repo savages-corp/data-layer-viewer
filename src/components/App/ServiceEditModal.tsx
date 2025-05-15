@@ -182,7 +182,7 @@ export function ServiceEditModal(
 
         {data.configuration.parameters && Object.keys(data.configuration.parameters).length > 0 && !data.imported && (
           <div className="react-flow__node-service-form-field">
-            <h3 className="react-flow__node-service-form-section">{ti18n.translate(ti18n.keys.genericParameters) || 'Parameters'}</h3>
+            <h3 className="react-flow__node-service-form-section">{ti18n.translate(ti18n.keys.genericParameters) ?? 'Parameters'}</h3>
             <div className="react-flow__node-service-form-parameters">
               {Object.entries(data.configuration.parameters).map(([key, value]) =>
                 renderParameterInput(key, value),
@@ -193,7 +193,7 @@ export function ServiceEditModal(
 
         {data.imported && (
           <div className="react-flow__node-service-form-field">
-            <h3 className="react-flow__node-service-form-section">{ti18n.translate(ti18n.keys.genericParameters) || 'Parameters'}</h3>
+            <h3 className="react-flow__node-service-form-section">{ti18n.translate(ti18n.keys.genericParameters) ?? 'Parameters'}</h3>
             <div className="react-flow__node-service-form-parameters">
               <p style={{ color: '#666', fontStyle: 'italic' }}>
                 {ti18n.translate(ti18n.keys.serviceImportedMessage)}

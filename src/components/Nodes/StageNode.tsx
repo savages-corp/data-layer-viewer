@@ -1,5 +1,4 @@
 import type { Node, NodeProps } from '@xyflow/react'
-import type { ServiceNode } from './ServiceNode'
 
 import { useTi18n } from '@/components/Core/Ti18nProvider'
 
@@ -36,7 +35,7 @@ export function StageNodeComponent({ id, data }: NodeProps<StageNode>) {
   const targetConnections = useNodeConnections({ handleType: 'target' })
 
   // Get the data of the connected node.
-  const targetConnectionsData = useNodesData(targetConnections[0]?.source) as ServiceNode | StageNode | undefined
+  const targetConnectionsData = useNodesData(targetConnections[0]?.source)
 
   const statusSlug = useMemo(() => {
     if (data.status) {

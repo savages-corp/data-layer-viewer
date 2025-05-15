@@ -166,7 +166,7 @@ export const Icon: React.FC<IconProps> = ({ color = '', icon = 'default', size =
     return key ?? icon
   })()
 
-  const SpecificIcon = iconMap[serviceKey] || FaScrewdriverWrench
+  const SpecificIcon = iconMap[serviceKey] ?? FaScrewdriverWrench
 
   return (
     <div className="icon">

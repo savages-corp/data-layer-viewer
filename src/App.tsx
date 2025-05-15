@@ -438,7 +438,7 @@ export default function App({
     const ids = [flow.container.id, flow.modelize.id, flow.egress.id]
 
     // We have to do a few operations here. Firstly, remove the nodes associated with the flow. Then, remove nodes that have any of them as parents.
-    let nodes = reactFlowInstance.getNodes() || []
+    let nodes = reactFlowInstance.getNodes() ?? []
     // nodes = nodes.filter(n => !ids.includes(n.id) && (n.parentId && !ids.includes(n.parentId)))
     nodes = nodes.filter(n => !ids.includes(n.id))
     nodes = nodes.filter(n => !ids.includes(n.parentId as string))
@@ -649,7 +649,7 @@ export default function App({
               style={{ marginRight: '8px' }}
             >
               <Icon icon="import" size={16} />
-              {isCompact ? '' : ti18n.translate(ti18n.keys.buttonImport) || 'Import'}
+              {isCompact ? '' : ti18n.translate(ti18n.keys.buttonImport) ?? 'Import'}
             </Button>
             <Button
               className="reactflow-panel-button"

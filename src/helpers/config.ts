@@ -60,22 +60,22 @@ export function translateToConfig(flows: FlowPrefab[], nodes: any[], edges: any[
       && nodes.find(n => n.id === edge.target && n.type === 'warehouse'),
     )
 
-    const sourceIdentifier = sourceService.data.configuration.identifier || 'source'
-    const destIdentifier = destinationService.data.configuration.identifier || 'destination'
+    const sourceIdentifier = sourceService.data.configuration.identifier ?? 'source'
+    const destIdentifier = destinationService.data.configuration.identifier ?? 'destination'
 
     acc.push({
       name: `${sourceIdentifier} -> ${destIdentifier}`,
       warehouse: isWarehouse,
       interval: sourceService.data.interval ?? 15, // Default interval of 15 seconds (near real-time).
       source: {
-        type: sourceService.data.configuration.type || 'UNKNOWN',
+        type: sourceService.data.configuration.type ?? 'UNKNOWN',
         configuration: {
           identifier: slugify(sourceService.data.configuration.identifier),
           parameters: sourceService.data.configuration.parameters ?? {},
         },
       },
       destination: {
-        type: destinationService.data.configuration.type || 'UNKNOWN',
+        type: destinationService.data.configuration.type ?? 'UNKNOWN',
         configuration: {
           identifier: slugify(destinationService.data.configuration.identifier),
           parameters: destinationService.data.configuration.parameters ?? {},
