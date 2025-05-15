@@ -31,7 +31,7 @@ export function DataEdgeComponent({
   targetPosition,
   data,
 }: EdgeProps<DataEdge>) {
-  const [status, setStatus] = useState<Status>(data!.initialStatus || Status.Unset) // Keep track of the status of the edge.
+  const [status, setStatus] = useState<Status>(data!.initialStatus ?? Status.Unset) // Keep track of the status of the edge.
   const sourceNode = useNodesData(source) // Get the data of the source node for the edge.
 
   useEffect(() => { // Receive status from source node.

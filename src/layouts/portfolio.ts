@@ -238,6 +238,6 @@ function builder({ ti18n }: { ti18n: Ti18n<TranslationKey>, mobile?: boolean }) 
 }
 
 export const PortfolioDefinition: LayoutDefinition = {
-  name: ({ ti18n }) => ti18n.translate(ti18n.keys.layoutPortfolio) as string,
+  name: ({ ti18n }) => ti18n.translate(ti18n.keys.layoutPortfolio),
   builder,
 } satisfies LayoutDefinition

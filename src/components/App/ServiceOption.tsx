@@ -1,15 +1,18 @@
 import { Icon } from '@/components/Common/Icon'
 
-interface ServiceOptionProps {
-  innerProps: any
-  data: any
-}
-
 /**
  * Custom component to render the service option with an icon
  * Used in service selection dropdowns
  */
-export function ServiceOption({ innerProps, data }: ServiceOptionProps) {
+export function ServiceOption(
+  {
+    innerProps,
+    data,
+  }: {
+    readonly innerProps: any
+    readonly data: any
+  },
+) {
   return (
     <div
       {...innerProps}

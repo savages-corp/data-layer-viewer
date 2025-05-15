@@ -15,13 +15,17 @@ import { useReactFlow } from '@xyflow/react'
 import { useCallback, useEffect, useState } from 'react'
 import { calculateExpectedDataEdges, translateFromAuditData, updateFromAuditData } from '../../helpers/db'
 
-interface ConnectionModalProps {
-  isOpen: boolean
-  setIsOpen: (value: boolean) => void
-  onVisualize: (datalayer: DatalayerPrefab, nodes: AppNode[], edges: AppEdge[], flows: FlowPrefab[]) => void
-}
-
-export function ConnectionModal({ isOpen, setIsOpen, onVisualize }: ConnectionModalProps) {
+export function ConnectionModal(
+  {
+    isOpen,
+    setIsOpen,
+    onVisualize,
+  }: {
+    readonly isOpen: boolean
+    readonly setIsOpen: (value: boolean) => void
+    readonly onVisualize: (datalayer: DatalayerPrefab, nodes: AppNode[], edges: AppEdge[], flows: FlowPrefab[]) => void
+  },
+) {
   const ti18n = useTi18n()
 
   const { getNodes, getEdges, setNodes, setEdges } = useReactFlow()
@@ -69,7 +73,7 @@ export function ConnectionModal({ isOpen, setIsOpen, onVisualize }: ConnectionMo
         format: 'JSONEachRow',
       })
 
-      const data = await result.json() as AuditDBPush[]
+      const data: AuditDBPush[] = await result.json()
 
       const existingNodes = getNodes()
       const existingEdges = getEdges()

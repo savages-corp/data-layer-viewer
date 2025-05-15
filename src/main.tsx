@@ -11,11 +11,11 @@ viewers.forEach((viewer) => {
   // Get the various data attributes to be passed as props.
   const hideControls = viewer.getAttribute('data-hide-controls') === '' || viewer.getAttribute('data-hide-controls') === 'true'
   const hideMinimap = viewer.getAttribute('data-hide-minimap') === '' || viewer.getAttribute('data-hide-minimap') === 'true'
-  const locale = viewer.getAttribute('data-locale') || 'en'
+  const locale = viewer.getAttribute('data-locale') ?? 'en'
   const locked = viewer.getAttribute('data-locked') === '' || viewer.getAttribute('data-locked') === 'true'
   const mobile = viewer.getAttribute('data-mobile') === '' || viewer.getAttribute('data-mobile') === 'true'
   const tutorial = viewer.getAttribute('data-tutorial') === '' || viewer.getAttribute('data-tutorial') === 'true'
-  const initialLayout = viewer.getAttribute('data-initial-layout') || undefined
+  const initialLayout = viewer.getAttribute('data-initial-layout') ?? undefined
 
   createRoot(viewer).render(
     <StrictMode>

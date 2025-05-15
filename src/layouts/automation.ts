@@ -210,6 +210,6 @@ function builder({ ti18n }: { ti18n: Ti18n<TranslationKey>, mobile?: boolean }) 
 }
 
 export const AutomationDefinition: LayoutDefinition = {
-  name: ({ ti18n }) => ti18n.translate(ti18n.keys.layoutAutomation) as string,
+  name: ({ ti18n }) => ti18n.translate(ti18n.keys.layoutAutomation),
   builder,
 } satisfies LayoutDefinition

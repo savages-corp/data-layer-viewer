@@ -112,20 +112,20 @@ export function ServiceNodeComponent({ id, data }: NodeProps<ServiceNode>) {
 
         {/* Action buttons - visible on hover and when selected */}
         <div className="react-flow__node-service-action-buttons">
-          <div className="react-flow__node-service-action-button" onClick={handleDelete}>
+          <button className="react-flow__node-service-action-button" onClick={handleDelete}>
             <Icon
               className="react-flow__node-service-action-button-destructive"
               icon="trash"
               size={10}
             />
-          </div>
-          <div className="react-flow__node-service-action-button" onClick={() => setIsModalOpen(true)}>
+          </button>
+          <button className="react-flow__node-service-action-button" onClick={() => setIsModalOpen(true)}>
             <Icon
               icon="gear"
               size={10}
               className="react-flow__node-service-action-button-gear"
             />
-          </div>
+          </button>
         </div>
 
         <div className="react-flow__node-service-information">

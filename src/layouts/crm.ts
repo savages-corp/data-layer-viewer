@@ -159,6 +159,6 @@ function builder({ ti18n }: { ti18n: Ti18n<TranslationKey>, mobile?: boolean }) 
 }
 
 export const CrmDefinition: LayoutDefinition = {
-  name: ({ ti18n }) => ti18n.translate(ti18n.keys.layoutCrm) as string,
+  name: ({ ti18n }) => ti18n.translate(ti18n.keys.layoutCrm),
   builder,
 } satisfies LayoutDefinition

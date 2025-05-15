@@ -10,16 +10,23 @@ import { Status } from '@/types/status'
 import { useReactFlow } from '@xyflow/react'
 import Select from 'react-select'
 
-interface ServiceEditModalProps {
-  id: string
-  data: ServiceNode['data']
-  isSource: boolean
-  isOpen: boolean
-  setIsOpen: (value: boolean) => void
-  onDelete: () => void
-}
-
-export function ServiceEditModal({ id, data, isSource, isOpen, setIsOpen, onDelete }: ServiceEditModalProps) {
+export function ServiceEditModal(
+  {
+    id,
+    data,
+    isSource,
+    isOpen,
+    setIsOpen,
+    onDelete,
+  }: {
+    readonly id: string
+    readonly data: ServiceNode['data']
+    readonly isSource: boolean
+    readonly isOpen: boolean
+    readonly setIsOpen: (value: boolean) => void
+    readonly onDelete: () => void
+  },
+) {
   const ti18n = useTi18n()
   const { updateNodeData } = useReactFlow()
 
@@ -36,7 +43,7 @@ export function ServiceEditModal({ id, data, isSource, isOpen, setIsOpen, onDele
 
   const handleParameterChange = (key: string, value: any) => {
     const updatedParameters = {
-      ...data.configuration.parameters || {},
+      ...data.configuration.parameters ?? {},
       [key]: value,
     }
 
@@ -136,7 +143,7 @@ export function ServiceEditModal({ id, data, isSource, isOpen, setIsOpen, onDele
                     width: 12,
                     height: 12,
                     borderRadius: '50%',
-                    backgroundColor: getStatusColor(data.status || Status.Unset),
+                    backgroundColor: getStatusColor(data.status ?? Status.Unset),
                     display: 'inline-block',
                   }}
                 />
@@ -165,7 +172,7 @@ export function ServiceEditModal({ id, data, isSource, isOpen, setIsOpen, onDele
             <input
               type="number"
               min="0"
-              value={data.interval || 0}
+              value={data.interval ?? 0}
               onChange={handleIntervalChange}
               style={{ width: '80px' }}
             />

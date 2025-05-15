@@ -23,11 +23,22 @@ export type ContainerNode = Node<
 export function ContainerNodeComponent({ data }: NodeProps<ContainerNode>) {
   const containerStyle = {
     background: data.color && `linear-gradient(48deg, ${data.color}, ${data.color}, #f8f8f8,  #ffffff)`,
-    color: data.textColor || data.color,
-    outlineColor: data.color && data.color,
+    color: data.textColor ?? data.color,
+    outlineColor: data.color,
     outlineStyle: data.outlineStyle,
     position: 'relative', // added to position annotation relative to container
   } satisfies React.CSSProperties
+
+  let annotationAlignmentStyle: React.CSSProperties
+  if (data.annotationAlignment === 'center') {
+    annotationAlignmentStyle = { left: '50%', transform: 'translateX(-50%)' }
+  }
+  else if (data.annotationAlignment === 'right') {
+    annotationAlignmentStyle = { right: 0 }
+  }
+  else {
+    annotationAlignmentStyle = { left: 0 }
+  }
 
   const annotationStyle: React.CSSProperties = {
     position: 'absolute',
@@ -35,11 +46,7 @@ export function ContainerNodeComponent({ data }: NodeProps<ContainerNode>) {
     ...(data.annotationSide === 'bottom'
       ? { top: '100%' } // place annotation below container
       : { bottom: '100%' }), // default/if 'top', place annotation above container
-    ...(data.annotationAlignment === 'center'
-      ? { left: '50%', transform: 'translateX(-50%)' }
-      : data.annotationAlignment === 'right'
-        ? { right: 0 }
-        : { left: 0 }),
+    ...annotationAlignmentStyle,
   } satisfies React.CSSProperties
 
   const labelStyle = {

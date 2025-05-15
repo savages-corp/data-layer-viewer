@@ -66,19 +66,19 @@ export function translateToConfig(flows: FlowPrefab[], nodes: any[], edges: any[
     acc.push({
       name: `${sourceIdentifier} -> ${destIdentifier}`,
       warehouse: isWarehouse,
-      interval: sourceService.data.interval || 15, // Default interval of 15 seconds (near real-time).
+      interval: sourceService.data.interval ?? 15, // Default interval of 15 seconds (near real-time).
       source: {
         type: sourceService.data.configuration.type || 'UNKNOWN',
         configuration: {
           identifier: slugify(sourceService.data.configuration.identifier),
-          parameters: sourceService.data.configuration.parameters || {},
+          parameters: sourceService.data.configuration.parameters ?? {},
         },
       },
       destination: {
         type: destinationService.data.configuration.type || 'UNKNOWN',
         configuration: {
           identifier: slugify(destinationService.data.configuration.identifier),
-          parameters: destinationService.data.configuration.parameters || {},
+          parameters: destinationService.data.configuration.parameters ?? {},
         },
       },
     })
@@ -124,7 +124,7 @@ export function translateFromConfig(importedConfig: ConfigFlow[]): {
     let destName = flowConfig.destination.configuration.identifier
 
     // If the flow name contains "->" then split it to get custom source and destination names
-    if (flowConfig.name && flowConfig.name.includes('->')) {
+    if (flowConfig.name?.includes('->')) {
       const nameParts = flowConfig.name.split('->').map(part => part.trim())
       if (nameParts.length >= 2) {
         sourceName = nameParts[0] || sourceName
@@ -147,7 +147,7 @@ export function translateFromConfig(importedConfig: ConfigFlow[]): {
           configuration: {
             type: flowConfig.source.type as ServiceType || ServiceType.GenericDatabase,
             identifier: sourceName,
-            parameters: flowConfig.source.configuration.parameters || {},
+            parameters: flowConfig.source.configuration.parameters ?? {},
           },
         },
       }
@@ -171,7 +171,7 @@ export function translateFromConfig(importedConfig: ConfigFlow[]): {
           configuration: {
             type: flowConfig.destination.type as ServiceType || ServiceType.CommonSalesforce,
             identifier: destName,
-            parameters: flowConfig.destination.configuration.parameters || {},
+            parameters: flowConfig.destination.configuration.parameters ?? {},
           },
         },
       }

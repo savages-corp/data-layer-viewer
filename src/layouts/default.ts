@@ -204,7 +204,7 @@ function builder({ ti18n, mobile = false }: { ti18n: Ti18n<TranslationKey>, mobi
 }
 
 export const DefaultDefinition: LayoutDefinition = {
-  name: ({ ti18n }) => ti18n.translate(ti18n.keys.layoutDefault) as string,
+  name: ({ ti18n }) => ti18n.translate(ti18n.keys.layoutDefault),
   builder,
 
 } satisfies LayoutDefinition

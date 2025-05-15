@@ -19,6 +19,18 @@
   --viewer-button-ghost: transparent;
 }
 
+button,
+input[type="submit"],
+input[type="reset"] {
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+}
+
 pre {
   position: relative;
   padding: 16px;
@@ -209,10 +221,6 @@ input {
   background-color: #888;
   cursor: pointer;
 }
-
-/* .modal-body {
-  height: 90%;
-} */
 
 .modal-content {
   min-height: 640px;
@@ -427,17 +435,6 @@ input {
 
 .react-flow__node-default.draggable:hover,
 .react-flow__node-container.draggable:hover,
-.react-flow__node-container.draggable:hover,
-.react-flow__node-service.draggable:hover,
-.react-flow__node-stage.draggable:hover,
-.react-flow__node-warehouse.draggable:hover {
-  box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.05);
-  outline: 1px solid var(--xy-custom-edge-stroke-inactive);
-}
-
-.react-flow__node-default.draggable:hover,
-.react-flow__node-container.draggable:hover,
-.react-flow__node-container.draggable:hover,
 .react-flow__node-service.draggable:hover,
 .react-flow__node-stage.draggable:hover,
 .react-flow__node-warehouse.draggable:hover {
@@ -555,8 +552,8 @@ input {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
+  width: 24px;
+  height: 24px;
   background: white;
   border-radius: 50%;
   padding: 4px;
@@ -624,7 +621,7 @@ input {
 .react-flow__node-service-form-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .react-flow__node-service-form-field {
@@ -673,12 +670,6 @@ input {
 }
 
 .react-flow__node-service-form-checkbox {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.react-flow__node-service-form-row {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -847,6 +838,10 @@ input {
   100% {
     opacity: 0;
   }
+}
+
+.react-flow__edge.selected {
+  outline: none;
 }
 
 .react-flow__edge-data__gizmo {

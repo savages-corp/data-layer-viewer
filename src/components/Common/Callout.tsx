@@ -1,13 +1,13 @@
 import { Icon } from '@/components/Common/Icon'
 
 export interface CalloutProps {
-  type: 'success' | 'error'
-  message: string
-  icon?: string
+  readonly type: 'success' | 'error'
+  readonly message: string
+  readonly icon?: string
 }
 
 export function Callout({ type, message, icon }: CalloutProps) {
-  const iconName = icon || (type === 'success' ? 'check' : 'exclamation')
+  const iconName = icon ?? (type === 'success' ? 'check' : 'exclamation')
 
   return (
     <div className={`callout callout-${type}`}>

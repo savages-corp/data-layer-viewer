@@ -93,15 +93,6 @@ interface LayoutOption {
   layout: Layout
 }
 
-interface AppProps {
-  hideMinimap?: boolean
-  hideControls?: boolean
-  locked?: boolean
-  mobile?: boolean
-  tutorial?: boolean
-  initialLayout?: string
-}
-
 export default function App({
   hideMinimap,
   hideControls,
@@ -109,7 +100,14 @@ export default function App({
   mobile,
   tutorial,
   initialLayout,
-}: AppProps) {
+}: {
+  readonly hideMinimap?: boolean
+  readonly hideControls?: boolean
+  readonly locked?: boolean
+  readonly mobile?: boolean
+  readonly tutorial?: boolean
+  readonly initialLayout?: string
+}) {
   const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance<AppNode, AppEdge>>()
   const reactFlowWrapper = useRef<HTMLDivElement>(null)
   const { width, height } = useWindowDimensions()
@@ -201,81 +199,78 @@ export default function App({
     [setEdges],
   )
 
+  // Helper: Check if connection is a duplicate or self-connection
+  const isInvalidConnection = (connection: Connection, edges: AppEdge[]) => {
+    if (connection.source === connection.target)
+      return true
+    return edges.some(
+      edge => edge.source === connection.source && edge.target === connection.target,
+    )
+  }
+
+  // Helper: Validate service node connection
+  const isValidServiceConnection = (targetNode: AppNode) => {
+    if (targetNode.type !== 'service' && targetNode.type !== 'stage')
+      return false
+
+    if (targetNode.type === 'stage') {
+      const stageNode = targetNode
+      if (stageNode.data.stage !== Stage.Modelize)
+        return false
+    }
+    return true
+  }
+
+  // Helper: Validate stage node connection and mutate edge if needed
+  const isValidStageConnection = (sourceNode: AppNode, targetNode: AppNode, edge: DataEdge) => {
+    const stageNode = sourceNode
+    // Type guard: check if stageNode.data has a 'stage' property
+    if ('stage' in stageNode.data) {
+      if (stageNode.data.stage === Stage.Modelize) {
+        if (targetNode.type !== 'stage' && targetNode.type !== 'warehouse')
+          return false
+        if (targetNode.type === 'stage' && targetNode.id !== stageNode.data.partnerId)
+          return false
+
+        edge.data!.shape = 'square'
+      }
+      else if (stageNode.data.stage === Stage.Egress) {
+        if (targetNode.type !== 'service')
+          return false
+      }
+      return true
+    }
+    return false
+  }
+
   const onConnect = useCallback(
     (connection: Connection) => {
-      if (!reactFlowInstance) {
+      if (!reactFlowInstance)
         return
-      }
-
-      if (connection.source === connection.target)
-        return // Prevent self-connections
-
-      // Check for duplicate connections.
-      const exists = edges.some(
-        edge => edge.source === connection.source && edge.target === connection.target,
-      )
-
-      if (exists)
+      if (isInvalidConnection(connection, edges))
         return
 
-      // Create a new edge based on the connection.
       const edge: DataEdge = {
-        id: `${connection.source}-${connection.target}-${Date.now()}`, // Unique ID
+        id: `${connection.source}-${connection.target}-${Date.now()}`,
         source: connection.source,
         target: connection.target,
         type: 'data',
         zIndex: 1,
-        data: {
-          shape: 'circle',
-        },
+        data: { shape: 'circle' },
       }
 
-      // This is where we have to handle the different type of node connections and their rules.
-
-      // Get the source node as we will be adjusting the data edge based on it.
       const sourceNode = reactFlowInstance.getNode(connection.source)
       const targetNode = reactFlowInstance.getNode(connection.target)
-
       if (!sourceNode || !targetNode)
         return
 
-      // A service node can only connect to another service node or a Stage Modelize node.
       if (sourceNode.type === 'service') {
-        if (targetNode.type !== 'service' && targetNode.type !== 'stage') {
+        if (!isValidServiceConnection(targetNode))
           return
-        }
-
-        if (targetNode.type === 'stage') {
-          const stageNode = targetNode as StageNode
-
-          if (stageNode.data.stage !== Stage.Modelize) {
-            return
-          }
-        }
       }
-
-      // A stage node has two variations: Modelize and Egress.
-      // - Modelize can only emit a connection to a Stage Egress or a Warehouse node.
-      if (sourceNode.type === 'stage') {
-        const stageNode = sourceNode as StageNode
-
-        if (stageNode.data.stage === Stage.Modelize) {
-          if (targetNode.type !== 'stage' && targetNode.type !== 'warehouse') {
-            return
-          }
-          else {
-            // If the target is a stage node, ensure it's the corresponding Egress node.
-            if (targetNode.type === 'stage' && targetNode.id !== stageNode.data.partnerId)
-              return
-          }
-
-          edge.data!.shape = 'square'
-        }
-        else if (stageNode.data.stage === Stage.Egress) {
-          if (targetNode.type !== 'service') {
-            return
-          }
-        }
+      else if (sourceNode.type === 'stage') {
+        if (!isValidStageConnection(sourceNode, targetNode, edge))
+          return
       }
 
       setEdges(eds => addEdge(edge, eds))
@@ -314,7 +309,7 @@ export default function App({
       if (!reactFlowInstance || !reactFlowWrapper.current)
         return
 
-      if (!node.measured || !node.measured.width || !node.measured.height)
+      if (!node.measured?.width || !node.measured?.height)
         return
 
       // Get the current viewport transformation
@@ -330,8 +325,8 @@ export default function App({
       const bottom = (-viewportY + clientHeight) / zoom
 
       // Now you can check if the node is within these bounds
-      const nodeRight = node.position.x + (node.width || 0)
-      const nodeBottom = node.position.y + (node.height || 0)
+      const nodeRight = node.position.x + (node.width ?? 0)
+      const nodeBottom = node.position.y + (node.height ?? 0)
 
       const isWithinBounds
         = node.position.x >= left
@@ -474,7 +469,7 @@ export default function App({
       type: 'service',
       position: { x: -32 + Math.random() * 64, y: -256 + Math.random() * 16 },
       data: {
-        status: option.status || Status.Success,
+        status: option.status ?? Status.Success,
         interval: 15,
         configuration: option.configuration,
       },
@@ -522,169 +517,167 @@ export default function App({
   }
 
   return (
-    <>
-      <ReactFlowProvider>
-        <Modal
-          title={ti18n.translate(ti18n.keys.modalConfigTitle)}
-          isOpen={isModalOpen}
-          setIsOpen={setIsModalOpen}
-          onClose={() => setIsModalOpen(false)}
-        >
-          <p>
-            {ti18n.translate(ti18n.keys.modalConfigDescription)}
-          </p>
-          <div className="modal-split">
-            <div className="modal-split-container">
-              <h2 className="modal-split-header">{ti18n.translate(ti18n.keys.modalConfigJson)}</h2>
-              <pre>
-                <Icon
-                  icon="clipboard"
-                  onClick={() => {
-                    navigator.clipboard.writeText(configJSON)
-                  }}
-                />
-                {configJSON}
-              </pre>
-            </div>
-            <div className="modal-split-container">
-              <h2 className="modal-split-header">{ti18n.translate(ti18n.keys.modalConfigYaml)}</h2>
-              <pre>
-                <Icon
-                  icon="clipboard"
-                  onClick={() => {
-                    navigator.clipboard.writeText(configYAML)
-                  }}
-                />
-                {configYAML}
-              </pre>
-            </div>
+    <ReactFlowProvider>
+      <Modal
+        title={ti18n.translate(ti18n.keys.modalConfigTitle)}
+        isOpen={isModalOpen}
+        setIsOpen={setIsModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      >
+        <p>
+          {ti18n.translate(ti18n.keys.modalConfigDescription)}
+        </p>
+        <div className="modal-split">
+          <div className="modal-split-container">
+            <h2 className="modal-split-header">{ti18n.translate(ti18n.keys.modalConfigJson)}</h2>
+            <pre>
+              <Icon
+                icon="clipboard"
+                onClick={() => {
+                  navigator.clipboard.writeText(configJSON)
+                }}
+              />
+              {configJSON}
+            </pre>
           </div>
-        </Modal>
-
-        <ImportModal
-          isOpen={isImportModalOpen}
-          setIsOpen={setIsImportModalOpen}
-          onImport={handleImportConfig}
-        />
-
-        <ConnectionModal
-          isOpen={isConnectionModalOpen}
-          setIsOpen={setIsConnectionModalOpen}
-          onVisualize={handleVisualize}
-        />
-
-        <div ref={reactFlowWrapper} className="reactflow-wrapper" style={{ width: '100%', height: '100%' }}>
-          <ReactFlow
-            onInit={instance => setReactFlowInstance(instance)}
-            nodes={nodes}
-            nodeTypes={nodeTypes}
-            edges={edges}
-            edgeTypes={edgeTypes}
-
-            fitViewOptions={fitViewOptions}
-
-            onConnect={onConnect}
-            onEdgesChange={onEdgesChange}
-            onNodesChange={onNodesChange}
-            onReconnect={onReconnect}
-            onReconnectStart={onReconnectStart}
-            onReconnectEnd={onReconnectEnd}
-            onNodeDragStop={onNodeDragStop}
-
-            autoPanOnNodeDrag={!locked}
-            panOnDrag={!locked}
-            zoomOnScroll={!locked}
-            zoomOnPinch={!locked}
-            zoomOnDoubleClick={!locked}
-          >
-            <Panel position="top-center" className="reactflow-panel-top">
-              <div className="reactflow-panel-select-container">
-                <Select
-                  placeholder={ti18n.translate(ti18n.keys.selectLayoutPlaceholder)}
-                  options={layoutOptions}
-                  value={null}
-                  onChange={option => selectLayout(option)}
-                  onMenuOpen={() => setShowTutorialLayout(false)}
-                />
-                {showTutorialLayout && (
-                  <div className="tutorial-overlay tutorial-layout">
-                    <Icon icon="arrowUp" size={10} style={{ transform: 'scaleX(-1)' }} />
-                    {ti18n.translate(ti18n.keys.tutorialLayout)}
-                  </div>
-                )}
-              </div>
-              <div className="reactflow-panel-select-container">
-                <Select<ServiceOptionType, false, GroupBase<ServiceOptionType>>
-                  placeholder={ti18n.translate(ti18n.keys.selectServicePlaceholder)}
-                  options={groupedServiceOptions}
-                  value={null}
-                  onChange={option => selectService(option)}
-                  onMenuOpen={() => setShowTutorialService(false)}
-                  components={{
-                    Option: ServiceOption,
-                  }}
-                  styles={{
-                    option: baseStyles => ({
-                      ...baseStyles,
-                      padding: 0,
-                    }),
-                  }}
-                />
-                {showTutorialService && (
-                  <div className="tutorial-overlay tutorial-service">
-                    {ti18n.translate(ti18n.keys.tutorialService)}
-                    <Icon icon="arrowUp" size={10} />
-                  </div>
-                )}
-              </div>
-            </Panel>
-            <Panel position="bottom-center" className="reactflow-panel-bottom">
-              <div className="reactflow-panel-group">
-                <Button className="reactflow-panel-group-left" onClick={addFlow}>
-                  <Icon icon="plus" size={16} style={{ transform: 'scaleX(-1)' }} />
-                  {isCompact ? '' : ti18n.translate(ti18n.keys.buttonAddFlow)}
-                </Button>
-                <Button className="reactflow-panel-group-right" onClick={removeFlow}>
-                  <Icon icon="minus" size={16} style={{ transform: 'scaleX(-1)' }} />
-                  {isCompact ? '' : ti18n.translate(ti18n.keys.buttonRemoveFlow)}
-                </Button>
-              </div>
-              <Button
-                className="reactflow-panel-button"
-                onClick={() => setIsImportModalOpen(true)}
-                style={{ marginRight: '8px' }}
-              >
-                <Icon icon="import" size={16} />
-                {isCompact ? '' : ti18n.translate(ti18n.keys.buttonImport) || 'Import'}
-              </Button>
-              <Button
-                className="reactflow-panel-button"
-                onClick={() => setIsModalOpen(true)}
-                style={{ marginRight: '8px' }}
-              >
-                <Icon icon="export" size={16} />
-                {isCompact ? '' : ti18n.translate(ti18n.keys.buttonConfig)}
-              </Button>
-              <Button
-                className="reactflow-panel-button"
-                onClick={() => setIsConnectionModalOpen(true)}
-              >
-                <Icon icon="plug" size={16} />
-                {isCompact ? '' : ti18n.translate(ti18n.keys.buttonConnect)}
-              </Button>
-            </Panel>
-            <Panel position="bottom-right">
-              <div className="reactflow-panel">
-              </div>
-            </Panel>
-            <Background
-              variant={BackgroundVariant.Dots}
-            />
-            {!hideMinimap && !locked && !isCompact && <MiniMap />}
-            {!hideControls && !locked && <Controls />}
-          </ReactFlow>
+          <div className="modal-split-container">
+            <h2 className="modal-split-header">{ti18n.translate(ti18n.keys.modalConfigYaml)}</h2>
+            <pre>
+              <Icon
+                icon="clipboard"
+                onClick={() => {
+                  navigator.clipboard.writeText(configYAML)
+                }}
+              />
+              {configYAML}
+            </pre>
+          </div>
         </div>
-      </ReactFlowProvider>
-    </>
+      </Modal>
+
+      <ImportModal
+        isOpen={isImportModalOpen}
+        setIsOpen={setIsImportModalOpen}
+        onImport={handleImportConfig}
+      />
+
+      <ConnectionModal
+        isOpen={isConnectionModalOpen}
+        setIsOpen={setIsConnectionModalOpen}
+        onVisualize={handleVisualize}
+      />
+
+      <div ref={reactFlowWrapper} className="reactflow-wrapper" style={{ width: '100%', height: '100%' }}>
+        <ReactFlow
+          onInit={instance => setReactFlowInstance(instance)}
+          nodes={nodes}
+          nodeTypes={nodeTypes}
+          edges={edges}
+          edgeTypes={edgeTypes}
+
+          fitViewOptions={fitViewOptions}
+
+          onConnect={onConnect}
+          onEdgesChange={onEdgesChange}
+          onNodesChange={onNodesChange}
+          onReconnect={onReconnect}
+          onReconnectStart={onReconnectStart}
+          onReconnectEnd={onReconnectEnd}
+          onNodeDragStop={onNodeDragStop}
+
+          autoPanOnNodeDrag={!locked}
+          panOnDrag={!locked}
+          zoomOnScroll={!locked}
+          zoomOnPinch={!locked}
+          zoomOnDoubleClick={!locked}
+        >
+          <Panel position="top-center" className="reactflow-panel-top">
+            <div className="reactflow-panel-select-container">
+              <Select
+                placeholder={ti18n.translate(ti18n.keys.selectLayoutPlaceholder)}
+                options={layoutOptions}
+                value={null}
+                onChange={option => selectLayout(option)}
+                onMenuOpen={() => setShowTutorialLayout(false)}
+              />
+              {showTutorialLayout && (
+                <div className="tutorial-overlay tutorial-layout">
+                  <Icon icon="arrowUp" size={10} style={{ transform: 'scaleX(-1)' }} />
+                  {ti18n.translate(ti18n.keys.tutorialLayout)}
+                </div>
+              )}
+            </div>
+            <div className="reactflow-panel-select-container">
+              <Select<ServiceOptionType, false, GroupBase<ServiceOptionType>>
+                placeholder={ti18n.translate(ti18n.keys.selectServicePlaceholder)}
+                options={groupedServiceOptions}
+                value={null}
+                onChange={option => selectService(option)}
+                onMenuOpen={() => setShowTutorialService(false)}
+                components={{
+                  Option: ServiceOption,
+                }}
+                styles={{
+                  option: baseStyles => ({
+                    ...baseStyles,
+                    padding: 0,
+                  }),
+                }}
+              />
+              {showTutorialService && (
+                <div className="tutorial-overlay tutorial-service">
+                  {ti18n.translate(ti18n.keys.tutorialService)}
+                  <Icon icon="arrowUp" size={10} />
+                </div>
+              )}
+            </div>
+          </Panel>
+          <Panel position="bottom-center" className="reactflow-panel-bottom">
+            <div className="reactflow-panel-group">
+              <Button className="reactflow-panel-group-left" onClick={addFlow}>
+                <Icon icon="plus" size={16} style={{ transform: 'scaleX(-1)' }} />
+                {isCompact ? '' : ti18n.translate(ti18n.keys.buttonAddFlow)}
+              </Button>
+              <Button className="reactflow-panel-group-right" onClick={removeFlow}>
+                <Icon icon="minus" size={16} style={{ transform: 'scaleX(-1)' }} />
+                {isCompact ? '' : ti18n.translate(ti18n.keys.buttonRemoveFlow)}
+              </Button>
+            </div>
+            <Button
+              className="reactflow-panel-button"
+              onClick={() => setIsImportModalOpen(true)}
+              style={{ marginRight: '8px' }}
+            >
+              <Icon icon="import" size={16} />
+              {isCompact ? '' : ti18n.translate(ti18n.keys.buttonImport) || 'Import'}
+            </Button>
+            <Button
+              className="reactflow-panel-button"
+              onClick={() => setIsModalOpen(true)}
+              style={{ marginRight: '8px' }}
+            >
+              <Icon icon="export" size={16} />
+              {isCompact ? '' : ti18n.translate(ti18n.keys.buttonConfig)}
+            </Button>
+            <Button
+              className="reactflow-panel-button"
+              onClick={() => setIsConnectionModalOpen(true)}
+            >
+              <Icon icon="plug" size={16} />
+              {isCompact ? '' : ti18n.translate(ti18n.keys.buttonConnect)}
+            </Button>
+          </Panel>
+          <Panel position="bottom-right">
+            <div className="reactflow-panel">
+            </div>
+          </Panel>
+          <Background
+            variant={BackgroundVariant.Dots}
+          />
+          {!hideMinimap && !locked && !isCompact && <MiniMap />}
+          {!hideControls && !locked && <Controls />}
+        </ReactFlow>
+      </div>
+    </ReactFlowProvider>
   )
 }
