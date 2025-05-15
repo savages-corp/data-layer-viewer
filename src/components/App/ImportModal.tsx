@@ -7,13 +7,17 @@ import { useTi18n } from '@/components/Core/Ti18nProvider'
 import { useState } from 'react'
 import { parse as YAMLParse } from 'yaml'
 
-interface ImportModalProps {
-  isOpen: boolean
-  setIsOpen: (value: boolean) => void
-  onImport: (config: any) => void
-}
-
-export function ImportModal({ isOpen, setIsOpen, onImport }: ImportModalProps) {
+export function ImportModal(
+  {
+    isOpen,
+    setIsOpen,
+    onImport,
+  }: {
+    readonly isOpen: boolean
+    readonly setIsOpen: (value: boolean) => void
+    readonly onImport: (config: any) => void
+  },
+) {
   const ti18n = useTi18n()
   const [inputValue, setInputValue] = useState('')
   const [format, setFormat] = useState('json') // 'json' or 'yaml'
@@ -81,11 +85,9 @@ export function ImportModal({ isOpen, setIsOpen, onImport }: ImportModalProps) {
       onClose={() => setIsOpen(false)}
       title={ti18n.translate(ti18n.keys.modalImportTitle) || 'Import Configuration'}
       buttons={(
-        <>
-          <Button onClick={handleImport} type={ButtonType.Primary}>
-            {ti18n.translate(ti18n.keys.buttonImport) || 'Import'}
-          </Button>
-        </>
+        <Button onClick={handleImport} type={ButtonType.Primary}>
+          {ti18n.translate(ti18n.keys.buttonImport) || 'Import'}
+        </Button>
       )}
     >
       <div className="import-modal-content">

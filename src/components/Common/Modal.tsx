@@ -17,15 +17,15 @@ export function Modal(
 
     children,
   }: {
-    isOpen: boolean
-    setIsOpen: (value: boolean) => void
-    onClose: () => void
+    readonly isOpen: boolean
+    readonly setIsOpen: (value: boolean) => void
+    readonly onClose: () => void
 
-    title: string
-    subtitle?: React.ReactNode
-    buttons?: React.ReactNode
+    readonly title: string
+    readonly subtitle?: React.ReactNode
+    readonly buttons?: React.ReactNode
 
-    children: React.ReactNode
+    readonly children: React.ReactNode
   },
 ) {
   const ti18n = useTi18n()

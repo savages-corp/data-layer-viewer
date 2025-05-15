@@ -16,7 +16,7 @@ export function CreateFlowPrefab(datalayer: AppNode, id: string, x?: number, y?:
   const container: ContainerNode = {
     id: getTimedId(`flow-container-${id}`),
     type: 'container',
-    position: { x: x || 0, y: y || 0 },
+    position: { x: x ?? 0, y: y ?? 0 },
     style: { width: 256, height: 32, zIndex: -1 },
     data: {
       label: 'Flow',

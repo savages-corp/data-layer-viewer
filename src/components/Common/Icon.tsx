@@ -11,9 +11,9 @@ import { TbApi, TbBrandAsana, TbBrandAuth0, TbBrandGithub, TbBrandGitlab, TbBran
 import { VscAzure } from 'react-icons/vsc'
 
 interface IconProps extends React.SVGProps<SVGElement> {
-  icon?: ServiceType | string
-  color?: string
-  size?: number
+  readonly icon?: ServiceType | string
+  readonly color?: string
+  readonly size?: number
 }
 
 // If you're wondering about the limited selection of icons: due to this being an embedded component, we're trying to keep the bundle size down.
@@ -163,7 +163,7 @@ export const Icon: React.FC<IconProps> = ({ color = '', icon = 'default', size =
     // Check if variant is one of the ServiceType values
     const enumKeys = Object.keys(ServiceType) as Array<keyof typeof ServiceType>
     const key = enumKeys.find(k => ServiceType[k] === icon)
-    return key || icon
+    return key ?? icon
   })()
 
   const SpecificIcon = iconMap[serviceKey] || FaScrewdriverWrench

@@ -167,6 +167,6 @@ function builder({ ti18n }: { ti18n: Ti18n<TranslationKey>, mobile?: boolean }) 
 }
 
 export const AggregatorDefinition: LayoutDefinition = {
-  name: ({ ti18n }) => ti18n.translate(ti18n.keys.layoutAggregator) as string,
+  name: ({ ti18n }) => ti18n.translate(ti18n.keys.layoutAggregator),
   builder,
 } satisfies LayoutDefinition

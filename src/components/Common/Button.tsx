@@ -7,9 +7,9 @@ export enum ButtonType {
   Ghost = 'ghost',
 }
 
-interface ButtonProps extends React.HTMLAttributes<HTMLDivElement> {
-  children: React.ReactNode
-  type?: ButtonType
+interface ButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
+  readonly children: React.ReactNode
+  readonly type?: ButtonType
 }
 
 export const Button: React.FC<ButtonProps> = (
@@ -22,7 +22,7 @@ export const Button: React.FC<ButtonProps> = (
     ...props
   },
 ) => {
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
     if (e.key === 'Enter' || e.key === ' ') {
       if (onClick)
         onClick(e as any)
@@ -30,15 +30,14 @@ export const Button: React.FC<ButtonProps> = (
   }
 
   return (
-    <div
+    <button
       {...props}
-      role="button"
       tabIndex={0}
       onClick={onClick}
       onKeyDown={handleKeyDown}
-      className={`button button-${type || ButtonType.Primary} ${className || ''}`.trim()}
+      className={`button button-${type ?? ButtonType.Primary} ${className}`.trim()}
     >
       {children}
-    </div>
+    </button>
   )
 }

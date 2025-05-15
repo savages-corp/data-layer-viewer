@@ -162,6 +162,6 @@ function builder({ ti18n }: { ti18n: Ti18n<TranslationKey>, mobile?: boolean }) 
 }
 
 export const ExternalDefinition: LayoutDefinition = {
-  name: ({ ti18n }) => ti18n.translate(ti18n.keys.layoutExternal) as string,
+  name: ({ ti18n }) => ti18n.translate(ti18n.keys.layoutExternal),
   builder,
 } satisfies LayoutDefinition

@@ -21,17 +21,17 @@ export function AnnotationNodeComponent({ data }: NodeProps<AnnotationNode>) {
     <>
       <div
         className="react-flow__node-annotation-text"
-        style={{ textAlign: data.textAlignment || 'left' }}
+        style={{ textAlign: data.textAlignment ?? 'left' }}
       >
         {lines.map((line, idx) => (
-          <React.Fragment key={idx}>
+          <React.Fragment key={`${line}-${idx}`}>
             {line}
             {idx < lines.length - 1 && <br />}
           </React.Fragment>
         ))}
       </div>
       {data.showArrow && (
-        <div className={`react-flow__node-annotation-arrow react-flow__node-annotation-arrow-${data.arrowPosition || 'bottom-right'}`}>
+        <div className={`react-flow__node-annotation-arrow react-flow__node-annotation-arrow-${data.arrowPosition ?? 'bottom-right'}`}>
           <Icon icon="arrowCurved" size={16} />
         </div>
       )}
