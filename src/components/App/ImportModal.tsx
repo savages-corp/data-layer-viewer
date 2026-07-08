@@ -1,11 +1,11 @@
+import { useState } from 'react'
+import { parse as YAMLParse } from 'yaml'
 import { Button, ButtonType } from '@/components/Common/Button'
 import { Callout } from '@/components/Common/Callout'
 import { Icon } from '@/components/Common/Icon'
+
 import { Modal } from '@/components/Common/Modal'
 import { useTi18n } from '@/components/Core/Ti18nProvider'
-
-import { useState } from 'react'
-import { parse as YAMLParse } from 'yaml'
 
 export function ImportModal(
   {

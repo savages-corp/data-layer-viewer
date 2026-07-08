@@ -1,12 +1,12 @@
-import type { ServiceNode } from '@/components/Nodes/ServiceNode'
-
-import type { AuditDBPush } from '@/types/auditdb'
-import type { ServiceType } from '@/types/service'
-
 import type { AppEdge, AppNode } from '../App'
 
 import type { DatalayerPrefab } from '../prefabs/datalayer'
 import type { FlowPrefab } from '../prefabs/flow'
+
+import type { ServiceNode } from '@/components/Nodes/ServiceNode'
+
+import type { AuditDBPush } from '@/types/auditdb'
+import type { ServiceType } from '@/types/service'
 
 import { Status } from '@/types/status'
 import { CreateDatalayerPrefab } from '../prefabs/datalayer'

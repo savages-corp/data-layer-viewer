@@ -1,8 +1,8 @@
-import type { TranslationKey } from '@/types/i18n'
 import type { Ti18n } from '@zealsprince/ti18n'
 import type { AppEdge, AppNode } from '../App'
 import type { DatalayerPrefab } from '../prefabs/datalayer'
 import type { FlowPrefab } from '../prefabs/flow'
+import type { TranslationKey } from '@/types/i18n'
 
 import { AggregatorDefinition } from './aggregator'
 import { AutomationDefinition } from './automation'

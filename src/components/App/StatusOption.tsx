@@ -1,6 +1,6 @@
-import type { TranslationKey } from '@/types/i18n'
-
 import type { Ti18n } from '@zealsprince/ti18n'
+
+import type { TranslationKey } from '@/types/i18n'
 import { Status } from '@/types/status'
 
 export interface StatusOptionProps {

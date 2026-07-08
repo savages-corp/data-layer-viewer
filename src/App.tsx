@@ -1,42 +1,20 @@
-import type { DataEdge } from '@/components/Edges/DataEdge'
-import type { AnnotationNode } from '@/components/Nodes/AnnotationNode'
-import type { ContainerNode } from '@/components/Nodes/ContainerNode'
-import type { ServiceNode } from '@/components/Nodes/ServiceNode'
-import type { StageNode } from '@/components/Nodes/StageNode'
-import type { WarehouseNode } from '@/components/Nodes/WarehouseNode'
-
-import type { ServiceOption as ServiceOptionType } from '@/types/option'
-
 import type { BuiltInEdge, BuiltInNode, Connection, EdgeChange, EdgeTypes, FitViewOptions, NodeChange, NodeTypes, ReactFlowInstance } from '@xyflow/react'
-
 import type { GroupBase } from 'react-select'
-
 import type { Layout } from './layouts/layouts'
-
 import type { DatalayerPrefab } from './prefabs/datalayer'
 import type { FlowPrefab } from './prefabs/flow'
+import type { DataEdge } from '@/components/Edges/DataEdge'
 
-import { ConnectionModal } from '@/components/App/ConnectionModal'
-import { ImportModal } from '@/components/App/ImportModal'
-import { ServiceOption } from '@/components/App/ServiceOption'
+import type { AnnotationNode } from '@/components/Nodes/AnnotationNode'
 
-import { Button } from '@/components/Common/Button'
-import { Icon } from '@/components/Common/Icon'
-import { Modal } from '@/components/Common/Modal'
+import type { ContainerNode } from '@/components/Nodes/ContainerNode'
 
-import { useTi18n } from '@/components/Core/Ti18nProvider'
+import type { ServiceNode } from '@/components/Nodes/ServiceNode'
 
-import { DataEdgeComponent } from '@/components/Edges/DataEdge'
-import { AnnotationNodeComponent } from '@/components/Nodes/AnnotationNode'
-import { ContainerNodeComponent } from '@/components/Nodes/ContainerNode'
-import { ServiceNodeComponent } from '@/components/Nodes/ServiceNode'
-import { StageNodeComponent } from '@/components/Nodes/StageNode'
-import { WarehouseNodeComponent } from '@/components/Nodes/WarehouseNode'
+import type { StageNode } from '@/components/Nodes/StageNode'
 
-import { getServiceOptionsData } from '@/src/data/serviceOptions'
-import { Stage } from '@/types/stage'
-
-import { Status } from '@/types/status'
+import type { WarehouseNode } from '@/components/Nodes/WarehouseNode'
+import type { ServiceOption as ServiceOptionType } from '@/types/option'
 
 import {
   addEdge,
@@ -52,10 +30,32 @@ import {
   reconnectEdge,
 } from '@xyflow/react'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-
 import Select from 'react-select'
 
 import { stringify as YAMLStringify } from 'yaml'
+import { ConnectionModal } from '@/components/App/ConnectionModal'
+import { ImportModal } from '@/components/App/ImportModal'
+
+import { ServiceOption } from '@/components/App/ServiceOption'
+
+import { Button } from '@/components/Common/Button'
+import { Icon } from '@/components/Common/Icon'
+import { Modal } from '@/components/Common/Modal'
+import { useTi18n } from '@/components/Core/Ti18nProvider'
+import { DataEdgeComponent } from '@/components/Edges/DataEdge'
+import { AnnotationNodeComponent } from '@/components/Nodes/AnnotationNode'
+
+import { ContainerNodeComponent } from '@/components/Nodes/ContainerNode'
+import { ServiceNodeComponent } from '@/components/Nodes/ServiceNode'
+
+import { StageNodeComponent } from '@/components/Nodes/StageNode'
+
+import { WarehouseNodeComponent } from '@/components/Nodes/WarehouseNode'
+import { getServiceOptionsData } from '@/src/data/serviceOptions'
+
+import { Stage } from '@/types/stage'
+
+import { Status } from '@/types/status'
 import { translateFromConfig, translateToConfig } from './helpers/config'
 import { calculateDataLayerHeight, calculateDataLayerY, calculateNextFlowY, calculateWarehouseY } from './helpers/positioning'
 

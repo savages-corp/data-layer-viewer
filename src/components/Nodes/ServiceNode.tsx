@@ -1,13 +1,13 @@
-import type { ServiceConfiguration } from '@/types/service'
 import type { Node, NodeProps } from '@xyflow/react'
-
-import { ServiceEditModal } from '@/components/App/ServiceEditModal'
-import { Icon } from '@/components/Common/Icon'
-import { useTi18n } from '@/components/Core/Ti18nProvider'
-import { Status } from '@/types/status'
+import type { ServiceConfiguration } from '@/types/service'
 
 import { Handle, Position, useNodeConnections, useNodesData, useReactFlow } from '@xyflow/react'
 import { useEffect, useMemo, useState } from 'react'
+import { ServiceEditModal } from '@/components/App/ServiceEditModal'
+import { Icon } from '@/components/Common/Icon'
+
+import { useTi18n } from '@/components/Core/Ti18nProvider'
+import { Status } from '@/types/status'
 
 export type ServiceNode = Node<
   {
