@@ -1,18 +1,18 @@
+import type { WebClickHouseClient } from '@clickhouse/client-web/dist/client'
 import type { AppEdge, AppNode } from '@/src/App'
 import type { DatalayerPrefab } from '@/src/prefabs/datalayer'
 import type { FlowPrefab } from '@/src/prefabs/flow'
 import type { AuditDBPush } from '@/types/auditdb'
-import type { WebClickHouseClient } from '@clickhouse/client-web/dist/client'
 
-import { Button } from '@/components/Common/Button'
-import { Callout } from '@/components/Common/Callout'
-import { Icon } from '@/components/Common/Icon'
-import { Modal } from '@/components/Common/Modal'
-
-import { useTi18n } from '@/components/Core/Ti18nProvider'
 import { createClient } from '@clickhouse/client-web'
 import { useReactFlow } from '@xyflow/react'
 import { useCallback, useEffect, useState } from 'react'
+import { Button } from '@/components/Common/Button'
+
+import { Callout } from '@/components/Common/Callout'
+import { Icon } from '@/components/Common/Icon'
+import { Modal } from '@/components/Common/Modal'
+import { useTi18n } from '@/components/Core/Ti18nProvider'
 import { calculateExpectedDataEdges, translateFromAuditData, updateFromAuditData } from '../../helpers/db'
 
 export function ConnectionModal(

@@ -20,7 +20,7 @@ export function AdjustDatalayerPrefab(datalayer: DatalayerPrefab, flowCount: num
   return datalayer
 }
 
-export function CreateDatalayerPrefab(flowCount: number) : (DatalayerPrefab) {
+export function CreateDatalayerPrefab(flowCount: number): (DatalayerPrefab) {
   const datalayerHeight = calculateDataLayerHeight(flowCount)
   const container: ContainerNode = {
     id: getTimedId('datalayer'),

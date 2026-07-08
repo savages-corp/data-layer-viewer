@@ -2,9 +2,9 @@ import type { Edge, EdgeProps } from '@xyflow/react'
 
 import type { ServiceNode } from 'src/components/Nodes/ServiceNode'
 
-import { Status } from '@/types/status'
 import { BaseEdge, getSmoothStepPath, useNodesData } from '@xyflow/react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Status } from '@/types/status'
 
 export type DataEdge = Edge<
   {

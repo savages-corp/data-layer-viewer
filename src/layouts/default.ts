@@ -1,12 +1,12 @@
-import type { AnnotationNode } from '@/components/Nodes/AnnotationNode'
-import type { ServiceNode } from '@/components/Nodes/ServiceNode'
+import type { Ti18n } from '@zealsprince/ti18n'
+import type { Layout, LayoutDefinition } from './layouts'
 
+import type { AnnotationNode } from '@/components/Nodes/AnnotationNode'
+
+import type { ServiceNode } from '@/components/Nodes/ServiceNode'
 import type { AppEdge, AppNode } from '@/src/App'
 
 import type { TranslationKey } from '@/types/i18n'
-import type { Ti18n } from '@zealsprince/ti18n'
-
-import type { Layout, LayoutDefinition } from './layouts'
 
 import { ServiceType } from '@/types/service'
 import { Status } from '@/types/status'
@@ -17,7 +17,7 @@ import { calculateNextFlowY } from '../helpers/positioning'
 import { CreateDatalayerPrefab } from '../prefabs/datalayer'
 import { CreateFlowPrefab } from '../prefabs/flow'
 
-function builder({ ti18n, mobile = false }: { ti18n: Ti18n<TranslationKey>, mobile?: boolean }) : (Layout) {
+function builder({ ti18n, mobile = false }: { ti18n: Ti18n<TranslationKey>, mobile?: boolean }): (Layout) {
   const datalayer = CreateDatalayerPrefab(mobile ? 1 : 2)
 
   const presetSource: ServiceNode = {

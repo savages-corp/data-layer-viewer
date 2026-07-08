@@ -1,8 +1,8 @@
 import type { Node, NodeProps } from '@xyflow/react'
 
-import { Icon } from '@/components/Common/Icon'
-
 import React from 'react'
+
+import { Icon } from '@/components/Common/Icon'
 
 export type AnnotationNode = Node<
   {

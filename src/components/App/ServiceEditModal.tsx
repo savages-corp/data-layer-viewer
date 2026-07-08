@@ -1,14 +1,14 @@
 import type { ServiceNode } from '@/components/Nodes/ServiceNode'
 
+import { useReactFlow } from '@xyflow/react'
+import Select from 'react-select'
 import { createStatusOptions, getStatusColor, StatusOption } from '@/components/App/StatusOption'
 import { Button } from '@/components/Common/Button'
 import { Icon } from '@/components/Common/Icon'
 import { Modal } from '@/components/Common/Modal'
+
 import { useTi18n } from '@/components/Core/Ti18nProvider'
 import { Status } from '@/types/status'
-
-import { useReactFlow } from '@xyflow/react'
-import Select from 'react-select'
 
 export function ServiceEditModal(
   {

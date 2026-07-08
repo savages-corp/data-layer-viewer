@@ -1,9 +1,9 @@
-import { Button, ButtonType } from '@/components/Common/Button'
-import { useTi18n } from '@/components/Core/Ti18nProvider'
-
 import React from 'react'
-
 import ReactModal from 'react-modal'
+
+import { Button, ButtonType } from '@/components/Common/Button'
+
+import { useTi18n } from '@/components/Core/Ti18nProvider'
 
 export function Modal(
   {

@@ -4,7 +4,7 @@ import { calculateNextFlowY } from '../helpers/positioning'
 import { CreateDatalayerPrefab } from '../prefabs/datalayer'
 import { CreateFlowPrefab } from '../prefabs/flow'
 
-function builder() : (Layout) {
+function builder(): (Layout) {
   const datalayer = CreateDatalayerPrefab(2)
   const flow = CreateFlowPrefab(datalayer.container, '2', 24, calculateNextFlowY(0))
   const layout: Layout = {
