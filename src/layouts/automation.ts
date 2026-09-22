@@ -194,7 +194,8 @@ function builder({ ti18n }: { ti18n: Ti18n<TranslationKey>, mobile?: boolean }):
     { id: 'pull-modelize-2', source: n8nSource.id, target: hubspotDestination.id, type: 'data', data: { initialStatus: Status.Success, shape: 'circle' }, zIndex: 1 },
 
     // Third flow edges
-    { id: 'pull-modelize-3', source: hubspotSource.id, target: hubspotToWarehouseFlow.modelize.id, type: 'data', data: { initialStatus: Status.Success, shape: 'circle' }, zIndex: 1 },
+    { id: 'pull-ingest-3', source: hubspotSource.id, target: hubspotToWarehouseFlow.ingest.id, type: 'data', data: { initialStatus: Status.Success, shape: 'circle' }, zIndex: 1 },
+    { id: 'ingest-modelize-3', source: hubspotToWarehouseFlow.ingest.id, target: hubspotToWarehouseFlow.modelize.id, type: 'data', data: { initialStatus: Status.Success, shape: 'square' }, zIndex: 1 },
     { id: 'modelize-warehouse', source: hubspotToWarehouseFlow.modelize.id, target: datalayer.warehouse.id, type: 'data', data: { initialStatus: Status.Success, shape: 'circle' }, zIndex: 1 },
   ] satisfies AppEdge[]
 

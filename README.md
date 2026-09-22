@@ -48,6 +48,18 @@ npm run preview
 
 This will start a local server on port 4173 that directly serves the `dist/` directory.
 
+## Bronze, Silver, Gold ##
+
+The Data Layer is drawn as a medallion architecture. Every flow passes through three stages, each living in its own layer band:
+
+| Stage | Layer | What happens |
+| --- | --- | --- |
+| Ingest | Bronze | Raw records are landed exactly as received, so a wrong mapping can be reprocessed instead of lost |
+| Modelize | Silver | Records are conformed into one standardized, tenant-neutral model (optionally persisted to the warehouse) |
+| Egress | Gold | Curated data is served to destinations: applications, AI/ML workloads and reporting |
+
+Sources always connect to Ingest, Egress always connects to a destination. Round handles connect to services, square handles connect stages inside the Data Layer. The `Manufacturing Data Platform` layout shows the full picture with ERP, shop and shop-floor sources feeding the platform app, AI/ML and reporting.
+
 ## Embedding Props ##
 
 The following props are available for embedding the Data Layer Viewer:

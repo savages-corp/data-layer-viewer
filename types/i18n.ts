@@ -104,6 +104,12 @@ export const TRANSLATION_KEYS = [
   'annotation-automation-warehouse-export',
   'annotation-automation-n8n-process',
   'annotation-automation-hubspot-sync',
+  'stage-ingest',
+  'layout-medallion',
+  'annotation-medallion-bronze',
+  'annotation-medallion-silver',
+  'annotation-medallion-gold',
+  'annotation-medallion-consumers',
 ] as const
 
 export type TranslationKey = typeof TRANSLATION_KEYS[number]

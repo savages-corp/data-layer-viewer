@@ -123,7 +123,8 @@ function builder({ ti18n, mobile = false }: { ti18n: Ti18n<TranslationKey>, mobi
 
   // The initial state of the graph.
   const edges: AppEdge[] = [
-    { id: 'pull-modelize-1', source: presetSource.id, target: presetFlow.modelize.id, type: 'data', data: { initialStatus: Status.Success, shape: 'circle' }, zIndex: 1 },
+    { id: 'pull-ingest-1', source: presetSource.id, target: presetFlow.ingest.id, type: 'data', data: { initialStatus: Status.Success, shape: 'circle' }, zIndex: 1 },
+    { id: 'ingest-modelize-1', source: presetFlow.ingest.id, target: presetFlow.modelize.id, type: 'data', data: { initialStatus: Status.Success, shape: 'square' }, zIndex: 1 },
     { id: 'modelize-egress-1', source: presetFlow.modelize.id, target: presetFlow.egress.id, type: 'data', data: { initialStatus: Status.Success, shape: 'square' }, zIndex: 1 },
     { id: 'egress-push-1', source: presetFlow.egress.id, target: presetDestination.id, type: 'data', data: { initialStatus: Status.Success, shape: 'circle' }, zIndex: 1 },
     { id: 'warehouse-1', source: presetFlow.modelize.id, target: datalayer.warehouse.id, type: 'data', data: { initialStatus: Status.Success, shape: 'square' }, zIndex: 1 },

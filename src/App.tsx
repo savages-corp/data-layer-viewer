@@ -57,7 +57,7 @@ import { Stage } from '@/types/stage'
 
 import { Status } from '@/types/status'
 import { translateFromConfig, translateToConfig } from './helpers/config'
-import { calculateDataLayerHeight, calculateDataLayerY, calculateNextFlowY, calculateWarehouseY } from './helpers/positioning'
+import { calculateDataLayerHeight, calculateDataLayerY, calculateLayerBandHeight, calculateNextFlowY, calculateWarehouseY } from './helpers/positioning'
 
 import { slugify } from './helpers/string'
 
@@ -215,7 +215,8 @@ export default function App({
 
     if (targetNode.type === 'stage') {
       const stageNode = targetNode
-      if (stageNode.data.stage !== Stage.Modelize)
+      // Services always enter the Data Layer through the Bronze layer, so raw data is landed before it is modelized.
+      if (stageNode.data.stage !== Stage.Ingest)
         return false
     }
     return true
@@ -226,7 +227,14 @@ export default function App({
     const stageNode = sourceNode
     // Type guard: check if stageNode.data has a 'stage' property
     if ('stage' in stageNode.data) {
-      if (stageNode.data.stage === Stage.Modelize) {
+      if (stageNode.data.stage === Stage.Ingest) {
+        // Ingest hands the raw data on to its own Modelize stage only.
+        if (targetNode.type !== 'stage' || targetNode.id !== stageNode.data.partnerId)
+          return false
+
+        edge.data!.shape = 'square'
+      }
+      else if (stageNode.data.stage === Stage.Modelize) {
         if (targetNode.type !== 'stage' && targetNode.type !== 'warehouse')
           return false
         if (targetNode.type === 'stage' && targetNode.id !== stageNode.data.partnerId)
@@ -408,6 +416,14 @@ export default function App({
         }
       }
 
+      // Stretch the Bronze, Silver and Gold bands with the Data Layer.
+      if (n.id === datalayer.bronze.id || n.id === datalayer.silver.id || n.id === datalayer.gold.id) {
+        return {
+          ...n,
+          style: { ...n.style, height: calculateLayerBandHeight(newHeight) },
+        }
+      }
+
       return n
     }))
   }, [datalayer, flows])
@@ -421,7 +437,7 @@ export default function App({
 
     const flow = CreateFlowPrefab(datalayer.container, Date.now().toString(), 24, calculateNextFlowY(flows.length))
 
-    setNodes(nds => [...nds, flow.container, flow.modelize, flow.egress])
+    setNodes(nds => [...nds, flow.container, flow.ingest, flow.modelize, flow.egress])
     setFlows(flws => [...flws, flow])
   }
 
@@ -435,7 +451,7 @@ export default function App({
       return
 
     // Before we continue, let's make our life easier by getting the IDs of the nodes associated with the flow.
-    const ids = [flow.container.id, flow.modelize.id, flow.egress.id]
+    const ids = [flow.container.id, flow.ingest.id, flow.modelize.id, flow.egress.id]
 
     // We have to do a few operations here. Firstly, remove the nodes associated with the flow. Then, remove nodes that have any of them as parents.
     let nodes = reactFlowInstance.getNodes() ?? []

@@ -47,7 +47,7 @@ export function translateToConfig(flows: FlowPrefab[], nodes: any[], edges: any[
 
   return flows.reduce<ConfigFlow[]>((acc, flow: FlowPrefab) => {
     // We get the source and destination services from the edges to associate them with the flow.
-    const sourceService = getServiceFromEdge(flow.modelize.id, false)
+    const sourceService = getServiceFromEdge(flow.ingest.id, false)
     const destinationService = getServiceFromEdge(flow.egress.id, true)
 
     // Only include flows if both source and destination are connected.
@@ -117,7 +117,7 @@ export function translateFromConfig(importedConfig: ConfigFlow[]): {
     flows.push(flow)
 
     // Add flow nodes to the nodes array
-    nodes.push(flow.container, flow.modelize, flow.egress)
+    nodes.push(flow.container, flow.ingest, flow.modelize, flow.egress)
 
     // Extract source and destination names from the flow name if available
     let sourceName = flowConfig.source.configuration.identifier
@@ -181,14 +181,26 @@ export function translateFromConfig(importedConfig: ConfigFlow[]): {
     }
 
     // Create edges to connect the flow
-    const sourceToModelizeEdge: AppEdge = {
-      id: `source-modelize-${index}-${getTimedId('')}`,
+    const sourceToIngestEdge: AppEdge = {
+      id: `source-ingest-${index}-${getTimedId('')}`,
       source: sourceNode.id,
-      target: flow.modelize.id,
+      target: flow.ingest.id,
       type: 'data',
       data: {
         initialStatus: Status.Success,
         shape: 'circle',
+      },
+      zIndex: 1,
+    }
+
+    const ingestToModelizeEdge: AppEdge = {
+      id: `ingest-modelize-${index}-${getTimedId('')}`,
+      source: flow.ingest.id,
+      target: flow.modelize.id,
+      type: 'data',
+      data: {
+        initialStatus: Status.Success,
+        shape: 'square',
       },
       zIndex: 1,
     }
@@ -217,7 +229,7 @@ export function translateFromConfig(importedConfig: ConfigFlow[]): {
       zIndex: 1,
     }
 
-    edges.push(sourceToModelizeEdge, modelizeToEgressEdge, egressToDestEdge)
+    edges.push(sourceToIngestEdge, ingestToModelizeEdge, modelizeToEgressEdge, egressToDestEdge)
 
     // If warehouse is enabled, add edge to warehouse
     if (flowConfig.warehouse) {

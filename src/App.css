@@ -791,7 +791,21 @@ input {
   font-size: .5em;
 }
 
+/* Tint each stage after the medallion layer it belongs to */
+.react-flow__node-stage-contents-bronze {
+  border-bottom: 2px solid #c8975f;
+}
+
+.react-flow__node-stage-contents-silver {
+  border-bottom: 2px solid #adb5bd;
+}
+
+.react-flow__node-stage-contents-gold {
+  border-bottom: 2px solid #d4a72c;
+}
+
 /* Highlight stage nodes that are causing an error status */
+.react-flow__node-stage-contents-ingest-error-service-pull,
 .react-flow__node-stage-contents-modelize-error-data-modelize,
 .react-flow__node-stage-contents-egress-error-data-egress {
   outline: 2px solid var(--xy-custom-edge-stroke-error);
