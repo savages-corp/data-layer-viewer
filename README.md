@@ -2,6 +2,15 @@
 
 Front-end visualization of Data Layer flows for demo and debugging purposes.
 
+## Deployments ##
+
+| Branch | URL | Purpose |
+| --- | --- | --- |
+| `main` | <https://savages-corp.github.io/data-layer-viewer/> | Production / demo |
+| `dev` | <https://savages-corp.github.io/data-layer-viewer/dev/> | Test link for trying out changes before they go to `main` |
+
+Both are built and published together by `.github/workflows/gh-pages.yml` on every push to `main` or `dev`.
+
 ## Getting Started ##
 
 ```bash

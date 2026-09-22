@@ -1,10 +1,16 @@
-# Simple workflow for deploying static content to GitHub Pages
+# Deploys two builds of the viewer to a single GitHub Pages site:
+#   main -> https://savages-corp.github.io/data-layer-viewer/       (production)
+#   dev  -> https://savages-corp.github.io/data-layer-viewer/dev/   (test)
+#
+# GitHub Pages only serves one site per repository, so both branches are
+# always built together and uploaded as one artifact, no matter which branch
+# triggered the run.
 name: Deploy static content to Pages
 
 on:
-  # Runs on pushes targeting the default branch
+  # Runs on pushes targeting the production or the test branch
   push:
-    branches: [main]
+    branches: [main, dev]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -21,7 +27,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Single deploy job since we're just deploying
   deploy:
     environment:
       name: github-pages
@@ -29,25 +34,53 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout main (production)
         uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+
+      - name: Checkout dev (test)
+        uses: actions/checkout@v4
+        with:
+          ref: dev
+          path: dev
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: |
+            main/package-lock.json
+            dev/package-lock.json
 
-      - name: Install dependencies
-        run: npm ci
-      - name: Build
-        run: npm run build
+      - name: Build main -> /
+        working-directory: main
+        run: |
+          npm ci --ignore-scripts
+          npm run build
+
+      - name: Build dev -> /dev/
+        working-directory: dev
+        run: |
+          npm ci --ignore-scripts
+          npm run build -- --base=/data-layer-viewer/dev/
+
+      - name: Assemble site
+        run: |
+          mkdir -p site/dev
+          cp -r main/dist/. site/
+          cp -r dev/dist/. site/dev/
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload dist folder
-          path: ./dist
+          path: ./site
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
