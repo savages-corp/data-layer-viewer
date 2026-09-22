@@ -5,7 +5,7 @@ import { Handle, Position, useNodeConnections, useNodesData, useReactFlow } from
 import { useEffect, useMemo } from 'react'
 import { useTi18n } from '@/components/Core/Ti18nProvider'
 
-import { Stage } from '@/types/stage'
+import { Stage, StageLayer } from '@/types/stage'
 import { Status } from '@/types/status'
 
 export type StageNode = Node<
@@ -18,11 +18,12 @@ export type StageNode = Node<
 >
 
 /*
-  StageNode displays and connects data handling steps within the Data Layer.
-    - It consists of two types: Modelize and Egress.
-    - Modelize accepts connections only from a single Service nodes.
-    - Egress sends data to a Service node.
+  StageNode displays and connects data handling steps within the Data Layer. Each stage belongs to one medallion layer:
+    - Ingest (Bronze) accepts a connection from a single Service node and lands the raw data.
+    - Modelize (Silver) conforms the raw data and may additionally persist it to the Warehouse.
+    - Egress (Gold) sends the curated data to a Service node.
 
+  Round handles connect to services, square handles connect stages (and the warehouse) inside the Data Layer.
 */
 
 export function StageNodeComponent({ id, data }: NodeProps<StageNode>) {
@@ -57,6 +58,9 @@ export function StageNodeComponent({ id, data }: NodeProps<StageNode>) {
 
   const label = useMemo(() => {
     switch (data.stage) {
+      case Stage.Ingest:
+        return ti18n.translate(ti18n.keys.stageIngest)
+
       case Stage.Modelize:
         return ti18n.translate(ti18n.keys.stageModelize)
 
@@ -65,15 +69,24 @@ export function StageNodeComponent({ id, data }: NodeProps<StageNode>) {
     }
   }, [data.stage])
 
+  const stageSlug = data.stage.toLowerCase()
+  const layerSlug = StageLayer[data.stage].toLowerCase()
+
+  // Ingest receives from a service (round), every other stage receives from a stage (square).
+  const targetIsRound = data.stage === Stage.Ingest
+  // Egress sends to a service (round), every other stage sends to a stage or the warehouse (square).
+  const sourceIsRound = data.stage === Stage.Egress
+  // Modelize may fan out to its partner stage and the warehouse, all other stages have a single outgoing connection.
+  const maxSourceConnections = data.stage === Stage.Modelize ? 2 : 1
+
   return (
-    <div className={`react-flow__node-stage-contents react-flow__node-stage-contents-${data.stage.toLowerCase()}-${statusSlug} stage-node-status-${statusSlug}`}>
+    <div className={`react-flow__node-stage-contents react-flow__node-stage-contents-${layerSlug} react-flow__node-stage-contents-${stageSlug}-${statusSlug} stage-node-status-${statusSlug}`}>
       <div>{label}</div>
-      {/* Depending on whether the stage is modelize or egress, either the target or source is square */}
       <Handle
         type="target"
         position={Position.Left}
         id="push"
-        style={{ borderRadius: data.stage === Stage.Egress ? '0' : '50%' }}
+        style={{ borderRadius: targetIsRound ? '50%' : '0' }}
         isConnectable={targetConnections.length === 0}
         className={targetConnections.length > 0 ? 'react-flow__handle-plugged' : ''}
       >
@@ -82,9 +95,9 @@ export function StageNodeComponent({ id, data }: NodeProps<StageNode>) {
         type="source"
         position={Position.Right}
         id="pull"
-        style={{ borderRadius: data.stage === Stage.Modelize ? '0' : '50%' }}
-        isConnectable={sourceConnections.length === 0 || (data.stage === Stage.Modelize && sourceConnections.length <= 1)}
-        className={(sourceConnections.length > 0 && data.stage === Stage.Egress) || sourceConnections.length > 1 ? 'react-flow__handle-plugged' : ''}
+        style={{ borderRadius: sourceIsRound ? '50%' : '0' }}
+        isConnectable={sourceConnections.length < maxSourceConnections}
+        className={sourceConnections.length >= maxSourceConnections ? 'react-flow__handle-plugged' : ''}
       >
       </Handle>
     </div>

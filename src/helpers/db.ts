@@ -74,7 +74,7 @@ export function translateFromAuditData(auditData: AuditDBPush[], inactiveDays: n
 
     // Add flow nodes to our collection
     flows.push(flow)
-    nodes.push(flow.container, flow.modelize, flow.egress)
+    nodes.push(flow.container, flow.ingest, flow.modelize, flow.egress)
 
     // Create source service node
     const sourceId = getSourceNodeId(flowData.source_type, flowData.source_identifier, flowData.destination_type, flowData.destination_identifier)
@@ -125,13 +125,24 @@ export function translateFromAuditData(auditData: AuditDBPush[], inactiveDays: n
     }
 
     // Create edges to connect the flow
-    const sourceToModelizeEdge: AppEdge = {
-      id: `${sourceId}-to-modelize-${flow.modelize.id}`,
+    const sourceToIngestEdge: AppEdge = {
+      id: `${sourceId}-to-ingest-${flow.ingest.id}`,
       source: sourceNode.id,
-      target: flow.modelize.id,
+      target: flow.ingest.id,
       type: 'data',
       data: {
         shape: 'circle',
+      },
+      zIndex: 1,
+    }
+
+    const ingestToModelizeEdge: AppEdge = {
+      id: `${flow.ingest.id}-to-modelize-${flow.modelize.id}`,
+      source: flow.ingest.id,
+      target: flow.modelize.id,
+      type: 'data',
+      data: {
+        shape: 'square',
       },
       zIndex: 1,
     }
@@ -158,7 +169,7 @@ export function translateFromAuditData(auditData: AuditDBPush[], inactiveDays: n
       zIndex: 1,
     }
 
-    edges.push(sourceToModelizeEdge, modelizeToEgressEdge, egressToDestEdge)
+    edges.push(sourceToIngestEdge, ingestToModelizeEdge, modelizeToEgressEdge, egressToDestEdge)
 
     // If the status indicates warehouse usage, add warehouse connection
     if (convertAuditStatus(flowData.latest_status, flowData.latest_timestamp, inactiveDays) === Status.SuccessWithWarehouse) {

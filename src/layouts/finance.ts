@@ -97,9 +97,11 @@ function builder({ ti18n }: { ti18n: Ti18n<TranslationKey>, mobile?: boolean }):
   ] satisfies AppNode[]
 
   const edges: AppEdge[] = [
-    { id: 'pull-modelize-1', source: paypalSource.id, target: paypalFlow.modelize.id, type: 'data', data: { initialStatus: Status.Success, shape: 'circle' }, zIndex: 1 },
+    { id: 'pull-ingest-1', source: paypalSource.id, target: paypalFlow.ingest.id, type: 'data', data: { initialStatus: Status.Success, shape: 'circle' }, zIndex: 1 },
+    { id: 'ingest-modelize-1', source: paypalFlow.ingest.id, target: paypalFlow.modelize.id, type: 'data', data: { initialStatus: Status.Success, shape: 'square' }, zIndex: 1 },
     { id: 'warehouse-1', source: paypalFlow.modelize.id, target: datalayer.warehouse.id, type: 'data', data: { initialStatus: Status.Success, shape: 'square' }, zIndex: 1 },
-    { id: 'pull-modelize-2', source: stripeSource.id, target: stripeFlow.modelize.id, type: 'data', data: { initialStatus: Status.Success, shape: 'circle' }, zIndex: 1 },
+    { id: 'pull-ingest-2', source: stripeSource.id, target: stripeFlow.ingest.id, type: 'data', data: { initialStatus: Status.Success, shape: 'circle' }, zIndex: 1 },
+    { id: 'ingest-modelize-2', source: stripeFlow.ingest.id, target: stripeFlow.modelize.id, type: 'data', data: { initialStatus: Status.Success, shape: 'square' }, zIndex: 1 },
     { id: 'warehouse-2', source: stripeFlow.modelize.id, target: datalayer.warehouse.id, type: 'data', data: { initialStatus: Status.Success, shape: 'square' }, zIndex: 1 },
   ]
 

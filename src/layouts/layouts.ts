@@ -11,6 +11,7 @@ import { DefaultDefinition } from './default'
 import { EmptyDefinition } from './empty'
 import { ExternalDefinition } from './external'
 import { FinanceDefinition } from './finance'
+import { MedallionDefinition } from './medallion'
 import { PortfolioDefinition } from './portfolio'
 
 export interface LayoutDefinition {
@@ -27,6 +28,7 @@ export interface Layout {
 
 export const layouts: Record<string, LayoutDefinition> = {
   default: DefaultDefinition,
+  medallion: MedallionDefinition,
   crm: CrmDefinition,
   external: ExternalDefinition,
   finance: FinanceDefinition,

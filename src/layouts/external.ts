@@ -141,11 +141,14 @@ function builder({ ti18n }: { ti18n: Ti18n<TranslationKey>, mobile?: boolean }):
   ] satisfies AppNode[]
 
   const edges: AppEdge[] = [
-    { id: 'pull-modelize-1', source: httpSource.id, target: inboundFlow.modelize.id, type: 'data', data: { initialStatus: Status.Success, shape: 'circle' }, zIndex: 1 },
+    { id: 'pull-ingest-1', source: httpSource.id, target: inboundFlow.ingest.id, type: 'data', data: { initialStatus: Status.Success, shape: 'circle' }, zIndex: 1 },
+    { id: 'ingest-modelize-1', source: inboundFlow.ingest.id, target: inboundFlow.modelize.id, type: 'data', data: { initialStatus: Status.Success, shape: 'square' }, zIndex: 1 },
     { id: 'modelize-egress-1', source: inboundFlow.modelize.id, target: inboundFlow.egress.id, type: 'data', data: { initialStatus: Status.Success, shape: 'square' }, zIndex: 1 },
     { id: 'egress-push-1', source: inboundFlow.egress.id, target: salesforceDestination.id, type: 'data', data: { initialStatus: Status.Success, shape: 'circle' }, zIndex: 1 },
 
-    { id: 'pull-modelize-2', source: salesforceSource.id, target: outboundFlow.modelize.id, type: 'data', data: { initialStatus: Status.Success, shape: 'circle' }, zIndex: 1 },
+    { id: 'pull-ingest-2', source: salesforceSource.id, target: outboundFlow.ingest.id, type: 'data', data: { initialStatus: Status.Success, shape: 'circle' }, zIndex: 1 },
+
+    { id: 'ingest-modelize-2', source: outboundFlow.ingest.id, target: outboundFlow.modelize.id, type: 'data', data: { initialStatus: Status.Success, shape: 'square' }, zIndex: 1 },
     { id: 'modelize-egress-2', source: outboundFlow.modelize.id, target: outboundFlow.egress.id, type: 'data', data: { initialStatus: Status.Success, shape: 'square' }, zIndex: 1 },
     { id: 'egress-push-2', source: outboundFlow.egress.id, target: httpDestination.id, type: 'data', data: { initialStatus: Status.Success, shape: 'circle' }, zIndex: 1 },
   ] satisfies AppEdge[]

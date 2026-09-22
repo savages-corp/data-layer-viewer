@@ -6,8 +6,8 @@
   "dictionary": {
     "annotation-destination": "Daten werden an ein Ziel gesendet und vervollständigen einen Flow",
     "annotation-flow-connect": "Verbinden Sie selbst einen Flow!",
-    "annotation-modelize": "Daten werden validiert, standardisiert und optional gespeichert",
-    "annotation-source": "Quellen übermitteln Daten zu einem Ziel\n(Nur ein Ziel möglich)",
+    "annotation-modelize": "Roh in Bronze, standardisiert in Silver, bereitgestellt aus Gold",
+    "annotation-source": "Quellen liefern Rohdaten in den Data Layer\n(Nur ein Ziel möglich)",
     "annotation-finance-payment": "Zahlungsdaten werden gesammelt und standardisiert",
     "annotation-finance-warehouse": "Standardisierte Zahlungsdaten dienen der Berichterstattung",
     "annotation-portfolio-cloud": "Alle Versicherungsdaten werden konsolidiert",
@@ -107,6 +107,12 @@
     "status-success-nothing-new": "Erfolgreich - Keine Änderungen",
     "status-success-with-warehouse": "Erfolgreich - Mit Datenlagerung",
     "status-success": "Erfolgreich",
+    "stage-ingest": "Ingest",
+    "layout-medallion": "Manufacturing Data Platform",
+    "annotation-medallion-bronze": "Bronze: Rohdaten, unverändert abgelegt und jederzeit neu verarbeitbar",
+    "annotation-medallion-silver": "Silver: in ein einheitliches, mandantenneutrales Modell überführt",
+    "annotation-medallion-gold": "Gold: aufbereitete Tabellen für Apps, KI/ML und Reporting",
+    "annotation-medallion-consumers": "Anwendungen, KI/ML und Reporting\nlesen alle aus demselben Gold-Layer",
     "tutorial-layout": "Testen Sie verschieden Konfigurationen",
     "tutorial-service": "Clicken Sie hier um neue Dienste hinzuzufügen"
   }

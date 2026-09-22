@@ -57,7 +57,7 @@ import { Stage } from '@/types/stage'
 
 import { Status } from '@/types/status'
 import { translateFromConfig, translateToConfig } from './helpers/config'
-import { calculateDataLayerHeight, calculateDataLayerY, calculateNextFlowY, calculateWarehouseY } from './helpers/positioning'
+import { calculateDataLayerHeight, calculateDataLayerY, calculateLayerBandHeight, calculateNextFlowY, calculateWarehouseY } from './helpers/positioning'
 
 import { slugify } from './helpers/string'
 
@@ -215,32 +215,44 @@ export default function App({
 
     if (targetNode.type === 'stage') {
       const stageNode = targetNode
-      if (stageNode.data.stage !== Stage.Modelize)
+      // Services always enter the Data Layer through the Bronze layer, so raw data is landed before it is modelized.
+      if (stageNode.data.stage !== Stage.Ingest)
         return false
     }
     return true
   }
 
+  // Helper: Which targets a stage may hand its data to. Stages only chain to their own partner stage,
+  // Modelize may additionally persist to the warehouse, and only Egress leaves the Data Layer towards a service.
+  const isValidStageTarget = (stage: Stage, partnerId: string, targetNode: AppNode) => {
+    const isPartner = targetNode.type === 'stage' && targetNode.id === partnerId
+
+    switch (stage) {
+      case Stage.Ingest:
+        return isPartner
+      case Stage.Modelize:
+        return isPartner || targetNode.type === 'warehouse'
+      case Stage.Egress:
+        return targetNode.type === 'service'
+      default:
+        return false
+    }
+  }
+
   // Helper: Validate stage node connection and mutate edge if needed
   const isValidStageConnection = (sourceNode: AppNode, targetNode: AppNode, edge: DataEdge) => {
-    const stageNode = sourceNode
-    // Type guard: check if stageNode.data has a 'stage' property
-    if ('stage' in stageNode.data) {
-      if (stageNode.data.stage === Stage.Modelize) {
-        if (targetNode.type !== 'stage' && targetNode.type !== 'warehouse')
-          return false
-        if (targetNode.type === 'stage' && targetNode.id !== stageNode.data.partnerId)
-          return false
+    // Type guard: check if the source node data has a 'stage' property
+    if (!('stage' in sourceNode.data))
+      return false
 
-        edge.data!.shape = 'square'
-      }
-      else if (stageNode.data.stage === Stage.Egress) {
-        if (targetNode.type !== 'service')
-          return false
-      }
-      return true
-    }
-    return false
+    if (!isValidStageTarget(sourceNode.data.stage, sourceNode.data.partnerId, targetNode))
+      return false
+
+    // Connections that stay inside the Data Layer are drawn with square gizmos.
+    if (sourceNode.data.stage !== Stage.Egress)
+      edge.data!.shape = 'square'
+
+    return true
   }
 
   const onConnect = useCallback(
@@ -408,6 +420,14 @@ export default function App({
         }
       }
 
+      // Stretch the Bronze, Silver and Gold bands with the Data Layer.
+      if (n.id === datalayer.bronze.id || n.id === datalayer.silver.id || n.id === datalayer.gold.id) {
+        return {
+          ...n,
+          style: { ...n.style, height: calculateLayerBandHeight(newHeight) },
+        }
+      }
+
       return n
     }))
   }, [datalayer, flows])
@@ -421,7 +441,7 @@ export default function App({
 
     const flow = CreateFlowPrefab(datalayer.container, Date.now().toString(), 24, calculateNextFlowY(flows.length))
 
-    setNodes(nds => [...nds, flow.container, flow.modelize, flow.egress])
+    setNodes(nds => [...nds, flow.container, flow.ingest, flow.modelize, flow.egress])
     setFlows(flws => [...flws, flow])
   }
 
@@ -435,16 +455,15 @@ export default function App({
       return
 
     // Before we continue, let's make our life easier by getting the IDs of the nodes associated with the flow.
-    const ids = [flow.container.id, flow.modelize.id, flow.egress.id]
+    const ids = new Set([flow.container.id, flow.ingest.id, flow.modelize.id, flow.egress.id])
 
     // We have to do a few operations here. Firstly, remove the nodes associated with the flow. Then, remove nodes that have any of them as parents.
     let nodes = reactFlowInstance.getNodes() ?? []
-    // nodes = nodes.filter(n => !ids.includes(n.id) && (n.parentId && !ids.includes(n.parentId)))
-    nodes = nodes.filter(n => !ids.includes(n.id))
-    nodes = nodes.filter(n => !ids.includes(n.parentId as string))
+    nodes = nodes.filter(n => !ids.has(n.id))
+    nodes = nodes.filter(n => !ids.has(n.parentId as string))
 
     setNodes(nodes)
-    setEdges(eds => eds.filter(e => !ids.includes(e.source) && !ids.includes(e.target)))
+    setEdges(eds => eds.filter(e => !ids.has(e.source) && !ids.has(e.target)))
     setFlows(flws => flws.filter(f => f.container.id !== flow.container.id))
   }
 

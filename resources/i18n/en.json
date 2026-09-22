@@ -6,8 +6,8 @@
   "dictionary": {
     "annotation-destination": "Data is pushed to a destination completing a flow",
     "annotation-flow-connect": "Try connecting a flow yourself!",
-    "annotation-modelize": "Data is validated, standardized and optionally warehoused",
-    "annotation-source": "Sources pull data to a given destination\n(They have a single output)",
+    "annotation-modelize": "Raw in Bronze, standardized in Silver, served from Gold",
+    "annotation-source": "Sources pull raw data into the Data Layer\n(They have a single output)",
     "annotation-finance-payment": "Payment data from multiple providers is collected and standardized",
     "annotation-finance-warehouse": "Standardized payment data is stored for consolidated reporting",
     "annotation-portfolio-cloud": "Insurance data from multiple cloud providers is consolidated",
@@ -107,6 +107,12 @@
     "status-success-nothing-new": "Success Nothing New",
     "status-success-with-warehouse": "Success With Warehouse",
     "status-success": "Success",
+    "stage-ingest": "Ingest",
+    "layout-medallion": "Manufacturing Data Platform",
+    "annotation-medallion-bronze": "Bronze: raw records, landed as received and reprocessable",
+    "annotation-medallion-silver": "Silver: conformed into one tenant-neutral model",
+    "annotation-medallion-gold": "Gold: curated tables for apps, AI/ML and reporting",
+    "annotation-medallion-consumers": "Applications, AI/ML and reporting\nall read from the same Gold layer",
     "tutorial-layout": "Explore various Data Layer configurations",
     "tutorial-service": "Build your own use-case with various services"
   }
